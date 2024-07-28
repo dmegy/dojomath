@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="style.css" />
+    <link href="/assets/fontawesome/css/fontawesome.css" rel="stylesheet" />
+    <link href="/assets/fontawesome/css/solid.css" rel="stylesheet" />
+
+    <script src="js/app.js"></script>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 110 100'><text y='0.9em' font-size='90'>🏆</text></svg>"
+    />
+    <title>Document</title>
+  </head>
+  <body>
+    <header>
+      <div class="centered-header">
+        <nav>
+          <i class="fa-solid fa-home"></i>
+          <i class="fa-solid fa-user"> </i>
+          <i class="fa-solid fa-chart-line"> </i>
+          <i class="fa-solid fa-trophy"> </i>
+        </nav>
+        <div class="points-counter">?PTS</div>
+      </div>
+    </header>
+    <main>
+      <section id="home" style="display: none" x-show="true">
+        <h1>Bienvenue</h1>
+        <h2>Règles du jeu</h2>
+        <p>
+          Chaque réponse correcte rapporte un point, chaque réponse incorrecte
+          enlève un point.
+        </p>
+        <p>
+          Des bonus sont octroyés pour des séries de bonnes réponses
+          consécutives.
+        </p>
+        <div x-html="fonctionTest(4)">
+          Cette valeur va être modifiée par javascript
+        </div>
+        <h2>Leaderboard</h2>
+        <div>--- tableau ---</div>
+      </section>
+      <section id="settings" x-show="false" style="display: none">
+        Cette section ne doit pas être affichée. Elle continent un div avec du
+        x-html :
+        <div x-html="variable">Ce contenu ne devrait pas être affiché</div>
+      </section>
+      <section id="statistics" x-show="false" style="display: none">
+        Cette section ne doit pas être affichée
+      </section>
+      <section id="trophys" x-show="false" style="display: none">
+        Cette section ne doit pas être affichée
+      </section>
+    </main>
+  </body>
+</html>
