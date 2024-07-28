@@ -15,7 +15,7 @@
     <title>Document</title>
   </head>
   <body>
-    <header>
+    <header class="glow">
       <div class="centered-header">
         <nav>
           <i class="fa-solid fa-home"></i>
@@ -27,8 +27,8 @@
       </div>
     </header>
     <main>
-      <section id="home" style="display: none" x-show="true">
-        <h1>Bienvenue</h1>
+      <section id="home" style="display: none" x-show="(state=='home')">
+        <h1 class="glow">Bienvenue</h1>
         <h2>Règles du jeu</h2>
         <p>
           Chaque réponse correcte rapporte un point, chaque réponse incorrecte
@@ -38,11 +38,8 @@
           Des bonus sont octroyés pour des séries de bonnes réponses
           consécutives.
         </p>
-        <div x-html="fonctionTest(4)">
-          Cette valeur va être modifiée par javascript
-        </div>
-        <h2>Leaderboard</h2>
-        <div>--- tableau ---</div>
+        <h2>Tableau des scores</h2>
+        <div>- - - Chargement des scores - - -</div>
       </section>
       <section id="settings" x-show="false" style="display: none">
         Cette section ne doit pas être affichée. Elle continent un div avec du
@@ -52,9 +49,12 @@
       <section id="statistics" x-show="false" style="display: none">
         Cette section ne doit pas être affichée
       </section>
-      <section id="trophys" x-show="false" style="display: none">
+      <section id="trophies" x-show="false" style="display: none">
         Cette section ne doit pas être affichée
       </section>
+      <div id="fab" class="fab">
+        <i class="fa-solid fa-play" style="transform: translateX(0.1rem)"></i>
+      </div>
     </main>
   </body>
 </html>

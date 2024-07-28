@@ -1,4 +1,5 @@
 let state = "home";
+
 let user = {
   userId: "userIdTest",
   userName: "NomProvisoire",
@@ -43,7 +44,11 @@ const xHtml = () => {
   }
 };
 
-window.addEventListener("load", () => {
+const render = () => {
   xShow();
   xHtml();
+};
+
+window.addEventListener("load", () => {
+  render();
 });
