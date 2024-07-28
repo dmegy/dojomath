@@ -23,7 +23,7 @@
   --hue-primary: 208;
   --c-bg-body: oklch(15% 14% var(--hue-primary));
   --c-text: oklch(90% 14% var(--hue-primary));
-  --c-primary: oklch(40% 14% var(--hue-primary));
+  --c-primary: oklch(40% 90% var(--hue-primary));
 }
 
 body {
@@ -39,6 +39,7 @@ header {
   height: 3rem;
   width: 100%;
   background-color: var(--c-bg-header);
+  font-size: 1.5rem;
 }
 
 .centered-header {
@@ -67,4 +68,16 @@ nav {
 
 h1 {
   font-size: 3rem;
+}
+
+.notif {
+  position: absolute;
+  top: -0.5rem;
+  right: -0.5rem;
+  border-radius: 1rem;
+  color: var(--c-text);
+  background-color: var(--c-primary);
+  padding: 0.1rem 0.3rem;
+  margin: 0;
+  font-size: 0.6rem;
 }
