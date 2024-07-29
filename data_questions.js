@@ -240,7 +240,7 @@ let questions=[{"statement": "Tautologie.","answer":true},{"statement": "$|1-\\p
 {"statement": "La dérivée de $x\\mapsto -1/x$ est $x\\mapsto 1/x^2$.","answer":true},
 {"statement": "La dérivée de $x\\mapsto 1/x^2$ est $x\\mapsto -2/x^3$.","answer":true},
 {"statement": "$x\\mapsto -3/x^4$ est la dérivée de $x\\mapsto 1/x^3$.","answer":true},
-{"statement": "$x\\mapsto 2/x^3$ est la dérivée seconde de $x\\mapsto 1/x$.","answer":true},																																																																																																																																																																																																	
+{"statement": "$x\\mapsto 2/x^3$ est la dérivée seconde de $x\\mapsto 1/x$.","answer":true},                                                                                                                                                                                                                                                                                                                                                                                                  
 {"statement": "La dérivée seconde de $x\\mapsto 1/x$ est $x\\mapsto 3/x^3$.","answer":false},
 {"statement": "La dérivée de $x\\mapsto x\\sqrt{x}$ est $x\\mapsto \\dfrac{1}{2\\sqrt{x}}$.","answer":false},
 {"statement": "La dérivée de $x\\mapsto \\cos(x)$ est $x\\mapsto -\\sin(x)$.","answer":true},

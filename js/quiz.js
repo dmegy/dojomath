@@ -28,6 +28,7 @@ function nextQuestion() {
   question.num = questionNumber; // on rajoute dans l'objet
   state = "Quiz";
   render();
+  MathJax.typeset();
 }
 
 function validateAnswer() {

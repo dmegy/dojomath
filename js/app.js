@@ -115,6 +115,7 @@ const xHtml = () => {
 const render = () => {
   xShow();
   xHtml();
+  //MathJax.typeset();// bcp trop lent !
 };
 
 window.addEventListener("load", () => {

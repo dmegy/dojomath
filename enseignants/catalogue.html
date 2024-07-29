@@ -20,7 +20,7 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.css"
     />
 
-    <script type="text/javascript" src="data_questions.js"></script>
+    <script type="text/javascript" src="../data_questions.js"></script>
 
     <style>
       .nowrap {
@@ -73,28 +73,39 @@
       s += "</tbody></table>";
       document.getElementById("mainDiv").innerHTML = s;
     </script>
-
-    <script type="text/x-mathjax-config">
-      MathJax.Hub.Config({
-      	tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
-      	TeX: {
-        		Macros: {
-        			N: "{\\mathbb{N}}",
-        			Z: "{\\mathbb{Z}}",
-        			Q: "{\\mathbb{Q}}",
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [
+            ["$", "$"],
+            ["\\(", "\\)"],
+          ],
+          macros: {
+            N: "{\\mathbb{N}}",
+            Z: "{\\mathbb{Z}}",
+            Q: "{\\mathbb{Q}}",
             R: "{\\mathbb{R}}",
             C: "{\\mathbb{C}}",
             U: "{\\mathbb{U}}",
             P: "{\\mathbb{P}}",
             llbracket: "{[\\![}",
-            rrbracket: "{]\\!]}"
-          }
-        }
-      });
+            rrbracket: "{]\\!]}",
+            tr: "{\\mathrm{tr}}",
+            rg: "{\\mathrm{rg}}",
+            im: "{\\mathrm{im}}",
+            id: "{\\mathrm{id}}",
+            Mat: "{\\mathrm{Mat}}",
+          },
+          svg: {
+            fontCache: "global",
+          },
+        },
+      };
     </script>
     <script
-      type="text/javascript"
-      src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML"
+      id="MathJax-script"
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
     ></script>
   </body>
 </html>
