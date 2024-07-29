@@ -1,0 +1,55 @@
+.button {
+  cursor: pointer;
+  border-radius: 2rem;
+  position: relative;
+  padding: 0.5rem 1rem;
+  margin: 1rem;
+  font-size: 1.2rem;
+
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.bbutton:focus {
+  outline: none !important;
+}
+
+.button-small {
+  /* pour les boutons des thèmes */
+  overflow: hidden;
+  display: inline-block;
+  margin: 0.2rem;
+  white-space: nowrap;
+  cursor: pointer;
+  border-radius: 0.8rem;
+  position: relative;
+  padding: 0.2rem 0.5rem 0.2rem 0.5rem;
+  font-size: 1rem;
+}
+
+.button-secondary {
+  background-color: var(--c-secondary-40);
+  text-align: center;
+}
+.button-primary {
+  background-color: var(--c-primary);
+  text-align: center;
+}
+
+.circled {
+  border: 3px solid var(--c-text);
+  border-radius: 1rem;
+  padding: 0.3rem;
+}
+
+.nav-button {
+  width: 2.4rem;
+  height: 2.4rem;
+  display: grid;
+  place-items: center;
+}

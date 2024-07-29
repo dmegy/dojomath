@@ -1,60 +1,7 @@
+@import "./config.css";
 @import "./components.css";
-
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-}
-@font-face {
-  font-family: "Nunito";
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-  src: url("../assets/fonts/Nunito.woff2");
-}
-@font-face {
-  font-family: "Nunito";
-  font-weight: 900;
-  font-style: normal;
-  font-display: swap;
-  src: url("../assets/fonts/nunito-v16-latin-900.woff2");
-}
-:root {
-  --header-height: 3rem;
-  --max-width: 500px;
-
-  --margin: 1rem; /* marge à gauche et à droite de l'écran*/
-
-  --hue-primary: 215;
-  --hue-accent: 200;
-  --hue-secondary: 130;
-  --c-primary-40: oklch(40% 70% var(--hue-primary));
-  --c-primary-30: oklch(30% 70% var(--hue-primary));
-  --c-primary: var(--c-primary-40); /* raccourci */
-
-  --c-primary-20-desat: oklch(20% 25% var(--hue-primary));
-  --c-primary-40-desat: oklch(40% 25% var(--hue-primary));
-  --c-primary-70-desat: oklch(70% 25% var(--hue-primary));
-  --c-primary-90-desat: oklch(90% 25% var(--hue-primary));
-
-  /* raccourcis */
-  --c-bg-body: var(--c-primary-20-desat);
-  --c-bg-header: black;
-  --c-text: var(--c-primary-90-desat);
-
-  --c-secondary-70: oklch(70% 90% var(--hue-secondary));
-  --c-secondary-40: oklch(40% 90% var(--hue-secondary));
-
-  --c-accent: oklch(90% 100% var(--hue-accent));
-  --c-seen: oklch(50% 90% var(--hue-secondary));
-  --c-successful: oklch(70% 90% var(--hue-secondary));
-  --c-double-successful: var(--c-text);
-
-  /* sera overwrité dans le composant du thème*/
-  --progress-seen: 86%;
-  --progress-successful: 60%;
-  --progress-double-successful: 35%;
-}
+@import "./buttons.css";
+@import "./avatar.css";
 
 body {
   font-family: Nunito, Futura, Arial;
@@ -63,15 +10,38 @@ body {
   padding: 0;
   min-height: 100vh;
   color: var(--c-text);
-  background-color: var(--c-bg-body);
+  background-color: var(--c-primary-40-desat);
   overflow: hidden;
 }
+
+.body-container {
+  overflow: hidden;
+  background-color: var(--c-primary-20-desat);
+  margin: auto;
+  box-shadow: 0 0 40px var(--c-primary-20-desat);
+  max-width: var(--max-width);
+  min-height: 100vh;
+}
+
 header {
   height: var(--header-height);
   width: 100%;
   background-color: var(--c-bg-header);
   font-size: 1.5rem;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
+footer {
+  width: 100%;
+  background-color: var(--c-bg-header);
+  min-height: var(--footer-min-height);
+  font-size: 0.8rem;
+  padding: 2rem 1rem;
+  color: oklch(70% 20% var(--hue-primary));
+}
+
 main {
   overflow: auto;
   scrollbar-width: none;
@@ -82,26 +52,10 @@ main {
   align-items: center;
 }
 
-p,
-.margin-l-r {
-  margin-left: var(--margin);
-  margin-right: var(--margin);
-}
-
-.centered-header {
-  height: 100%;
-  margin: auto;
-  padding: 1rem;
-  max-width: var(--max-width);
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
 section {
+  padding: 1rem;
   width: 100%;
   max-width: var(--max-width);
-  padding: 1rem;
 }
 
 nav {
@@ -116,16 +70,20 @@ h1,
 h2,
 h3,
 h4 {
-  margin: 0.6em 0 0.6em 1rem;
+  margin: 0;
+  margin-bottom: 1rem;
   font-weight: 900;
 }
-h2,
+
 h3 {
   color: var(--c-secondary-70);
 }
 
 h1 {
-  font-size: 3rem;
+  font-size: 2.4rem;
+}
+h2 {
+  font-size: 2rem;
 }
 h3 {
   font-size: 1.5rem;
@@ -193,62 +151,6 @@ summary {
   animation: rotating 2s linear infinite;
 }
 
-.button {
-  cursor: pointer;
-  border-radius: 2rem;
-  position: relative;
-  padding: 0.5rem 1rem;
-  margin: 1rem;
-  font-size: 1.2rem;
-
-  -webkit-tap-highlight-color: transparent;
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
-
-.bbutton:focus {
-  outline: none !important;
-}
-
-.button-small {
-  /* pour les boutons des thèmes */
-  overflow: hidden;
-  display: inline-block;
-  margin: 0.2rem;
-  white-space: nowrap;
-  cursor: pointer;
-  border-radius: 0.8rem;
-  position: relative;
-  padding: 0.2rem 0.5rem 0.2rem 0.5rem;
-  font-size: 1rem;
-}
-
-.button-secondary {
-  background-color: var(--c-secondary-40);
-  text-align: center;
-}
-.button-primary {
-  background-color: var(--c-primary);
-  text-align: center;
-}
-
-.circled {
-  border: 3px solid var(--c-text);
-  border-radius: 1rem;
-  padding: 0.3rem;
-}
-
-.nav-button {
-  width: 2.4rem;
-  height: 2.4rem;
-  display: grid;
-  place-items: center;
-}
-
 /* - - - - - - 
 - - - STATS THEME
 - - - - - - -*/
@@ -288,36 +190,4 @@ summary {
   height: 1em;
   fill: var(--c-text);
   transform: translateY(8%);
-}
-
-/* - - - - - - - - - - - - - - - -
-- - - - - A V A T A R - - - - - 
-- - - - - - - - - - - - - - - - */
-.avatar {
-  width: calc(100% - 2rem);
-  height: calc(100% - 2rem);
-  position: relative;
-  margin: 1rem;
-}
-.avatar-disk {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  overflow: hidden;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.avatar-missing {
-  border: 3px var(--c-primary-40) dashed;
-}
-.change-avatar {
-  cursor: pointer;
-  position: absolute;
-  right: -0.7rem;
-  bottom: -0.7rem;
-  background-color: var(--c-bg-header);
-  padding: 0.3rem;
-  border-radius: 0.5rem;
 }

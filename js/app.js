@@ -68,6 +68,8 @@ const gotoTheme = (id) => {
   render();
 };
 
+function startQuiz() {}
+
 const level = (points) => {
   // correspondances points<->niv :
   // 20->niv1, 40->niv2, 80->niv3 etc

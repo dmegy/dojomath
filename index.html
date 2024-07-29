@@ -20,8 +20,8 @@
     <title>DojoMath</title>
   </head>
   <body>
-    <header class="glow">
-      <div class="centered-header">
+    <div class="body-container">
+      <header class="glow">
         <nav>
           <div class="nav-button" onClick="goto('Home')">
             <i id="navButtonHome" class="fa-solid fa-home circled"></i>
@@ -37,223 +37,310 @@
           </div>
         </nav>
         <div x-html="htmlPoints()"></div>
-      </div>
-    </header>
-    <main>
-      <section id="home" x-show="(state=='Home')">
-        <h1 class="glow">Bienvenue</h1>
-        <h3>Règles du jeu</h3>
-        <p>
-          Chaque réponse correcte rapporte un point, chaque réponse incorrecte
-          enlève un point.
-        </p>
-        <p>
-          Des bonus sont octroyés pour des séries de bonnes réponses
-          consécutives.
-        </p>
-        <h3>
-          Tableau des scores
-          <span onclick="getHighscores()"
-            ><i
-              id="refreshHighscoresButton"
-              class="fa-solid fa-arrow-rotate-right"
-            ></i
-          ></span>
-        </h3>
-        <p>Tous les temps / Plus récents / Meilleurs Streaks</p>
-        <div id="highscores" class="margin-l-r">
-          - - - Chargement des scores - - -
-        </div>
-      </section>
-
-      <!-- - - - - - C H A P I T R E S - - - - - -->
-
-      <section id="chapters" x-show="(state=='Chapters')" style="display: none">
-        <div x-html="htmlChapters()"></div>
-      </section>
-      <!-- - - - - - T H E M E - - - - - -->
-      <section id="theme" x-show="(state=='theme')" style="display: none">
-        <h3 x-html="theme.title"></h3>
-        <p x-html="theme.info"></p>
-        <div class="stats-theme">
-          <div style="flex-grow: 1; min-height: 5rem" class="stats-theme-infos">
-            <span x-html="theme.questions.length">?</span> questions dont :
-            <div style="width: 100%; height: 0.4rem"></div>
-            <span style="display: inline; color: var(--c-seen)">
-              <svg
-                class="svg-icon"
-                viewBox="0 0 580 512"
-                style="margin-right: 0.7rem"
-                x-html="svgPathFarEye"
-              ></svg>
-              <span x-html="theme.nbQuestionsSeen || '0' ">?</span>
-              déjà affichées (<span
-                x-html="theme.nbQuestionsSeen/theme.length || '0' "
-                >?</span
-              >%)
-            </span>
-            <br />
-            <span style="display: inline; color: var(--c-successful)">
-              <svg
-                class="svg-icon"
-                viewBox="0 0 512 512"
-                style="margin-right: 0.7rem"
-                x-html="svgPathFasCheck"
-              ></svg>
-              <span x-html="theme.nbQuestionsChecked || '0' ">?</span> réussies
-              (<span x-html="theme.nbQuestionsSuccessful/theme.length || '0' "
-                >?</span
-              >%)</span
-            >
-
-            <br />
-            <span style="display: inline; color: var(--c-double-successful)">
-              <svg
-                class="svg-icon"
-                viewBox="0 0 512 512"
-                style="margin-right: 0.7rem"
-                x-html="svgPathFasCheckDouble"
-              ></svg>
-              <span x-html="theme.nbQuestionsDbChecked || '0' ">?</span>
-              consolidées (<span
-                x-html="theme.nbQuestionsDbSuccessful/theme.length || '0' "
-                >?</span
-              >%)
-            </span>
-          </div>
-        </div>
-        <div
-          style="margin-top: 1.5rem"
-          class="button button-primary"
-          onclick="startQuiz()"
-        >
-          <svg
-            class="svg-icon"
-            x-html="svgPathFasCirclePlay"
-            viewBox="0 0 512 512"
-          ></svg>
-          Quiz de 10 questions
-        </div>
-      </section>
-
-      <!-- - - - - - S T A T S  - - - - - -->
-
-      <section
-        id="statistics"
-        x-show="state=='Statistics'"
-        style="display: none"
-      >
-        <h1 class="glow">Statistiques</h1>
-        <h3>Bilan</h3>
-        <p>🔥 Streak : <span x-html="getUserStreak()"></span></p>
-        <h3><i class="fa-solid fa-list-check"></i> Objectifs du jour</h3>
-        <p>blabla sur les objectifs du jour</p>
-        <h3>
-          <i style="rotate: 20deg" class="fa-solid fa-dumbbell"></i> Prochaines
-          étapes
-        </h3>
-        <div class="margin-l-r">
-          <div style="display: flex; gap: 0.5rem; align-items: center">
-            <div style="flex-shrink: 0">Niveau ? (? pts):</div>
-            <div
-              style="height: 0.5rem; flex-grow: 1"
-              x-html="htmlProgress(user.points,nextLevelThreshold(user.points))"
-            ></div>
-          </div>
-          <div style="display: flex; gap: 0.5rem; align-items: center">
-            <div style="flex-shrink: 0">Réussir ? questions :</div>
-            <div
-              style="height: 0.5rem; flex-grow: 1"
-              x-html="htmlProgress(user.nbCorrectAnswers,100*Math.ceil(user.nbCorrectAnswers/100))"
-            ></div>
-          </div>
-          <div style="display: flex; gap: 0.5rem; align-items: center">
-            <div style="flex-shrink: 0">
-              Finir ? quiz avec un score parfait :
-            </div>
-            <div
-              style="height: 0.5rem; flex-grow: 1"
-              x-html="htmlProgress(user.perfects,10*(Math.floor(user.perfects/10)+1))"
-            ></div>
-          </div>
-        </div>
-        <h3><i class="fa-solid fa-chart-column"></i> Activité sur 48h</h3>
-        <p>Pas d'activité à afficher. Au travail !</p>
-      </section>
-
-      <!-- - - - - - P R O F I L - - - - - -->
-
-      <section id="profile" x-show="(state=='Profile')" style="display: none">
-        <h1 class="glow">Profil Utilisateur</h1>
-        <p>Ici les réglages de club, avatar, login éventuel</p>
-
-        <div class="avatar" style="width: 6rem; height: 6rem">
-          <div id="avatarDisk" class="avatar-disk avatar-missing">
-            <svg
-              id="avantAvatar"
-              style="width: 90%; height: 90%; opacity: 0.1"
-              viewBox="0 0 512 512"
-              class="svg-icon"
-              x-html="svgPathFasUserLarge"
-            ></svg>
-            <img
-              id="avatarImg"
-              width="100%"
-              height="100%"
-              style="display: none"
-            />
-          </div>
-          <label for="inputTag" class="change-avatar" style="">
-            <svg
-              class="svg-icon"
-              viewBox="0 0 512 512"
-              x-html="svgPathFasPenToSquare"
-            ></svg>
-            <input
-              id="inputTag"
-              type="file"
-              accept="image/jpeg, image/png"
-              style="display: none"
-            />
-          </label>
-        </div>
-
-        <div>
-          <p>Identifiant utilisateur : <span x-html="user.userId"></span></p>
-          <p>Nom utilisateur : <span x-html="user.userId"></span></p>
-          <p>Département (si France) :</p>
-          <p>Club :</p>
-        </div>
-
-        <div>
-          <h3>Sauvegarde du compte</h3>
-          <p>Utilisateur côté serveur :</p>
-          <p>Tu n'est pas loggué(e)</p>
-          <p>Boutons se loguer (pour loader un utilisateur déjà existant)</p>
+      </header>
+      <main>
+        <section id="home" x-show="(state=='Home')">
+          <h1 class="glow">Bienvenue</h1>
+          <h3>Règles du jeu</h3>
           <p>
-            (Apparaît lorsqu'on dépasse 100 pts) Félicitations tu as plus de 100
-            pts, tu as le droit de créer un compte sur le serveur. Tes points
-            sont de toute façon sauvegardés sur ton nagifateur, mais un compte
-            sur le serveur permettra de récupérer tes points si tu effaces
-            l'historique de ton navigateur, ou si tu joues depuis une autre
-            machine.
+            Chaque réponse correcte rapporte un point, chaque réponse incorrecte
+            enlève un point.
           </p>
-        </div>
-      </section>
+          <p>
+            Des bonus sont octroyés pour des séries de bonnes réponses
+            consécutives.
+          </p>
+          <h3>
+            Tableau des scores
+            <span onclick="getHighscores()"
+              ><i
+                id="refreshHighscoresButton"
+                class="fa-solid fa-arrow-rotate-right"
+              ></i
+            ></span>
+          </h3>
+          <p>Tous les temps / Plus récents / Meilleurs Streaks</p>
+          <div id="highscores">- - - Chargement des scores - - -</div>
+        </section>
 
-      <section id="trophies" x-show="(state=='Trophies')" style="display: none">
-        <h1 class="glow">Trophées</h1>
-        <p>Tes trophées seront affichés ici.</p>
-      </section>
-      <div
-        id="fab"
-        class="fab pulse"
-        onClick="gotoChapters()"
-        x-show="(state=='Home')||(state=='Profile')||(state=='Statistics')||(state=='Trophies')"
-      >
-        <i class="fa-solid fa-play" style="transform: translateX(0.1rem)"></i>
-      </div>
-    </main>
-    <footer></footer>
+        <!-- - - - - - C H A P I T R E S - - - - - -->
+
+        <section
+          id="chapters"
+          x-show="(state=='Chapters')"
+          style="display: none"
+        >
+          <div x-html="htmlChapters()"></div>
+        </section>
+
+        <!-- - - - - - D E T A I L S   T H E M E - - - - - -->
+        <section id="theme" x-show="(state=='theme')" style="display: none">
+          <h3 x-html="theme.title"></h3>
+          <p x-html="theme.info"></p>
+          <div class="stats-theme">
+            <div
+              style="flex-grow: 1; min-height: 5rem"
+              class="stats-theme-infos"
+            >
+              <span x-html="theme.questions.length">?</span> questions dont :
+              <div style="width: 100%; height: 0.4rem"></div>
+              <span style="display: inline; color: var(--c-seen)">
+                <svg
+                  class="svg-icon"
+                  viewBox="0 0 580 512"
+                  style="margin-right: 0.7rem"
+                  x-html="svgPathFarEye"
+                ></svg>
+                <span x-html="theme.nbQuestionsSeen || '0' ">?</span>
+                déjà affichées (<span
+                  x-html="theme.nbQuestionsSeen/theme.length || '0' "
+                  >?</span
+                >%)
+              </span>
+              <br />
+              <span style="display: inline; color: var(--c-successful)">
+                <svg
+                  class="svg-icon"
+                  viewBox="0 0 512 512"
+                  style="margin-right: 0.7rem"
+                  x-html="svgPathFasCheck"
+                ></svg>
+                <span x-html="theme.nbQuestionsChecked || '0' ">?</span>
+                réussies (<span
+                  x-html="theme.nbQuestionsSuccessful/theme.length || '0' "
+                  >?</span
+                >%)</span
+              >
+
+              <br />
+              <span style="display: inline; color: var(--c-double-successful)">
+                <svg
+                  class="svg-icon"
+                  viewBox="0 0 512 512"
+                  style="margin-right: 0.7rem"
+                  x-html="svgPathFasCheckDouble"
+                ></svg>
+                <span x-html="theme.nbQuestionsDbChecked || '0' ">?</span>
+                consolidées (<span
+                  x-html="theme.nbQuestionsDbSuccessful/theme.length || '0' "
+                  >?</span
+                >%)
+              </span>
+            </div>
+          </div>
+          <div
+            style="margin-top: 1.5rem"
+            class="button button-primary"
+            onclick="startQuiz()"
+          >
+            <svg
+              class="svg-icon"
+              x-html="svgPathFasCirclePlay"
+              viewBox="0 0 512 512"
+            ></svg>
+            Quiz de 10 questions
+          </div>
+        </section>
+
+        <!-- - - - - - S T A T S  - - - - - -->
+        <section
+          id="statistics"
+          x-show="state=='Statistics'"
+          style="display: none"
+        >
+          <h1 class="glow">Statistiques</h1>
+          <!-- - - - S T A T S > > > BILAN- - - -->
+          <h3>Bilan</h3>
+          <p>Questions : ? vues, ? ratées, ? sautées, ? réussies</p>
+          <div
+            x-html="htmlTripleProgress([2,3,7])"
+            style="height: 1rem; margin: 1rem 0"
+          ></div>
+
+          <!-- - - - S T A T S > > > A C T I V I T E   RECENTE- - - -->
+          <h3><i class="fa-solid fa-chart-column"></i> Activité Récente</h3>
+
+          <p>
+            🔥 Streak : <span x-html="getUserStreak()"></span> (+streak faible?)
+          </p>
+          <p>Pas d'activité à afficher. Au travail !</p>
+
+          <!-- - - - S T A T S > > > OBJECTIFS DU JOUR - - - -->
+          <h3><i class="fa-solid fa-list-check"></i> Objectifs du jour</h3>
+          <div class="margin-l-r">
+            <div style="display: flex; gap: 0.5rem; align-items: center">
+              <div
+                style="width: 1rem; flex-shrink: 0; text-align: center"
+                x-html="htmlCheckbox(true)"
+              ></div>
+              <div style="flex-shrink: 0">Gagner 100 points :</div>
+              <div
+                style="height: 0.5rem; flex-grow: 1"
+                x-html="htmlProgress(user.points,100)"
+              ></div>
+            </div>
+
+            <div style="display: flex; gap: 0.5rem; align-items: center">
+              <div
+                style="width: 1rem; flex-shrink: 0; text-align: center"
+                x-html="htmlCheckbox(true)"
+              ></div>
+              <div style="flex-shrink: 0">Valider 5 quiz :</div>
+              <div
+                style="height: 0.5rem; flex-grow: 1"
+                x-html="htmlProgress(2,5)"
+              ></div>
+            </div>
+
+            <div style="display: flex; gap: 0.5rem; align-items: center">
+              <div
+                style="width: 1rem; flex-shrink: 0; text-align: center"
+                x-html="htmlCheckbox(true)"
+              ></div>
+              <div>Valider un quiz avec 20/20</div>
+            </div>
+
+            <div style="display: flex; gap: 0.5rem; align-items: center">
+              <div
+                style="width: 1rem; flex-shrink: 0; text-align: center"
+                x-html="htmlCheckbox(true)"
+              ></div>
+              <div>Valider un quiz entre 6h et 8h</div>
+            </div>
+
+            <div style="display: flex; gap: 0.5rem; align-items: center">
+              <div
+                style="width: 1rem; flex-shrink: 0; text-align: center"
+                x-html="htmlCheckbox(true)"
+              ></div>
+              <div>Valider un quiz entre midi et 14h</div>
+            </div>
+
+            <div style="display: flex; gap: 0.5rem; align-items: center">
+              <div
+                style="width: 1rem; flex-shrink: 0; text-align: center"
+                x-html="htmlCheckbox(true)"
+              ></div>
+              <div>Valider un quiz entre 18h et 20h</div>
+            </div>
+          </div>
+          <!-- - - - S T A T S > > > P R O C H A I N E S   E T A P E S - - - -->
+          <h3>
+            <i style="rotate: 20deg" class="fa-solid fa-dumbbell"></i>
+            Prochaines étapes
+          </h3>
+          <div class="margin-l-r">
+            <div style="display: flex; gap: 0.5rem; align-items: center">
+              <div style="flex-shrink: 0">Niveau ? (? pts):</div>
+              <div
+                style="height: 0.5rem; flex-grow: 1"
+                x-html="htmlProgress(user.points,nextLevelThreshold(user.points))"
+              ></div>
+            </div>
+            <div style="display: flex; gap: 0.5rem; align-items: center">
+              <div style="flex-shrink: 0">Réussir ? questions :</div>
+              <div
+                style="height: 0.5rem; flex-grow: 1"
+                x-html="htmlProgress(user.nbCorrectAnswers,100*Math.ceil(user.nbCorrectAnswers/100))"
+              ></div>
+            </div>
+            <div style="display: flex; gap: 0.5rem; align-items: center">
+              <div style="flex-shrink: 0">
+                Finir ? quiz avec un score parfait :
+              </div>
+              <div
+                style="height: 0.5rem; flex-grow: 1"
+                x-html="htmlProgress(user.perfects,10*(Math.floor(user.perfects/10)+1))"
+              ></div>
+            </div>
+          </div>
+        </section>
+        <!-- - - - - - / S T A T S - - - - - -->
+
+        <!-- - - - - - P R O F I L - - - - - -->
+
+        <section id="profile" x-show="(state=='Profile')" style="display: none">
+          <h1 class="glow">Profil Utilisateur</h1>
+          <p>Ici les réglages de club, avatar, login éventuel</p>
+
+          <div class="avatar" style="width: 6rem; height: 6rem">
+            <div id="avatarDisk" class="avatar-disk avatar-missing">
+              <svg
+                id="avantAvatar"
+                style="width: 90%; height: 90%; opacity: 0.1"
+                viewBox="0 0 512 512"
+                class="svg-icon"
+                x-html="svgPathFasUserLarge"
+              ></svg>
+              <img
+                id="avatarImg"
+                width="100%"
+                height="100%"
+                style="display: none"
+              />
+            </div>
+            <label for="inputTag" class="change-avatar" style="">
+              <svg
+                class="svg-icon"
+                viewBox="0 0 512 512"
+                x-html="svgPathFasPenToSquare"
+              ></svg>
+              <input
+                id="inputTag"
+                type="file"
+                accept="image/jpeg, image/png"
+                style="display: none"
+              />
+            </label>
+          </div>
+
+          <div>
+            <p>Identifiant utilisateur : <span x-html="user.userId"></span></p>
+            <p>Nom utilisateur : <span x-html="user.userId"></span></p>
+            <p>Département (si France) :</p>
+            <p>Club :</p>
+          </div>
+
+          <div>
+            <h3>Sauvegarde du compte</h3>
+            <p>Utilisateur côté serveur :</p>
+            <p>Tu n'est pas loggué(e)</p>
+            <p>Boutons se loguer (pour loader un utilisateur déjà existant)</p>
+            <p>
+              (Apparaît lorsqu'on dépasse 100 pts) Félicitations tu as plus de
+              100 pts, tu as le droit de créer un compte sur le serveur. Tes
+              points sont de toute façon sauvegardés sur ton nagifateur, mais un
+              compte sur le serveur permettra de récupérer tes points si tu
+              effaces l'historique de ton navigateur, ou si tu joues depuis une
+              autre machine.
+            </p>
+          </div>
+        </section>
+
+        <section
+          id="trophies"
+          x-show="(state=='Trophies')"
+          style="display: none"
+        >
+          <h1 class="glow">Trophées</h1>
+          <p>Tes trophées seront affichés ici.</p>
+        </section>
+        <div
+          id="fab"
+          class="fab pulse"
+          onClick="gotoChapters()"
+          x-show="(state=='Home')||(state=='Profile')||(state=='Statistics')||(state=='Trophies')"
+        >
+          <i class="fa-solid fa-play" style="transform: translateX(0.1rem)"></i>
+        </div>
+
+        <footer>
+          DojoMath est une création du Club Mathématique de Nancy (lien)<br />
+          DojoMath pour les profs<br />
+          FAQ
+        </footer>
+      </main>
+    </div>
+    >
   </body>
 </html>

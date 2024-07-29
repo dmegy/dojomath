@@ -1,0 +1,67 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+@font-face {
+  font-family: "Nunito";
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+  src: url("../assets/fonts/Nunito.woff2");
+}
+@font-face {
+  font-family: "Nunito";
+  font-weight: 900;
+  font-style: normal;
+  font-display: swap;
+  src: url("../assets/fonts/nunito-v16-latin-900.woff2");
+}
+
+:root {
+  --header-height: 3.5rem;
+  --max-width: 500px;
+  --footer-min-height: 10rem;
+
+  --margin: 1rem; /* marge à gauche et à droite de l'écran*/
+
+  --hue-success: 125;
+  --hue-warning: 85;
+  --hue-danger: 50;
+
+  --hue-primary: 215;
+  --hue-accent: 200;
+  --hue-secondary: 130;
+
+  --c-danger: oklch(70% 70% var(--hue-danger));
+  --c-warning: oklch(70% 70% var(--hue-warning));
+  --c-success: oklch(70% 70% var(--hue-success));
+
+  --c-primary-40: oklch(40% 70% var(--hue-primary));
+  --c-primary-30: oklch(30% 70% var(--hue-primary));
+  --c-primary: var(--c-primary-40); /* raccourci */
+
+  --c-primary-10-desat: oklch(10% 25% var(--hue-primary));
+  --c-primary-20-desat: oklch(20% 25% var(--hue-primary));
+  --c-primary-40-desat: oklch(40% 25% var(--hue-primary));
+  --c-primary-70-desat: oklch(70% 25% var(--hue-primary));
+  --c-primary-90-desat: oklch(90% 25% var(--hue-primary));
+
+  /* raccourcis */
+  --c-bg-body: var(--c-primary-20-desat);
+  --c-bg-header: black;
+  --c-text: var(--c-primary-90-desat);
+
+  --c-secondary-70: oklch(70% 90% var(--hue-secondary));
+  --c-secondary-40: oklch(40% 90% var(--hue-secondary));
+
+  --c-accent: oklch(90% 100% var(--hue-accent));
+  --c-seen: oklch(50% 90% var(--hue-secondary));
+  --c-successful: oklch(70% 90% var(--hue-secondary));
+  --c-double-successful: var(--c-text);
+
+  /* sera overwrité dans le composant du thème*/
+  --progress-seen: 86%;
+  --progress-successful: 60%;
+  --progress-double-successful: 35%;
+}

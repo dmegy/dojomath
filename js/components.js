@@ -53,7 +53,7 @@ function htmlProfile() {
 
 function htmlProgress(a, b) {
   // retourne un div html avec une barre de progression
-  if (a > b) a = b;
+  if (a > b) a = b; // on tronque
   let p = 0;
   if (b != 0) p = a / b;
   return `<div class='progress-bar-container'>
@@ -61,12 +61,26 @@ function htmlProgress(a, b) {
 			</div>`;
 }
 
+function htmlTripleProgress([a, b, c]) {
+  // retourne un div html avec des barres de progression dans le ratio a:b:c
+
+  let n = a + b + c;
+  let [pa, pb, pc] = [0, 0, 0];
+  if (n != 0) [pa, pb, pc] = [(100 * a) / n, (100 * b) / n, (100 * c) / n];
+
+  let s = "";
+  s = `	<div class='progress-bar-container'>
+				<div style='width:${pa}%;background-color:var(--c-danger)'></div>
+				<div style='width:${pb}%;background-color:var(--c-warning)'></div>
+				<div style='width:${pc}%;background-color:var(--c-success)'></div>
+			</div>`;
+  return s;
+}
+
 function htmlCheckbox(bool) {
   if (bool) {
-    return `<div style="width:1rem;flex-shrink:0">
-			<svg class="svg-icon" viewBox="0 0 512 512">${svgPathFasCheck}</svg>
-			</div>`;
+    return `<svg class="svg-icon" viewBox="0 0 512 512">${svgPathFasCheck}</svg>`;
   } else {
-    return `<div style="width:1rem;flex-shrink:0;text-align:center">•</div>`;
+    return `•`;
   }
 }

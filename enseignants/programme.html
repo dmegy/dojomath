@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="fr">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv='cache-control' content='no-cache'>
+		<meta http-equiv='expires' content='0'>
+		<meta http-equiv='pragma' content='no-cache'>
+		
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Consolidation en  mathématiques: programme">
+    <meta name="author" content="Damien Mégy">
+    <title>Consolidation maths : programme complet</title>
+
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.css">
+
+
+		<script type="text/javascript" src="themes.js"></script>
+		<script type="text/javascript" src="questions_old.js"></script>
+
+
+
+		<style>
+			.nowrap{
+				max-width:100%;
+				white-space:nowrap;
+			}
+			body{
+				margin:0;
+				padding:1rem;
+			}
+		</style>
+		
+  </head>
+
+
+  <body>
+  	<h2>Chapitres, thèmes et questions de l'application "consolidation"</h2>
+  	<p>Cette page affiche toutes les questions de l'application <a href="https://dmegy.perso.math.cnrs.fr/consolidation/" target="_blank">https://dmegy.perso.math.cnrs.fr/consolidation</a>, classées par chapitres et thèmes. Ceci permet de vérifier ce qui est proposé par l'appli, et éventuellement de suggérer l'ajout ou la suppression de questions ou de thèmes.</p>
+  	<p>(Avertissement : il y a plusieurs centaines de questions, MathJax met plusieurs secondes à mettre tout ça en forme.)</p>
+  	<div id="mainDiv">
+  		Chargement...
+  	</div>
+
+
+
+
+
+
+		<script type="text/javascript">
+			let s = `<table id="mainTable" class="table table-striped table-bordered table-sm">
+        <thead><tr>
+            <th>Chapitre > thème</th>
+            <th>Quest°</th>
+            <th>V/F</th>
+            <th>Énoncé</th>
+        </tr>
+        </thead>
+        <tbody>`;
+      let i=1;
+			for(chapID in _chapitres){ // _chapitres est un objet
+				console.log("chapitre : "+chapID);
+				let j=1;
+				for(themeID of _chapitres[chapID].themes){
+					console.log("thème : "+themeID);
+					//_chapitres[chapID].themes est un tableau
+					for(questionID of _themes[themeID].questions){
+						console.log(questionID);
+						let ligne=`
+							<tr>
+								<td class="nowrap">${i}.${j} : ${_chapitres[chapID].nom} > ${_themes[themeID].etiquette}</td>
+								<td>${questionID}</td>
+								<td>${_questions[questionID].answer ? "V" : "F"}</td>
+								<td>${_questions[questionID].statement}</td>
+							</tr>`;
+						s+=ligne;
+					}
+					j++;
+				}
+				i++;
+			}
+			s+="</tbody></table>";
+			document.getElementById("mainDiv").innerHTML = s;
+		</script>
+
+			<script type="text/x-mathjax-config">
+		MathJax.Hub.Config({
+			tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
+			TeX: {
+    		Macros: {
+    			N: "{\\mathbb{N}}",
+    			Z: "{\\mathbb{Z}}",
+    			Q: "{\\mathbb{Q}}",
+		      R: "{\\mathbb{R}}",
+		      C: "{\\mathbb{C}}",
+		      U: "{\\mathbb{U}}",
+		      P: "{\\mathbb{P}}",
+		      llbracket: "{[\\![}",
+		      rrbracket: "{]\\!]}"
+		    }
+		  }
+		});
+	</script>
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML"></script>
+
+		
+  </body>
+</html>
