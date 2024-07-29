@@ -4,24 +4,9 @@
 // - - - - - - - - - - - - - - - - - - - - -
 // - - - - - - - - - - - - - - - - - - - - -
 
-// Mettre les étiquettes ici ? Et pas dans les thèmes ?
-// Car l'étiquette dépend du titre du chapitre
-// changer ceci, mettre directement les questions ici ?
-// du genre :
-//"calcul_mental":{
-//		"nom": "Calcul mental",
-//		"themes":[
-//			{"étiquette thème 1","519-156 618 978 1023-1027"},
-//			{"étiquette thème 2","519-156 618 978 1023-1027"}
-//		],
-//	},
-
-// ou alors mettre carrément les thèmes avec l'ancienne structure dans les chapitres:
-// ne pas passer l'id du thème, passer tout le thème
-
-const _chapitres = [
+let chapters = [
   {
-    nom: "Calcul mental",
+    name: "Calcul mental",
     themes: [
       { label: "Priorités", id: "tables_parentheses1" },
       { label: "Mult. à 2 chiffres", id: "multiplication1" },
@@ -29,21 +14,21 @@ const _chapitres = [
     ],
   },
   {
-    nom: "Géométrie élémentaire",
+    name: "Géométrie élémentaire",
     themes: [
       { label: "Quadrilatères", id: "quadrilateres" },
       { label: "Symétries", id: "symetries" },
     ],
   },
   {
-    nom: "Trigonométrie élémentaire",
+    name: "Trigonométrie élémentaire",
     themes: [
       { label: "Cosinus", id: "valeurs_cosinus" },
       { label: "Comparaisons de cos", id: "comparaisons_cosinus" },
     ],
   },
   {
-    nom: "Calcul littéral",
+    name: "Calcul littéral",
     themes: [
       { label: "Fractions", id: "fractions1" },
       { label: "Un symbole", id: "calcul_litt1" },
@@ -54,7 +39,7 @@ const _chapitres = [
     ],
   },
   {
-    nom: "Racine carrée",
+    name: "Racine carrée",
     themes: [
       { label: "Simplifications", id: "sqrt1" },
       { label: "Avec produits", id: "sqrt2" },
@@ -62,11 +47,11 @@ const _chapitres = [
     ],
   },
   {
-    nom: "Introduction aux fonctions",
+    name: "Introduction aux fonctions",
     themes: [{ label: "Fonctions affines", id: "fonctions_affines" }],
   },
   {
-    nom: "Domaines de définition",
+    name: "Domaines de définition",
     themes: [
       { label: "Divisions", id: "domaines_zero" },
       { label: "Racines carrées", id: "domaines_sqrt" },
@@ -75,7 +60,7 @@ const _chapitres = [
     ],
   },
   {
-    nom: "Suites arithmétiques",
+    name: "Suites arithmétiques",
     themes: [
       { label: "Généralités", id: "suites_arithmetiques" },
       { label: "Variations", id: "suites_arithmetiques_variations" },
@@ -83,7 +68,7 @@ const _chapitres = [
     ],
   },
   {
-    nom: "Analyse",
+    name: "Analyse",
     themes: [
       { label: "Analyse 1", id: "analyse1" },
       { label: "Dérivées 1", id: "derivees1" },
@@ -95,7 +80,7 @@ const _chapitres = [
     ],
   },
   {
-    nom: "Nombres complexes",
+    name: "Nombres complexes",
     themes: [
       { label: "Multiplications", id: "complexes_mult" },
       { label: "Arguments classiques", id: "complexes_arg" },
@@ -105,7 +90,7 @@ const _chapitres = [
     ],
   },
   {
-    nom: "Trigonométrie",
+    name: "Trigonométrie",
     themes: [
       { label: "Valeurs classiques", id: "trigo_valeurs" },
       { label: "Formules", id: "trigo_formules1" },
@@ -114,7 +99,7 @@ const _chapitres = [
     ],
   },
   {
-    nom: "Géométrie plane",
+    name: "Géométrie plane",
     themes: [
       { label: "Isométries, 1", id: "isometries_planes1" },
       { label: "Rotations", id: "rotations_planes1" },
@@ -123,7 +108,7 @@ const _chapitres = [
     ],
   },
   {
-    nom: "Logique, quantificateurs",
+    name: "Logique, quantificateurs",
     themes: [
       { label: "Implication", id: "implication" },
       { label: "∃ ∀", id: "quantificateurs1" },
@@ -131,21 +116,21 @@ const _chapitres = [
     ],
   },
   {
-    nom: "Relations binaires",
+    name: "Relations binaires",
     themes: [
-      { label: "", id: "relations_equiv" },
-      { label: "", id: "relations_ordre" },
+      { label: "Relations d'équivalence", id: "relations_equiv" },
+      { label: "Relations d'ordre", id: "relations_ordre" },
     ],
   },
   {
-    nom: "Arithmétique",
+    name: "Arithmétique",
     themes: [
       { label: "Arithmétique 1", id: "arithmetique1" },
       { label: "Arithmétique de ℤ", id: "arithmetique_Z" },
     ],
   },
   {
-    nom: "Algèbre linéaire",
+    name: "Algèbre linéaire",
     themes: [
       { label: "Espaces vectoriels", id: "ev1" },
       { label: "Applications linéaires", id: "app_lin1" },
@@ -154,7 +139,7 @@ const _chapitres = [
     ],
   },
   {
-    nom: "Suites et séries",
+    name: "Suites et séries",
     themes: [
       { label: "Analyse asymptotique", id: "analyse_asymptotique1" },
       { label: "Suites et limites", id: "suites1" },
@@ -163,21 +148,21 @@ const _chapitres = [
     ],
   },
   {
-    nom: "Continuité et dérivabilité",
+    name: "Continuité et dérivabilité",
     themes: [
       { label: "Continuité", id: "continuite1" },
       { label: "Dérivabilité", id: "derivabilite1" },
     ],
   },
   {
-    nom: "Probabilités",
+    name: "Probabilités",
     themes: [
       { label: "Esp. probabilisés finis", id: "espaces_probabilises_finis" },
       { label: "Var. aléatoires finies", id: "variables_aleatoires_finies" },
     ],
   },
   {
-    nom: "Algèbre",
+    name: "Algèbre",
     themes: [
       { label: "Groupes", id: "groupes" },
       { label: "...agissant sur des ensembles", id: "groupes_operant" },
@@ -194,12 +179,12 @@ const _chapitres = [
     ],
   },
   {
-    nom: "Analyse complexe",
+    name: "Analyse complexe",
     themes: [
       { label: "Holomorphie", id: "holomorphie" },
       { label: "∂ et ∂̅", id: "wirtinger" },
-      { label: "", id: "anneau_holomorphes" },
-      { label: "", id: "fct_harmoniques" },
+      { label: "𝒪(U)", id: "anneau_holomorphes" },
+      { label: "Harmonicité", id: "fct_harmoniques" },
     ],
   },
 ];
