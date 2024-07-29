@@ -46,3 +46,7 @@ function htmlButtonTheme(i, j) {
 		</div>
 	`;
 }
+
+function htmlProfile() {
+  return "";
+}

@@ -1,4 +1,4 @@
-let state = "home";
+let state = "Home";
 let theme = {}; // thème courant, celui affiché lorsqu'on clique sur un thème dans la page des chapitres.
 
 let user = {
@@ -7,14 +7,24 @@ let user = {
   points: 0,
 };
 
-const gotoHome = () => {
-  state = "home";
-  render();
+const removeCircles = () => {
+  document
+    .querySelectorAll("i")
+    .forEach((el) => el.classList.remove("circled"));
 };
 
 const gotoChapters = () => {
-  console.log("appel de gotoChapters");
-  state = "chapters";
+  state = "Chapters";
+  removeCircles();
+  render();
+};
+
+const goto = (newState) => {
+  // oldState= state;
+  state = newState;
+
+  removeCircles();
+  document.getElementById("navButton" + newState).classList.add("circled");
   render();
 };
 
@@ -31,6 +41,11 @@ const level = (points) => {
   // 20->niv1, 40->niv2, 80->niv3 etc
   if (points < 20) return 0;
   else return Math.floor(Math.log(points / 10) / Math.log(2));
+};
+
+const nextLevelThreshold = (points) => {
+  // on retourne la prochaine (puissance de 2 multiplée par 10)
+  return 10 * 2 ** (level(points) + 1);
 };
 
 function getScript(scriptUrl, callback) {
