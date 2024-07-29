@@ -127,7 +127,7 @@ window.addEventListener("load", () => {
   });
 
   render(); //rendu des points
-  getHighScores();
+  getHighscores();
 });
 
 /*
@@ -139,10 +139,15 @@ fetch("questions.json?again=" + Math.random())
   });
 */
 
-function getHighScores() {
+function getHighscores() {
+  document.getElementById("highscores").innerHTML = "Chargement...";
+  document.getElementById("refreshHighscoresButton").classList.add("fa-spin");
   fetch("static/highscores.html.txt?again=" + Math.random())
     .then((response) => response.text())
     .then((data) => {
       document.getElementById("highscores").innerHTML = data;
+      document
+        .getElementById("refreshHighscoresButton")
+        .classList.remove("fa-spin");
     });
 }
