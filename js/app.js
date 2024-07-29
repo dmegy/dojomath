@@ -10,6 +10,7 @@ if (window.localStorage.getItem("firstConnectionDate") !== null) {
 let state = "Home";
 let theme = {}; // thème courant, celui affiché lorsqu'on clique sur un thème dans la page des chapitres.
 
+/* données pour tester l'affihage */
 let user = {
   firstConnection: t0,
   userId: toB64(t0.getTime()),
@@ -17,9 +18,11 @@ let user = {
   avatar: "" /* type : dataURL*/,
   depCode: "",
   mathClub: "",
-  points: 0,
-  streak: 0,
-  weakStreak: 0,
+  points: 27,
+  perfects: 2,
+  nbCorrectAnswers: 56,
+  streak: 3,
+  weakStreak: 7,
 };
 
 const removeCircles = () => {

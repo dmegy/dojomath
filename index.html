@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="stylesheet" href="style.css" />
+    <link rel="stylesheet" href="css/style.css" />
     <link href="assets/fontawesome/css/fontawesome.min.css" rel="stylesheet" />
     <link href="assets/fontawesome/css/solid.min.css" rel="stylesheet" />
 
@@ -130,7 +130,35 @@
         x-show="state=='Statistics'"
         style="display: none"
       >
-        <h1 class="glow">Statistiques utilisateur</h1>
+        <h1 class="glow">Statistiques</h1>
+        <h3>Bilan</h3>
+        <h3><i class="fa-solid fa-list-check"></i> Objectifs du jour</h3>
+        <h3>
+          <i style="rotate: 20deg" class="fa-solid fa-dumbbell"></i> Prochaines
+          étapes
+        </h3>
+        <div style="display: flex; gap: 0.5rem; align-items: center">
+          <div style="flex-shrink: 0">Niveau ? (? pts):</div>
+          <div
+            style="height: 0.5rem; flex-grow: 1"
+            x-html="htmlProgress(user.points,nextLevelThreshold(user.points))"
+          ></div>
+        </div>
+        <div style="display: flex; gap: 0.5rem; align-items: center">
+          <div style="flex-shrink: 0">Réussir ? questions :</div>
+          <div
+            style="height: 0.5rem; flex-grow: 1"
+            x-html="htmlProgress(user.nbCorrectAnswers,100*Math.ceil(user.nbCorrectAnswers/100))"
+          ></div>
+        </div>
+        <div style="display: flex; gap: 0.5rem; align-items: center">
+          <div style="flex-shrink: 0">Finir ? quiz avec un score parfait :</div>
+          <div
+            style="height: 0.5rem; flex-grow: 1"
+            x-html="htmlProgress(user.perfects,10*(Math.floor(user.perfects/10)+1))"
+          ></div>
+        </div>
+        <h3><i class="fa-solid fa-chart-column"></i> Activité sur 48h</h3>
       </section>
 
       <!-- - - - - - P R O F I L - - - - - -->

@@ -50,3 +50,23 @@ function htmlButtonTheme(i, j) {
 function htmlProfile() {
   return "";
 }
+
+function htmlProgress(a, b) {
+  // retourne un div html avec une barre de progression
+  if (a > b) a = b;
+  let p = 0;
+  if (b != 0) p = a / b;
+  return `<div class='progress-bar-container'>
+				<div style='width:${100 * p}% ;' class='progress-bar'></div>
+			</div>`;
+}
+
+function htmlCheckbox(bool) {
+  if (bool) {
+    return `<div style="width:1rem;flex-shrink:0">
+			<svg class="svg-icon" viewBox="0 0 512 512">${svgPathFasCheck}</svg>
+			</div>`;
+  } else {
+    return `<div style="width:1rem;flex-shrink:0;text-align:center">•</div>`;
+  }
+}
