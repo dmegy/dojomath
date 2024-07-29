@@ -42,6 +42,7 @@
 }
 
 .nav-button {
+  cursor: pointer;
   --c-border: transparent;
   height: 2.4rem;
   margin-right: 0.5rem;

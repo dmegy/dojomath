@@ -84,3 +84,15 @@ function htmlCheckbox(bool) {
     return `•`;
   }
 }
+
+function htmlThemeReferences() {
+  let s = "";
+  let list = theme.links; // le thème courant : passer en paramètre ?
+  if (list == undefined) return s;
+  s += "Si besoin, ressources externes:<ul>";
+  for (let i = 0; i < list.length; i++) {
+    s += `<li><a target="_blank" href="${list[i].URL}">${list[i].title}</a></li>`;
+  }
+  s += "</ul>(Les liens s'ouvrent dans une nouvelle fenêtre.)";
+  return s;
+}

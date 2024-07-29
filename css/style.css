@@ -2,6 +2,7 @@
 @import "./components.css";
 @import "./buttons.css";
 @import "./avatar.css";
+@import "./quiz.css";
 
 body {
   font-family: Nunito, Futura, Arial;
@@ -91,6 +92,13 @@ h4 {
   font-size: 1.2rem;
 }
 
+a,
+a:active,
+a:hover,
+a:after {
+  color: var(--c-text);
+}
+
 .glow {
   text-shadow: 0 0 0.5em var(--c-accent);
 }
@@ -163,4 +171,18 @@ summary {
   height: 1em;
   fill: var(--c-text);
   transform: translateY(8%);
+}
+
+/* MODALS*/
+#abortQuizModal {
+  max-width: max(80%, 400px);
+  outline: none;
+  border: 3x solid var(--c-text);
+  border-radius: 2rem;
+  background-color: var(--c-primary-20-desat);
+  color: var(--c-text);
+}
+
+dialog::backdrop {
+  background: rgba(0, 0, 0, 0.7);
 }

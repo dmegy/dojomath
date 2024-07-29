@@ -125,7 +125,7 @@ let themes = {
     title: "Quadrilatères",
     info: "Questions sur les quadrilatères : rectangles, carrés, losanges, parallélogrammes, trapèzes etc.",
     questions: [...range(657, 685), ...range(1259, 1273), ...range(1428, 1430)],
-    liens: [
+    links: [
       {
         title: "Wikipédia (très complet)",
         URL: "https://fr.wikipedia.org/wiki/Quadrilat%C3%A8re",

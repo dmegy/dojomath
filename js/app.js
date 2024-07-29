@@ -1,4 +1,4 @@
-let t0 = new Date();
+let t0 = performance.timeOrigin + performance.now();
 
 if (window.localStorage.getItem("firstConnectionDate") !== null) {
 } else
@@ -13,12 +13,12 @@ let theme = {}; // thème courant, celui affiché lorsqu'on clique sur un thème
 /* données pour tester l'affihage */
 let user = {
   firstConnection: t0,
-  userId: toB64(t0.getTime()),
-  userName: toB64(t0.getTime()),
+  userId: toB64(t0),
+  userName: toB64(t0),
   avatar: "" /* type : dataURL*/,
   depCode: "",
   mathClub: "",
-  points: 27,
+  points: 527,
   perfects: 2,
   nbCorrectAnswers: 56,
   lastActive: "" /* date ou stringified date */,
@@ -68,7 +68,11 @@ const gotoTheme = (id) => {
   render();
 };
 
-function startQuiz() {}
+function startQuiz() {
+  /* ou gotoQuiz ?*/
+  state = "Quiz";
+  render();
+}
 
 const level = (points) => {
   // correspondances points<->niv :

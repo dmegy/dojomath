@@ -13,6 +13,7 @@
     <script src="js/components.js"></script>
     <script src="js/svg-paths.js"></script>
     <script src="js/app.js"></script>
+    <script src="js/quiz.js"></script>
     <link
       rel="icon"
       href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 110 100'><text y='0.9em' font-size='90'>🏆</text></svg>"
@@ -24,7 +25,10 @@
       <header class="glow">
         <nav>
           <div class="nav-button" onClick="goto('Home')">
-            <i id="navButtonHome" class="fa-solid fa-home nav-button-icon"></i>
+            <i
+              id="navButtonHome"
+              class="fa-solid fa-home nav-button-icon circled"
+            ></i>
           </div>
           <div class="nav-button" onClick="goto('Profile')">
             <i id="navButtonProfile" class="fa-solid fa-user nav-button-icon">
@@ -149,6 +153,7 @@
             ></svg>
             Quiz de 10 questions
           </div>
+          <div x-html="htmlThemeReferences()" style="opacity: 70%"></div>
         </section>
 
         <!-- - - - - - S T A T S  - - - - - -->
@@ -245,14 +250,23 @@
           </h3>
           <div class="margin-l-r">
             <div style="display: flex; gap: 0.5rem; align-items: center">
-              <div style="flex-shrink: 0">Niveau ? (? pts):</div>
+              <div style="flex-shrink: 0">
+                Niveau <span x-html="(level(user.points)+1)"></span> (<span
+                  x-html="nextLevelThreshold(user.points)"
+                ></span>
+                pts):
+              </div>
               <div
                 style="height: 0.5rem; flex-grow: 1"
                 x-html="htmlProgress(user.points,nextLevelThreshold(user.points))"
               ></div>
             </div>
             <div style="display: flex; gap: 0.5rem; align-items: center">
-              <div style="flex-shrink: 0">Réussir ? questions :</div>
+              <div style="flex-shrink: 0">
+                Réussir
+                <span x-html="100*Math.ceil(user.nbCorrectAnswers/100)"></span>
+                questions :
+              </div>
               <div
                 style="height: 0.5rem; flex-grow: 1"
                 x-html="htmlProgress(user.nbCorrectAnswers,100*Math.ceil(user.nbCorrectAnswers/100))"
@@ -260,7 +274,9 @@
             </div>
             <div style="display: flex; gap: 0.5rem; align-items: center">
               <div style="flex-shrink: 0">
-                Finir ? quiz avec un score parfait :
+                Finir
+                <span x-html="10*(Math.floor(user.perfects/10)+1)"></span> quiz
+                avec un score parfait :
               </div>
               <div
                 style="height: 0.5rem; flex-grow: 1"
@@ -339,6 +355,12 @@
           <h1 class="glow">Trophées</h1>
           <p>Tes trophées seront affichés ici.</p>
         </section>
+
+        <section id="quiz" x-show="(state=='Quiz')" style="display: none">
+          <h1 class="glow">Quiz !</h1>
+          <p>Affichage d'une question et des deux boutons</p>
+        </section>
+
         <div
           id="fab"
           class="fab pulse"
@@ -348,13 +370,19 @@
           <i class="fa-solid fa-play" style="transform: translateX(0.1rem)"></i>
         </div>
 
-        <footer>
+        <!--<footer>
           DojoMath est une création du Club Mathématique de Nancy (lien)<br />
           DojoMath pour les profs<br />
           FAQ
-        </footer>
+        </footer>-->
       </main>
     </div>
-    >
+    <dialog id="abortQuizModal">
+      <h1 class="glow">Attention !</h1>
+      Souhaitez-tu vraiment quitter le quiz en cours ?
+      <br />
+      Aucun point ne sera sauvegardé.<br />
+      Revenir au quiz / Quitter le quiz.
+    </dialog>
   </body>
 </html>
