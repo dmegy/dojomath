@@ -1,10 +1,25 @@
+let t0 = new Date();
+
+if (window.localStorage.getItem("firstConnectionDate") !== null) {
+} else
+  window.localStorage.setItem(
+    "firstConnectionDate",
+    JSON.stringify(new Date())
+  );
+
 let state = "Home";
 let theme = {}; // thème courant, celui affiché lorsqu'on clique sur un thème dans la page des chapitres.
 
 let user = {
-  userId: "userIdTest",
-  userName: "NomProvisoire",
+  firstConnection: t0,
+  userId: toB64(t0.getTime()),
+  userName: toB64(t0.getTime()),
+  avatar: "" /* type : dataURL*/,
+  depCode: "",
+  mathClub: "",
   points: 0,
+  streak: 0,
+  weakStreak: 0,
 };
 
 const removeCircles = () => {
@@ -47,13 +62,6 @@ const nextLevelThreshold = (points) => {
   // on retourne la prochaine (puissance de 2 multiplée par 10)
   return 10 * 2 ** (level(points) + 1);
 };
-
-function getScript(scriptUrl, callback) {
-  const script = document.createElement("script");
-  script.src = scriptUrl + "?unique=" + Math.random();
-  script.onload = callback;
-  document.body.appendChild(script);
-}
 
 const xShow = () => {
   // boucle sur les éléments avec x-show et les affiche conditionnellement à l'argument
