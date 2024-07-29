@@ -63,7 +63,6 @@ nav {
   display: flex;
 
   align-items: center;
-  gap: 0.5rem;
 }
 
 h1,
@@ -111,32 +110,6 @@ summary {
   padding: 0.1rem 0.3rem;
   margin: 0;
   font-size: 0.6rem;
-}
-
-.fab {
-  padding: 1.5rem;
-  font-size: 1.5rem;
-  position: absolute;
-  bottom: 1rem;
-  margin: auto;
-  background-color: var(--c-primary);
-  border-radius: 50%;
-}
-
-.pulse {
-  animation: pulse 1s ease-out infinite;
-}
-
-@keyframes pulse {
-  0% {
-    transform: scale(1);
-  }
-  5% {
-    transform: scale(1.2);
-  }
-  100% {
-    transform: scale(1);
-  }
 }
 
 @keyframes rotating {

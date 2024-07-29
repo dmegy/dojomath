@@ -24,16 +24,25 @@
       <header class="glow">
         <nav>
           <div class="nav-button" onClick="goto('Home')">
-            <i id="navButtonHome" class="fa-solid fa-home circled"></i>
+            <i id="navButtonHome" class="fa-solid fa-home nav-button-icon"></i>
           </div>
           <div class="nav-button" onClick="goto('Profile')">
-            <i id="navButtonProfile" class="fa-solid fa-user"> </i>
+            <i id="navButtonProfile" class="fa-solid fa-user nav-button-icon">
+            </i>
           </div>
           <div class="nav-button" onClick="goto('Statistics')">
-            <i id="navButtonStatistics" class="fa-solid fa-chart-line"> </i>
+            <i
+              id="navButtonStatistics"
+              class="fa-solid fa-dumbbell nav-button-icon"
+            >
+            </i>
           </div>
           <div class="nav-button" onClick="goto('Trophies')">
-            <i id="navButtonTrophies" class="fa-solid fa-trophy"> </i>
+            <i
+              id="navButtonTrophies"
+              class="fa-solid fa-trophy nav-button-icon"
+            >
+            </i>
           </div>
         </nav>
         <div x-html="htmlPoints()"></div>
@@ -151,10 +160,15 @@
           <h1 class="glow">Statistiques</h1>
           <!-- - - - S T A T S > > > BILAN- - - -->
           <h3>Bilan</h3>
-          <p>Questions : ? vues, ? ratées, ? sautées, ? réussies</p>
+          <p>
+            ? questions vues dont<br />
+            <span style="color: var(--c-danger)">? ratées, </span>
+            <span style="color: var(--c-warning)">? sautées, </span>
+            <span style="color: var(--c-success)">? réussies. </span>
+          </p>
           <div
             x-html="htmlTripleProgress([2,3,7])"
-            style="height: 1rem; margin: 1rem 0"
+            style="height: 0.5rem; margin: 1rem 0"
           ></div>
 
           <!-- - - - S T A T S > > > A C T I V I T E   RECENTE- - - -->

@@ -41,15 +41,47 @@
   text-align: center;
 }
 
+.nav-button {
+  --c-border: transparent;
+  height: 2.4rem;
+  margin-right: 0.5rem;
+  display: grid;
+  place-items: center;
+}
+
 .circled {
-  border: 3px solid var(--c-text);
+  --c-border: var(--c-text);
+}
+
+.nav-button-icon {
+  border: 3px solid var(--c-border);
   border-radius: 1rem;
   padding: 0.3rem;
 }
 
-.nav-button {
-  width: 2.4rem;
-  height: 2.4rem;
-  display: grid;
-  place-items: center;
+.fab {
+  filter: drop-shadow(0 0 20px black);
+  padding: 1.5rem;
+  font-size: 1.5rem;
+  position: absolute;
+  bottom: 1rem;
+  margin: auto;
+  background-color: var(--c-primary);
+  border-radius: 50%;
+}
+
+.pulse {
+  animation: pulse 1s ease-out infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  5% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
