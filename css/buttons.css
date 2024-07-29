@@ -15,7 +15,7 @@
   user-select: none;
 }
 
-.bbutton:focus {
+.button:focus {
   outline: none !important;
 }
 

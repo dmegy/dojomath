@@ -1,0 +1,19 @@
+.button-container input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.button-container input:checked ~ .button {
+  border: 1px solid var(--c-text);
+  box-shadow:
+    0 0 10px 0 var(--c-primary),
+    inset 0 0 8px 0 var(--c-primary);
+
+  transition: box-shadow cubic-bezier(0, 2, 1, 1) 200ms;
+}
+.button-dark {
+  border: 1px grey solid;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}

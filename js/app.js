@@ -63,7 +63,8 @@ const goto = (newState) => {
 const gotoTheme = (id) => {
   console.log("appel de gotoTheme avec id " + id);
   state = "theme";
-  theme = themes[id];
+  theme = structuredClone(themes[id]);
+  theme.id = id; // on rajoute l'id sinon il n'est plus là...
   // calculer theme.progress, theme.nbQuestionsSeens, nbQuestionsChecked, theme.nbQuestionsDbChecked
   render();
 };
@@ -101,7 +102,6 @@ const xShow = () => {
 const xHtml = () => {
   // boucle sur les éléments avec x-html  visibles et affiche le contenu
   let elements = document.querySelectorAll("[x-html]");
-  console.log(elements);
   for (let i = 0; i < elements.length; i++) {
     if (elements[i].offsetParent === null) {
       // seule méthode trouvée pour vérifier la visibilité

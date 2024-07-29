@@ -54,7 +54,7 @@ main {
 }
 
 section {
-  padding: 1rem;
+  padding: var(--margin);
   width: 100%;
   max-width: var(--max-width);
 }
