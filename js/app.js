@@ -21,9 +21,23 @@ let user = {
   points: 27,
   perfects: 2,
   nbCorrectAnswers: 56,
-  streak: 3,
-  weakStreak: 7,
+  lastActive: "" /* date ou stringified date */,
+  lastStreak: 2,
+  longestStreak: 7,
+  weakStreak: 10,
 };
+
+function getUserStreak() {
+  if (user.lastActive == "") return 0;
+  let today = Math.floor(new Date().getTime() / (24 * 3600));
+  let lastActiveDay = Math.floor(
+    new Date(user.lastActive).getTime() / (24 * 3600)
+  );
+  if (today - lastActiveDay <= 1) return lastStreak;
+  else return 0;
+}
+
+function updateUserStreak() {}
 
 const removeCircles = () => {
   document
@@ -113,6 +127,7 @@ window.addEventListener("load", () => {
   });
 
   render(); //rendu des points
+  getHighScores();
 });
 
 /*
@@ -123,3 +138,11 @@ fetch("questions.json?again=" + Math.random())
     console.log(questions[3]);
   });
 */
+
+function getHighScores() {
+  fetch("static/highscores.html.txt?again=" + Math.random())
+    .then((response) => response.text())
+    .then((data) => {
+      document.getElementById("highscores").innerHTML = data;
+    });
+}
