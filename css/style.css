@@ -77,7 +77,7 @@ h4 {
 }
 
 h3 {
-  color: var(--c-secondary-70);
+  color: var(--c-secondary-60);
 }
 
 h1 {
@@ -97,7 +97,7 @@ a,
 a:active,
 a:hover,
 a:after {
-  color: var(--c-text);
+  color: oklch(70% 20% var(--hue-primary));
 }
 
 .glow {

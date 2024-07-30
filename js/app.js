@@ -17,6 +17,7 @@ let state = "Loading";
 let theme = {}; // thème courant, celui affiché lorsqu'on clique sur un thème dans la page des chapitres.
 
 let statsQuestions = [];
+let statsThemes = {}; //quest. vues, réussies, ratées, sautées, double-réussies
 
 /* données pour tester l'affihage */
 let user = {
@@ -27,9 +28,9 @@ let user = {
   depCode: "",
   mathClub: "",
   combo: 0,
-  points: 527,
+  points: 0,
   perfects: 2,
-  nbCorrectAnswers: 56,
+  nbCorrectAnswers: 0,
   lastActive: "" /* date ou stringified date */,
   lastStreak: 2,
   longestStreak: 7,

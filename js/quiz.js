@@ -72,6 +72,9 @@ function validateAnswer() {
     console.log("question ratée");
   }
   quiz.result += question.result;
+  statsQuestions[question.num].penultimateResult =
+    statsQuestions[question.num].lastResult;
+  statsQuestions[question.num].lastResult = question.result;
 
   console.log("question.result : " + question.result);
 
@@ -117,7 +120,7 @@ function showQuizResults() {
 
   quiz.finalGrade = grade20FromResult(quiz.success, quiz.quizLength);
   // remplacer success par result pour tenir compte des erreurs
-
+  user.points += quiz.points;
   state = "End";
   render();
 }

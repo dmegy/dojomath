@@ -451,7 +451,7 @@
               <tr>
                 <td>
                   <span x-html="quiz.success">0</span>
-                  questions réussies :
+                  question(s) réussie(s) :
                 </td>
                 <td style="text-align: right">
                   +
@@ -461,7 +461,7 @@
               <tr>
                 <td>
                   <span x-html="quiz.fail">0</span>
-                  questions ratées :
+                  question(s) ratée(s) :
                 </td>
                 <td style="text-align: right">
                   -
@@ -471,7 +471,7 @@
               <tr>
                 <td>
                   <span x-html="quiz.skipped">0</span>
-                  questions sautées :
+                  question(s) sautée(s) :
                 </td>
                 <td style="text-align: right">0 pts</td>
               </tr>
@@ -523,19 +523,24 @@
           x-show="(state=='Home')||(state=='Profile')||(state=='Statistics')||(state=='Trophies')"
         >
           <div class="fab-triangle">
-            ▶<!--<i class="fa-solid fa-play"></i>-->
+            <i class="fa-solid fa-play"></i>
           </div>
         </div>
         <!-- - - - - - F O O T E R  - - - - - -->
-        <footer x-show="!((state=='Quiz')||(state=='End'))">
-          <div>
-            DojoMath est une création du <br />Club Mathématique de Nancy
-            (lien)<br />
-          </div>
+        <footer x-show="state=='Home'">
+          <div style="display: flex; justify-content: space-between">
+            <div style="text-align: left">
+              DojoMath est une création du <br />
+              <a href="https://dmegy.perso.math.cnrs.fr/club" target="_blank"
+                >Club Mathématique de Nancy</a
+              ><br />
+            </div>
 
-          <div>
-            DojoMath pour les profs<br />
-            FAQ
+            <div style="text-align: right">
+              <a href="enseignants/" target="_blank">DojoMath pour les profs</a
+              ><br />
+              <a href="faq.html" target="_blank">FAQ / Contact</a>
+            </div>
           </div>
         </footer>
       </main>

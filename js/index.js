@@ -19,9 +19,21 @@ getScript("data_questions.js", () => {
       fail: 0,
       skipped: 0,
       success: 0,
+      lastResult: 0,
+      penultimateResult: 0,
     };
   }
 });
 getScript("data_chapters.js");
-getScript("data_themes.js");
+getScript("data_themes.js", () => {
+  for (let themeId in themes) {
+    //initialisation
+    statsThemes[themeId] ??= {
+      nbQuestionsViewed: 0,
+      nbAnswersCorrect: 0,
+      nbAnswersIncorrect: 0,
+      nbQuizFinished: 0,
+    };
+  }
+});
 getScript("js/quiz.js");

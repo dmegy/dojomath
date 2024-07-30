@@ -53,6 +53,7 @@
   --c-text: var(--c-primary-90-desat);
 
   --c-secondary-70: oklch(70% 90% var(--hue-secondary));
+  --c-secondary-60: oklch(60% 90% var(--hue-secondary));
   --c-secondary-40: oklch(40% 90% var(--hue-secondary));
 
   --c-accent: oklch(90% 100% var(--hue-accent));

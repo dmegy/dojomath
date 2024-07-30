@@ -87,7 +87,7 @@ button {
   display: flex;
   align-items: center;
   justify-content: center;
-  transform: translateX(0.2rem) translateY(0.3rem);
+  transform: translateX(0.2rem);
 }
 
 .pulse {
