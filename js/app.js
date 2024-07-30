@@ -7,8 +7,16 @@ if (window.localStorage.getItem("firstConnectionDate") !== null) {
     JSON.stringify(new Date())
   );
 
+const QUIZ_MIN_RESULT = 2; // attention certains quiz peuvent faire moins de 2 questions ?
+const QUIZ_MAX_LENGTH = 10;
+const QUESTION_MAX_POINTS = 20; //maximum de pts que l'on peut gagner à chaque question
+
+let questionNumber; // int, question courante
+let question; // question courante : object
 let state = "Loading";
 let theme = {}; // thème courant, celui affiché lorsqu'on clique sur un thème dans la page des chapitres.
+
+let statsQuestions = [];
 
 /* données pour tester l'affihage */
 let user = {
@@ -150,4 +158,21 @@ function getHighscores() {
         .getElementById("refreshHighscoresButton")
         .classList.remove("fa-spin");
     });
+}
+// transformation nombres en b64
+
+function toB64(x) {
+  let digit =
+    "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_";
+  return x
+    .toString(2)
+    .split(/(?=(?:.{6})+(?!.))/g)
+    .map((v) => digit[parseInt(v, 2)])
+    .join("");
+}
+
+function fromB64(x) {
+  let digit =
+    "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_";
+  return x.split("").reduce((s, v) => s * 64 + digit.indexOf(v), 0);
 }

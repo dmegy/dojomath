@@ -1,49 +1,12 @@
 // ceci doit tourner après que les questions soient loadées !
 
-const QUIZ_MIN_RESULT = 2; // attention certains quiz peuvent faire moins de 2 questions ?
-const QUIZ_MAX_LENGTH = 10;
-const QUESTION_MAX_POINTS = 20; //maximum de pts que l'on peut gagner à chaque question
-
-let questionNumber; // int, question courante
-let question; // question courante : object
-
-let abortQuizModal = document.getElementById("abortQuizModal");
-
-function showAbortQuizModal() {
-  let text =
-    "DEMANDE DE CONFIRMATION :\n\nSouhaites-tu vraiment interrompre le Quiz ?\n\n(Attention, aucun point ne sera sauvegardé.)";
-  if (confirm(text) == true) {
-    abortQuiz();
-  }
-}
-function abortQuiz() {
-  // appelé lorsque l'utilisateur confirme la fermeture, ou en cas de gameover ?
-  // éventuel appel serveur, gestion des stats ? ajout quiz interrompu ?
-
-  gotoTheme(theme.id);
-}
-
-let statsQuestions = new Array(questions.length);
-for (let i = 0; i < questions.length; i++) {
-  //initialisation
-  statsQuestions[i] = {
-    views: 0,
-    fail: 0,
-    skipped: 0,
-    success: 0,
-  };
-}
-
-// ATTENTION : ensuite, écraser avec la valeur provenant du localstorage ?
-// Mais il va peut-être manquer des questions, en cas de question ajoutée ?
-
-shuffleArray = function (array) {
-  // attention ceci modifie directement le tableau "sur place"
+function shuffleArray(array) {
+  // attention !  le tableau est muté sur place
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [array[i], array[j]] = [array[j], array[i]];
   }
-};
+}
 
 function startQuiz() {
   quiz = structuredClone(theme);
@@ -70,36 +33,25 @@ function startQuiz() {
 }
 
 function nextQuestion() {
+  // appelée par startQuiz() ou bien validateAnswer()
   questionNumber = quiz.questions.splice(0, 1)[0];
   // attention on l'enlève d ela liste
   question = structuredClone(questions[questionNumber]);
   question.num = questionNumber; // on rajoute dans l'objet
   state = "Quiz";
-
-  // uncheck radios
-
   render();
   MathJax.typeset();
   statsQuestions[question.num].views += 1;
 }
 
 function submitAnswer(answer) {
+  //called by button
   question.submittedAnswer = answer;
-
   validateAnswer();
 }
 
-function htmlPoints(points) {
-  return points + " pt" + (points == 1 ? "" : "s");
-}
-
 function validateAnswer() {
-  // correction en fonction de la valeur de submittedAnswer
-  // attention pour la correction : utiliser ===
-  /* mise à jour de toutes les stats, puis nextQuestion() */
-
-  // calcul de 'question.resultat', qui vaut -1, 0 ou 1, en lisant la réponse donnée
-
+  //appelée à la fin de  submitAnswer()
   if (question.submittedAnswer === undefined) {
     question.result = 0;
     statsQuestions[question.num].pass += 1;
@@ -155,19 +107,13 @@ function validateAnswer() {
   /* enregistrement stats*/
 
   if (quiz.questions.length > 0) nextQuestion();
-  else showResults();
+  else showQuizResults();
 }
 
-function grade20FromResult(result, maxResult) {
-  let MAX_GRADE = 20; // ou 100
-  let posResult = Math.max(0, result);
-  let grade = (MAX_GRADE * posResult) / maxResult;
-  let roundedGrade = Math.floor(grade);
-  return roundedGrade;
-}
-
-function showResults() {
+function showQuizResults() {
+  //appelée par validateResults()
   /* calculer stats etc, récompenses, bonus */
+  /* empile les messages, les récompenses etc ?*/
 
   quiz.finalGrade = grade20FromResult(quiz.success, quiz.quizLength);
   // remplacer success par result pour tenir compte des erreurs
@@ -183,6 +129,8 @@ function unstack(targetName) {
   else gotoTheme(theme.id);
 }
 
+// - - - COMPOSANTS - - - --
+
 function glyphResult(note) {
   // écran de fin de quiz
   let glyph = "";
@@ -192,5 +140,26 @@ function glyphResult(note) {
   else glyph = "😅";
   return glyph;
 }
+function grade20FromResult(result, maxResult) {
+  let MAX_GRADE = 20; // ou 100
+  let posResult = Math.max(0, result);
+  let grade = (MAX_GRADE * posResult) / maxResult;
+  let roundedGrade = Math.floor(grade);
+  return roundedGrade;
+}
 
 function getBooster() {}
+
+function showAbortQuizModal() {
+  let text =
+    "DEMANDE DE CONFIRMATION :\n\nSouhaites-tu vraiment interrompre le Quiz ?\n\n(Attention, aucun point ne sera sauvegardé.)";
+  if (confirm(text) == true) {
+    abortQuiz();
+  }
+}
+function abortQuiz() {
+  // appelé lorsque l'utilisateur confirme la fermeture, ou en cas de gameover ?
+  // éventuel appel serveur, gestion des stats ? ajout quiz interrompu ?
+
+  gotoTheme(theme.id);
+}

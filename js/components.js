@@ -1,3 +1,9 @@
+function htmlPoints(points) {
+  return points + " pt" + (points == 1 ? "" : "s");
+}
+
+// pour l'écran des thèmes et chapitres :
+
 function htmlChapters() {
   let s = "";
   for (let i = 0; i < chapters.length; i++) {
@@ -36,6 +42,20 @@ function htmlButtonTheme(i, j) {
 	`;
 }
 
+function htmlThemeReferences() {
+  let s = "";
+  let list = theme.links; // le thème courant : passer en paramètre ?
+  if (list == undefined) return s;
+  s += "Si besoin, ressources externes:<ul>";
+  for (let i = 0; i < list.length; i++) {
+    s += `<li><a target="_blank" href="${list[i].URL}">${list[i].title}</a></li>`;
+  }
+  s += "</ul>(Les liens s'ouvrent dans une nouvelle fenêtre.)";
+  return s;
+}
+
+// pour l'écran des stats utilisateur : barres de progression etc
+
 function htmlProfile() {
   return "";
 }
@@ -72,16 +92,4 @@ function htmlCheckbox(bool) {
   } else {
     return `•`;
   }
-}
-
-function htmlThemeReferences() {
-  let s = "";
-  let list = theme.links; // le thème courant : passer en paramètre ?
-  if (list == undefined) return s;
-  s += "Si besoin, ressources externes:<ul>";
-  for (let i = 0; i < list.length; i++) {
-    s += `<li><a target="_blank" href="${list[i].URL}">${list[i].title}</a></li>`;
-  }
-  s += "</ul>(Les liens s'ouvrent dans une nouvelle fenêtre.)";
-  return s;
 }
