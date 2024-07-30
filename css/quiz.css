@@ -19,7 +19,29 @@
   margin-bottom: 0.5rem;
 }
 
+.button-answer {
+  padding: 1rem 1.5rem;
+  border-radius: 3rem;
+  color: #eeeeee;
+  font-size: 1.5rem;
+}
+
+.button-answer-true {
+  background-color: oklch(50% 50% var(--hue-success));
+}
+.button-answer-undefined {
+  background-color: oklch(50% 50% var(--hue-warning));
+}
+.button-answer-false {
+  background-color: oklch(50% 50% var(--hue-danger));
+}
+
 .quiz-statement {
   overflow: auto;
   scrollbar-width: none; /*  autoriser une scrollbar visible ici ?*/
+}
+
+.quiz-answer {
+  display: flex;
+  justify-content: space-evenly;
 }

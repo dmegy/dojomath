@@ -7,7 +7,7 @@ if (window.localStorage.getItem("firstConnectionDate") !== null) {
     JSON.stringify(new Date())
   );
 
-let state = "Home";
+let state = "Loading";
 let theme = {}; // thème courant, celui affiché lorsqu'on clique sur un thème dans la page des chapitres.
 
 /* données pour tester l'affihage */
@@ -52,7 +52,7 @@ const gotoChapters = () => {
 };
 
 const goto = (newState) => {
-  // oldState= state;
+  oldState = state;
   state = newState;
 
   removeCircles();
@@ -119,19 +119,7 @@ const render = () => {
 };
 
 window.addEventListener("load", () => {
-  //render();
-  getScript("data_chapters.js", () => {
-    console.log("chapitres chargés!");
-    chaptersLoaded = true;
-  });
-  getScript("data_themes.js", () => {
-    console.log("thèmes chargés!");
-    themesLoaded = true;
-  });
-  getScript("data_questions.js", () => {
-    console.log("Questions chargées!");
-    questionsLoaded = true;
-  });
+  state = "Home";
   getScript("js/initMathJax.js", () => {
     console.log("MathJax config initialisée!");
     questionsLoaded = true;

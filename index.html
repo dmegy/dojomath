@@ -13,6 +13,9 @@
     <script src="js/components.js"></script>
     <script src="js/svg-paths.js"></script>
     <script src="js/app.js"></script>
+    <script src="data_questions.js"></script>
+    <script src="data_chapters.js"></script>
+    <script src="data_themes.js"></script>
     <script src="js/quiz.js"></script>
 
     <link
@@ -386,26 +389,24 @@
               style="flex-grow: 1; border: 1px dashed green"
               x-html="question.statement"
             ></div>
-            <div class="quiz-response">
-              <form id="answerForm">
-                <label class="button-container">
-                  <input type="radio" name="q" autocomplete="off" />
-                  <div class="button button-dark">Vrai</div>
-                </label>
-                <label class="button-container">
-                  <input type="radio" name="q" autocomplete="off" />
-                  <div class="button button-dark">Faux</div>
-                </label>
-                <label class="button-container">
-                  <input type="radio" name="q" autocomplete="off" checked="" />
-                  <div id="" class="button button-dark">
-                    Je ne sais pas / Passer
-                  </div>
-                </label>
-              </form>
-              <div class="button button-secondary" onclick="validateAnswer()">
-                Valider
-                <i class="fa-solid fa-arrow-right"></i>
+            <div class="quiz-answer">
+              <div
+                class="button button-answer button-answer-false"
+                onclick="submitAnswer(false)"
+              >
+                FAUX
+              </div>
+              <div
+                class="button button-answer button-answer-undefined"
+                onclick="submitAnswer(undefined)"
+              >
+                PASSER
+              </div>
+              <div
+                class="button button-answer button-answer-true"
+                onclick="submitAnswer(true)"
+              >
+                VRAI
               </div>
             </div>
           </div>

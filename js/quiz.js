@@ -1,9 +1,24 @@
+// ceci doit tourner après que les questions soient loadées !
+
 const QUIZ_LENGTH = 10;
 let questionNumber; // int, question courante
 let question; // question courante : object
-let statsQuestions = [];
 
-const shuffleArray = (array) => {
+let statsQuestions = new Array(questions.length);
+for (let i = 0; i < questions.length; i++) {
+  //initialisation
+  statsQuestions[i] = {
+    views: 0,
+    fail: 0,
+    pass: 0,
+    success: 0,
+  };
+}
+
+// ATTENTION : ensuite, écraser avec la valeur provenant du localstorage ?
+// Mais il va peut-être manquer des questions, en cas de question ajoutée ?
+
+shuffleArray = function (array) {
   // attention ceci modifie directement le tableau "sur place"
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -28,13 +43,40 @@ function nextQuestion() {
   question = structuredClone(questions[questionNumber]);
   question.num = questionNumber; // on rajoute dans l'objet
   state = "Quiz";
+
+  // uncheck radios
+
   render();
   MathJax.typeset();
+  statsQuestions[question.num].views += 1;
+}
+
+function submitAnswer(answer) {
+  question.submittedAnswer = answer;
+
+  validateAnswer();
 }
 
 function validateAnswer() {
-  /* appelée lorsqu'on clique sur valider*/
-  /* correction, mise à jour de toutes les stats, puis nextQuestion() */
+  // correction en fonction de la valeur de submittedAnswer
+  // attention pour la correction : utiliser ===
+  /* mise à jour de toutes les stats, puis nextQuestion() */
+
+  // calcul de 'question.resultat', qui vaut -1, 0 ou 1, en lisant la réponse donnée
+
+  if (question.submittedAnswer === undefined) {
+    question.resultat = 0;
+    console.log("tu as passé la question");
+    statsQuestions[question.num].pass += 1;
+  } else if (question.submittedAnswer === question.answer) {
+    question.resultat = 1;
+    console.log("bonne réponse");
+    statsQuestions[question.num].success += 1;
+  } else {
+    question.resultat = -1;
+    console.log("mauvaise réponse");
+    statsQuestions[question.num].fail += 1;
+  }
 
   /* gestion des combos, éventuellement affichage de messages (combo etc)*/
 
