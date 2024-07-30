@@ -367,15 +367,7 @@
 
         <!-- - - - - -  / ! \  - - Q U I Z - - / ! \ - - - - - -->
 
-        <section
-          id="quiz"
-          x-show="(state=='Quiz')"
-          style="
-            display: none;
-            height: calc(100vh - var(--header-height));
-            border: red solid 1px;
-          "
-        >
+        <section id="quiz" x-show="(state=='Quiz')">
           <div
             style="
               height: 100%;
@@ -391,22 +383,22 @@
             ></div>
             <div class="quiz-answer">
               <div
-                class="button button-answer button-answer-false"
+                class="button-answer button-answer-false"
                 onclick="submitAnswer(false)"
               >
-                FAUX
+                &nbsp;FAUX&nbsp;
               </div>
               <div
-                class="button button-answer button-answer-undefined"
+                class="button-answer button-answer-undefined"
                 onclick="submitAnswer(undefined)"
               >
                 PASSER
               </div>
               <div
-                class="button button-answer button-answer-true"
+                class="button-answer button-answer-true"
                 onclick="submitAnswer(true)"
               >
-                VRAI
+                &nbsp;&nbsp;VRAI&nbsp;&nbsp;
               </div>
             </div>
           </div>
