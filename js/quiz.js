@@ -4,10 +4,19 @@ const QUIZ_LENGTH = 10;
 let questionNumber; // int, question courante
 let question; // question courante : object
 
+let abortQuizModal = document.getElementById("abortQuizModal");
+
+function showAbortQuizModal() {
+  let text =
+    "ATTENTION!\n\nSouhaites-tu vraiment interrompre le Quiz ?\n\n(Aucun point ne sera sauvegardé.)";
+  if (confirm(text) == true) {
+    abortQuiz();
+  }
+}
 function abortQuiz() {
   // appelé lorsque l'utilisateur confirme la fermeture, ou en cas de gameover ?
   // éventuel appel serveur, gestion des stats ? ajout quiz interrompu ?
-  abortQuizModal.close();
+
   gotoTheme(theme.id);
 }
 

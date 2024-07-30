@@ -9,14 +9,14 @@
     <link href="assets/fontawesome/css/fontawesome.min.css" rel="stylesheet" />
     <link href="assets/fontawesome/css/solid.min.css" rel="stylesheet" />
 
-    <script src="js/functions.js"></script>
-    <script src="js/components.js"></script>
-    <script src="js/svg-paths.js"></script>
-    <script src="js/app.js"></script>
-    <script src="data_questions.js"></script>
-    <script src="data_chapters.js"></script>
-    <script src="data_themes.js"></script>
-    <script src="js/quiz.js"></script>
+    <script defer src="js/functions.js"></script>
+    <script defer src="js/components.js"></script>
+    <script defer src="js/svg-paths.js"></script>
+    <script defer src="js/app.js"></script>
+    <script defer src="data_questions.js"></script>
+    <script defer src="data_chapters.js"></script>
+    <script defer src="data_themes.js"></script>
+    <script defer src="js/quiz.js"></script>
 
     <link
       rel="icon"
@@ -64,7 +64,7 @@
         >
           <div style="display: flex; justify-content: space-between">
             <!-- flex-container-->
-            <div onClick="abortQuizModal.showModal()">✖</div>
+            <div onClick="showAbortQuizModal()">✖</div>
             <div>+??pts</div>
           </div>
         </div>
@@ -413,6 +413,38 @@
               </div>
             </div>
           </div>
+
+          <div class="modal" id="abortQuizModal" style="display: none">
+            <h1 class="glow">Attention !</h1>
+            <p>Souhaites-tu vraiment quitter le quiz en cours ?</p>
+            <p>Aucun point ne sera sauvegardé.</p>
+            <div
+              class="button"
+              style="
+                border: none;
+                background-color: var(--c-primary);
+                color: var(--c-text);
+                width: 100%;
+                text-align: center;
+              "
+              onclick="abortQuizModal.style.display='none'"
+            >
+              Reprendre le Quiz
+            </div>
+            <div
+              class="button"
+              style="
+                border: none;
+                background-color: var(--c-danger);
+                color: white;
+                width: 100%;
+                text-align: center;
+              "
+              onclick="abortQuiz()"
+            >
+              ✖ Quitter le Quiz
+            </div>
+          </div>
         </section>
 
         <!-- - - - - - E N D (écran de fin)  - - - - - -->
@@ -560,36 +592,5 @@
         </footer>
       </main>
     </div>
-    <dialog id="abortQuizModal">
-      <h1 class="glow">Attention !</h1>
-      <p>Souhaites-tu vraiment quitter le quiz en cours ?</p>
-      <p>Aucun point ne sera sauvegardé.</p>
-      <div
-        class="button"
-        style="
-          border: none;
-          background-color: var(--c-primary);
-          color: var(--c-text);
-          width: 100%;
-          text-align: center;
-        "
-        onclick="abortQuizModal.close()"
-      >
-        Reprendre le Quiz
-      </div>
-      <div
-        class="button"
-        style="
-          border: none;
-          background-color: var(--c-danger);
-          color: white;
-          width: 100%;
-          text-align: center;
-        "
-        onclick="abortQuiz()"
-      >
-        ✖ Quitter le Quiz
-      </div>
-    </dialog>
   </body>
 </html>
