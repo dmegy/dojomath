@@ -1,6 +1,7 @@
 const QUIZ_LENGTH = 10;
 let questionNumber; // int, question courante
 let question; // question courante : object
+let statsQuestions = [];
 
 const shuffleArray = (array) => {
   // attention ceci modifie directement le tableau "sur place"
@@ -39,6 +40,8 @@ function validateAnswer() {
 
   /* gestion du game over anticipé */
 
+  /* enregistrement stats*/
+
   if (quiz.questions.length > 0) nextQuestion();
   else showResults();
 }
@@ -50,6 +53,7 @@ function showResults() {
 }
 
 function unstack(targetName) {
+  /* appelé lorsque le joueur sort de l'écran de fin : il faut afficher tous les messages empilés */
   /* provisoire */
   if (targetName == "Chapters") gotoChapters();
   else gotoTheme(theme.id);

@@ -14,40 +14,6 @@
     <script src="js/svg-paths.js"></script>
     <script src="js/app.js"></script>
     <script src="js/quiz.js"></script>
-    <script>
-      MathJax = {
-        tex: {
-          inlineMath: [
-            ["$", "$"],
-            ["\\(", "\\)"],
-          ],
-          macros: {
-            N: "{\\mathbb{N}}",
-            Z: "{\\mathbb{Z}}",
-            Q: "{\\mathbb{Q}}",
-            R: "{\\mathbb{R}}",
-            C: "{\\mathbb{C}}",
-            U: "{\\mathbb{U}}",
-            P: "{\\mathbb{P}}",
-            llbracket: "{[\\![}",
-            rrbracket: "{]\\!]}",
-            tr: "{\\mathrm{tr}}",
-            rg: "{\\mathrm{rg}}",
-            im: "{\\mathrm{im}}",
-            id: "{\\mathrm{id}}",
-            Mat: "{\\mathrm{Mat}}",
-          },
-          svg: {
-            fontCache: "global",
-          },
-        },
-      };
-    </script>
-    <script
-      id="MathJax-script"
-      async
-      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
-    ></script>
 
     <link
       rel="icon"
@@ -421,7 +387,7 @@
               x-html="question.statement"
             ></div>
             <div class="quiz-response">
-              <form>
+              <form id="answerForm">
                 <label class="button-container">
                   <input type="radio" name="q" autocomplete="off" />
                   <div class="button button-dark">Vrai</div>
@@ -432,7 +398,9 @@
                 </label>
                 <label class="button-container">
                   <input type="radio" name="q" autocomplete="off" checked="" />
-                  <div id="" class="button button-dark">Je ne sais pas</div>
+                  <div id="" class="button button-dark">
+                    Je ne sais pas / Passer
+                  </div>
                 </label>
               </form>
               <div class="button button-secondary" onclick="validateAnswer()">
@@ -565,20 +533,27 @@
           </p>
         </section>
 
+        <!-- - - - - - F A B (Floating Action Button ) - - - - - -->
         <div
           id="fab"
-          class="fab pulse"
+          class="button fab pulse"
           onClick="gotoChapters()"
           x-show="(state=='Home')||(state=='Profile')||(state=='Statistics')||(state=='Trophies')"
         >
           <i class="fa-solid fa-play" style="transform: translateX(0.1rem)"></i>
         </div>
+        <!-- - - - - - F O O T E R  - - - - - -->
+        <footer x-show="!((state=='Quiz')||(state=='End'))">
+          <div>
+            DojoMath est une création du <br />Club Mathématique de Nancy
+            (lien)<br />
+          </div>
 
-        <!--<footer>
-          DojoMath est une création du Club Mathématique de Nancy (lien)<br />
-          DojoMath pour les profs<br />
-          FAQ
-        </footer>-->
+          <div>
+            DojoMath pour les profs<br />
+            FAQ
+          </div>
+        </footer>
       </main>
     </div>
     <dialog id="abortQuizModal">
@@ -588,9 +563,5 @@
       Aucun point ne sera sauvegardé.<br />
       Revenir au quiz / Quitter le quiz.
     </dialog>
-    <div id="preloadMathJax" style="opacity: 0">
-      Un test invisible de MathJax : $1+2\times
-      (3+4)^{123456789}\N\Z\Q\R\C\U\frac{\pi+e^{x}}{\sqrt{2^3}+\sqrt 2}$
-    </div>
   </body>
 </html>

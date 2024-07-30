@@ -17,6 +17,7 @@
 
 .button:focus {
   outline: none !important;
+  cursor: pointer;
 }
 
 .button-small {
@@ -25,7 +26,6 @@
   display: inline-block;
   margin: 0.2rem;
   white-space: nowrap;
-  cursor: pointer;
   border-radius: 0.8rem;
   position: relative;
   padding: 0.2rem 0.5rem 0.2rem 0.5rem;
@@ -61,7 +61,10 @@
 }
 
 .fab {
-  filter: drop-shadow(0 0 20px black);
+  box-shadow:
+    0 0 10px black,
+    0 0 40px black;
+  /*filter: drop-shadow(0 0 20px yellow);*/
   padding: 1.5rem;
   font-size: 1.5rem;
   position: absolute;

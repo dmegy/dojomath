@@ -132,6 +132,10 @@ window.addEventListener("load", () => {
     console.log("Questions chargées!");
     questionsLoaded = true;
   });
+  getScript("js/initMathJax.js", () => {
+    console.log("MathJax config initialisée!");
+    questionsLoaded = true;
+  });
 
   render(); //rendu des points
   getHighscores();
