@@ -8,7 +8,7 @@ let abortQuizModal = document.getElementById("abortQuizModal");
 
 function showAbortQuizModal() {
   let text =
-    "ATTENTION!\n\nSouhaites-tu vraiment interrompre le Quiz ?\n\n(Aucun point ne sera sauvegardé.)";
+    "DEMANDE DE CONFIRMATION :\n\nSouhaites-tu vraiment interrompre le Quiz ?\n\n(Attention, aucun point ne sera sauvegardé.)";
   if (confirm(text) == true) {
     abortQuiz();
   }
