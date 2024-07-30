@@ -54,9 +54,12 @@
           </div>
         </nav>
         <div
-          x-html="htmlPoints()"
           x-show="(state!='Quiz') && (state!='End')"
-        ></div>
+          style="position: relative"
+        >
+          <span x-html="htmlPoints(user.points)"></span>
+          <span class="notif">Niv. 2</span>
+        </div>
         <div id="quizHeader" style="width: 100%" x-show="(state=='Quiz')">
           <div style="display: flex; justify-content: space-between">
             <!-- flex-container-->
@@ -89,89 +92,6 @@
           </h3>
           <p>Tous les temps / Plus récents / Meilleurs Streaks</p>
           <div id="highscores">- - - Chargement des scores - - -</div>
-        </section>
-
-        <!-- - - - - - C H A P I T R E S - - - - - -->
-
-        <section
-          id="chapters"
-          x-show="(state=='Chapters')"
-          style="display: none"
-        >
-          <div x-html="htmlChapters()"></div>
-        </section>
-
-        <!-- - - - - - D E T A I L S   T H E M E - - - - - -->
-        <section id="theme" x-show="(state=='theme')" style="display: none">
-          <h3 x-html="theme.title"></h3>
-          <p x-html="theme.info"></p>
-          <div class="stats-theme">
-            <div
-              style="flex-grow: 1; min-height: 5rem"
-              class="stats-theme-infos"
-            >
-              <span x-html="theme.questions.length">?</span> questions dont :
-              <div style="width: 100%; height: 0.4rem"></div>
-              <span style="display: inline; color: var(--c-seen)">
-                <svg
-                  class="svg-icon"
-                  viewBox="0 0 580 512"
-                  style="margin-right: 0.7rem"
-                  x-html="svgPathFarEye"
-                ></svg>
-                <span x-html="theme.nbQuestionsSeen || '0' ">?</span>
-                déjà affichées (<span
-                  x-html="theme.nbQuestionsSeen/theme.length || '0' "
-                  >?</span
-                >%)
-              </span>
-              <br />
-              <span style="display: inline; color: var(--c-successful)">
-                <svg
-                  class="svg-icon"
-                  viewBox="0 0 512 512"
-                  style="margin-right: 0.7rem"
-                  x-html="svgPathFasCheck"
-                ></svg>
-                <span x-html="theme.nbQuestionsChecked || '0' ">?</span>
-                réussies (<span
-                  x-html="theme.nbQuestionsSuccessful/theme.length || '0' "
-                  >?</span
-                >%)</span
-              >
-
-              <br />
-              <span style="display: inline; color: var(--c-double-successful)">
-                <svg
-                  class="svg-icon"
-                  viewBox="0 0 512 512"
-                  style="margin-right: 0.7rem"
-                  x-html="svgPathFasCheckDouble"
-                ></svg>
-                <span x-html="theme.nbQuestionsDbChecked || '0' ">?</span>
-                consolidées (<span
-                  x-html="theme.nbQuestionsDbSuccessful/theme.length || '0' "
-                  >?</span
-                >%)
-              </span>
-            </div>
-          </div>
-
-          <div
-            style="margin-top: 1.5rem"
-            class="button button-primary"
-            onclick="gotoChapters()"
-          >
-            ❮❮ Retour à la liste des chapitres
-          </div>
-          <div
-            style="margin-top: 1.5rem"
-            class="button button-secondary"
-            onclick="startQuiz()"
-          >
-            Quiz de 10 questions ❯❯
-          </div>
-          <div x-html="htmlThemeReferences()" style="opacity: 70%"></div>
         </section>
 
         <!-- - - - - - S T A T S  - - - - - -->
@@ -375,6 +295,89 @@
           <p>Tes trophées seront affichés ici.</p>
         </section>
 
+        <!-- - - - - - C H A P I T R E S - - - - - -->
+
+        <section
+          id="chapters"
+          x-show="(state=='Chapters')"
+          style="display: none"
+        >
+          <div x-html="htmlChapters()"></div>
+        </section>
+
+        <!-- - - - - - D E T A I L S   T H E M E - - - - - -->
+        <section id="theme" x-show="(state=='theme')" style="display: none">
+          <h3 x-html="theme.title"></h3>
+          <p x-html="theme.info"></p>
+          <div class="stats-theme">
+            <div
+              style="flex-grow: 1; min-height: 5rem"
+              class="stats-theme-infos"
+            >
+              <span x-html="theme.questions.length">?</span> questions dont :
+              <div style="width: 100%; height: 0.4rem"></div>
+              <span style="display: inline; color: var(--c-seen)">
+                <svg
+                  class="svg-icon"
+                  viewBox="0 0 580 512"
+                  style="margin-right: 0.7rem"
+                  x-html="svgPathFarEye"
+                ></svg>
+                <span x-html="theme.nbQuestionsSeen || '0' ">?</span>
+                déjà affichées (<span
+                  x-html="theme.nbQuestionsSeen/theme.length || '0' "
+                  >?</span
+                >%)
+              </span>
+              <br />
+              <span style="display: inline; color: var(--c-successful)">
+                <svg
+                  class="svg-icon"
+                  viewBox="0 0 512 512"
+                  style="margin-right: 0.7rem"
+                  x-html="svgPathFasCheck"
+                ></svg>
+                <span x-html="theme.nbQuestionsChecked || '0' ">?</span>
+                réussies (<span
+                  x-html="theme.nbQuestionsSuccessful/theme.length || '0' "
+                  >?</span
+                >%)</span
+              >
+
+              <br />
+              <span style="display: inline; color: var(--c-double-successful)">
+                <svg
+                  class="svg-icon"
+                  viewBox="0 0 512 512"
+                  style="margin-right: 0.7rem"
+                  x-html="svgPathFasCheckDouble"
+                ></svg>
+                <span x-html="theme.nbQuestionsDbChecked || '0' ">?</span>
+                consolidées (<span
+                  x-html="theme.nbQuestionsDbSuccessful/theme.length || '0' "
+                  >?</span
+                >%)
+              </span>
+            </div>
+          </div>
+
+          <div
+            style="margin-top: 1.5rem"
+            class="button button-primary"
+            onclick="gotoChapters()"
+          >
+            ❮❮ Retour à la liste des chapitres
+          </div>
+          <div
+            style="margin-top: 1.5rem"
+            class="button button-secondary"
+            onclick="startQuiz()"
+          >
+            Quiz de 10 questions ❯❯
+          </div>
+          <div x-html="htmlThemeReferences()" style="opacity: 70%"></div>
+        </section>
+
         <!-- - - - - -  / ! \  - - Q U I Z - - / ! \ - - - - - -->
 
         <section id="quiz" x-show="(state=='Quiz')" style="display: none">
@@ -428,122 +431,109 @@
             gagnés, eux, tiennent compte des bonus et malus.
           </p>
 
-          <div style="margin: 1rem; width: 100%-2rem">
-            <table width="100%" style="border-collapse: collapse">
-              <thead>
-                <tr>
-                  <th
-                    style="
-                      text-align: left;
-                      font-size: 1.2rem;
-                      font-weight: 800;
-                      border-bottom: 1px white solid;
-                    "
-                  >
-                    Détails
-                  </th>
-                  <th
-                    style="
-                      text-align: right;
-                      font-size: 1.2rem;
-                      font-weight: 800;
-                      border-bottom: 1px white solid;
-                    "
-                  >
-                    Points
-                  </th>
-                </tr>
-              </thead>
-              <tbody id="tableauResultats">
-                <tr>
-                  <td>
-                    <span x-html="quiz.success">0</span>
-                    questions réussies :
-                  </td>
-                  <td style="text-align: right">
-                    +
-                    <span x-html="htmlPoints(quiz.success)">0</span>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <span x-html="quiz.fail">0</span>
-                    questions ratées :
-                  </td>
-                  <td style="text-align: right">
-                    -
-                    <span x-html="htmlPoints(quiz.fail)">0</span>
-                  </td>
-                </tr>
-                <tr>
-                  <td>
-                    <span x-html="quiz.skipped">0</span>
-                    questions sautées :
-                  </td>
-                  <td style="text-align: right">0 pts</td>
-                </tr>
-                <tr x-show="quiz.bonus>0">
-                  <td>Bonus réussites consécutives :</td>
-                  <td style="text-align: right">
-                    +
-                    <span x-html="htmlPoints(quiz.bonus)"></span>
-                  </td>
-                </tr>
-                <tr x-show="getBooster(new Date())>1">
-                  <td>BOOSTER ACTIF:</td>
-                  <td style="text-align: right">
-                    x<span x-html="getBooster(new Date())"></span>
-                  </td>
-                </tr>
-              </tbody>
-              <tfoot>
-                <tr
+          <table width="100%" style="border-collapse: collapse">
+            <thead>
+              <tr>
+                <th
                   style="
                     text-align: left;
                     font-size: 1.2rem;
                     font-weight: 800;
-                    border-top: 1px white solid;
+                    border-bottom: 1px var(--c-text) solid;
                   "
                 >
-                  <td style="text-align: left">TOTAL :</td>
-                  <td style="text-align: right">
-                    + <span x-html="htmlPoints(quiz.points)"></span>
-                  </td>
-                </tr>
-              </tfoot>
-            </table>
-          </div>
+                  Détails
+                </th>
+                <th
+                  style="
+                    text-align: right;
+                    font-size: 1.2rem;
+                    font-weight: 800;
+                    border-bottom: 1px var(--c-text) solid;
+                  "
+                >
+                  Points
+                </th>
+              </tr>
+            </thead>
+            <tbody id="tableauResultats">
+              <tr>
+                <td>
+                  <span x-html="quiz.success">0</span>
+                  questions réussies :
+                </td>
+                <td style="text-align: right">
+                  +
+                  <span x-html="htmlPoints(quiz.success)">0</span>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <span x-html="quiz.fail">0</span>
+                  questions ratées :
+                </td>
+                <td style="text-align: right">
+                  -
+                  <span x-html="htmlPoints(quiz.fail)">0</span>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <span x-html="quiz.skipped">0</span>
+                  questions sautées :
+                </td>
+                <td style="text-align: right">0 pts</td>
+              </tr>
+              <tr x-show="quiz.bonus>0">
+                <td>Bonus réussites consécutives :</td>
+                <td style="text-align: right">
+                  +
+                  <span x-html="htmlPoints(quiz.bonus)"></span>
+                </td>
+              </tr>
+              <tr x-show="getBooster(new Date())>1">
+                <td>BOOSTER ACTIF:</td>
+                <td style="text-align: right">
+                  x<span x-html="getBooster(new Date())"></span>
+                </td>
+              </tr>
+            </tbody>
+            <tfoot>
+              <tr
+                style="
+                  text-align: left;
+                  font-size: 1.2rem;
+                  font-weight: 800;
+                  border-top: 1px var(--c-text) solid;
+                "
+              >
+                <td style="text-align: left">TOTAL :</td>
+                <td style="text-align: right">
+                  + <span x-html="htmlPoints(quiz.points)"></span>
+                </td>
+              </tr>
+            </tfoot>
+          </table>
 
           <div class="button button-primary" onclick="unstack('Chapters')">
             <i class="fa-solid fa-list-Ul"></i>
-            Retour à la liste des thèmes
+            ❮❮ Retour à la liste des chapitres
           </div>
           <div class="button button-primary" onclick="unstack('Theme')">
-            <i class="fa-solid fa-circle-play"></i>> Nouveau quiz
+            Rejouer sur ce thème ❯❯
           </div>
-
-          <h4 style="padding-top: 1rem">Correction :</h4>
-          <div>Remettre les éventuels liens</div>
-
-          <div id="correction" style="flex-direction: column-reverse">
-            <!--- - - - - correction - - - - - -->
-          </div>
-
-          <p style="text-align: justify; text-justify: auto">
-            Note : s'il y a un problème avec une question, le numéro de la
-            question peut aider à signaler ce problème. Cela dit, les énoncés
-            sont normalement corrects et le diable se cache dans les détails.
-          </p>
         </section>
 
         <!-- - - - - - F A B (Floating Action Button ) - - - - - -->
         <div
           id="fab"
-          class="button fab pulse"
+          class="fab pulse"
           onClick="gotoChapters()"
           x-show="(state=='Home')||(state=='Profile')||(state=='Statistics')||(state=='Trophies')"
         >
-          <i class="fa-solid fa-play" style="transform: translateX(0.1rem)"></i>
+          <div class="fab-triangle">
+            ▶<!--<i class="fa-solid fa-play"></i>-->
+          </div>
         </div>
         <!-- - - - - - F O O T E R  - - - - - -->
         <footer x-show="!((state=='Quiz')||(state=='End'))">

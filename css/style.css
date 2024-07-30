@@ -111,8 +111,8 @@ summary {
 }
 .notif {
   position: absolute;
-  top: -0.5rem;
-  right: -0.5rem;
+  top: -0.6rem;
+  right: -0.7rem;
   border-radius: 1rem;
   color: var(--c-text);
   background-color: var(--c-primary);
