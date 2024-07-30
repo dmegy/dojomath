@@ -26,6 +26,7 @@ button {
 
 .button-small {
   /* pour les boutons des thèmes */
+  cursor: pointer;
   overflow: hidden;
   display: inline-block;
   margin: 0.2rem;

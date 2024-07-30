@@ -18,6 +18,7 @@ let user = {
   avatar: "" /* type : dataURL*/,
   depCode: "",
   mathClub: "",
+  combo: 0,
   points: 527,
   perfects: 2,
   nbCorrectAnswers: 56,

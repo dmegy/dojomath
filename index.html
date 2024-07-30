@@ -57,11 +57,7 @@
           x-html="htmlPoints()"
           x-show="(state!='Quiz') && (state!='End')"
         ></div>
-        <div
-          id="quizHeader"
-          style="width: 100%"
-          x-show="(state=='Quiz') || (state=='End')"
-        >
+        <div id="quizHeader" style="width: 100%" x-show="(state=='Quiz')">
           <div style="display: flex; justify-content: space-between">
             <!-- flex-container-->
             <div onClick="showAbortQuizModal()">✖</div>
@@ -160,17 +156,20 @@
               </span>
             </div>
           </div>
+
           <div
             style="margin-top: 1.5rem"
             class="button button-primary"
+            onclick="gotoChapters()"
+          >
+            ❮❮ Retour à la liste des chapitres
+          </div>
+          <div
+            style="margin-top: 1.5rem"
+            class="button button-secondary"
             onclick="startQuiz()"
           >
-            <svg
-              class="svg-icon"
-              x-html="svgPathFasCirclePlay"
-              viewBox="0 0 512 512"
-            ></svg>
-            Quiz de 10 questions
+            Quiz de 10 questions ❯❯
           </div>
           <div x-html="htmlThemeReferences()" style="opacity: 70%"></div>
         </section>
@@ -413,56 +412,20 @@
               </div>
             </div>
           </div>
-
-          <div class="modal" id="abortQuizModal" style="display: none">
-            <h1 class="glow">Attention !</h1>
-            <p>Souhaites-tu vraiment quitter le quiz en cours ?</p>
-            <p>Aucun point ne sera sauvegardé.</p>
-            <div
-              class="button"
-              style="
-                border: none;
-                background-color: var(--c-primary);
-                color: var(--c-text);
-                width: 100%;
-                text-align: center;
-              "
-              onclick="abortQuizModal.style.display='none'"
-            >
-              Reprendre le Quiz
-            </div>
-            <div
-              class="button"
-              style="
-                border: none;
-                background-color: var(--c-danger);
-                color: white;
-                width: 100%;
-                text-align: center;
-              "
-              onclick="abortQuiz()"
-            >
-              ✖ Quitter le Quiz
-            </div>
-          </div>
         </section>
 
-        <!-- - - - - - E N D (écran de fin)  - - - - - -->
+        <!-- - - - - - E N D  / Q U I Z  T E R M I N É  - - - - - -->
         <section id="trophies" x-show="(state=='End')" style="display: none">
           <h1 style="text-align: center">
-            <span class="sync" data-action="html" data-param="quiz.note"></span
-            >/20
+            <span x-html="quiz.finalGrade"></span>/20
             <!-- icône suivant le résultat-->
-            <span x-html="glyphResult(quiz.note)"> </span>
+            <span x-html="glyphResult(quiz.finalGrade)"> </span>
           </h1>
 
           <p style="color: var(--c-texte-inactif)">
-            La note est calculée avant les bonus. Elle peut être basse à cause
-            des points négatifs. Ceux-ci sont nécessaires pour dissuader de
-            répondre au hasard.
-            <span style="font-weight: 800"
-              >Décrocher la moyenne est déjà un bon résultat !</span
-            >
+            ⓘ La note est calculée sans tenir compte des pénalités dues aux
+            erreurs ni des bonus de bonnes réponses successives. Les points
+            gagnés, eux, tiennent compte des bonus et malus.
           </p>
 
           <div style="margin: 1rem; width: 100%-2rem">
@@ -494,41 +457,36 @@
               <tbody id="tableauResultats">
                 <tr>
                   <td>
-                    <span x-html="quiz.repJustes">0</span>
+                    <span x-html="quiz.success">0</span>
                     questions réussies :
                   </td>
                   <td style="text-align: right">
                     +
-                    <span x-html="quiz.repJustes">0</span>
+                    <span x-html="htmlPoints(quiz.success)">0</span>
                   </td>
                 </tr>
                 <tr>
                   <td>
-                    <span x-html="quiz.repFausses">0</span>
+                    <span x-html="quiz.fail">0</span>
                     questions ratées :
                   </td>
                   <td style="text-align: right">
                     -
-                    <span x-html="quiz.repFausses">0</span>
+                    <span x-html="htmlPoints(quiz.fail)">0</span>
                   </td>
                 </tr>
                 <tr>
                   <td>
-                    <span
-                      class="sync"
-                      data-action="html"
-                      data-param="quiz.repNeutres"
-                      >0</span
-                    >
+                    <span x-html="quiz.skipped">0</span>
                     questions sautées :
                   </td>
-                  <td style="text-align: right">0</td>
+                  <td style="text-align: right">0 pts</td>
                 </tr>
                 <tr x-show="quiz.bonus>0">
                   <td>Bonus réussites consécutives :</td>
                   <td style="text-align: right">
                     +
-                    <span x-html="quiz.bonus"></span>
+                    <span x-html="htmlPoints(quiz.bonus)"></span>
                   </td>
                 </tr>
                 <tr x-show="getBooster(new Date())>1">
@@ -538,14 +496,23 @@
                   </td>
                 </tr>
               </tbody>
+              <tfoot>
+                <tr
+                  style="
+                    text-align: left;
+                    font-size: 1.2rem;
+                    font-weight: 800;
+                    border-top: 1px white solid;
+                  "
+                >
+                  <td style="text-align: left">TOTAL :</td>
+                  <td style="text-align: right">
+                    + <span x-html="htmlPoints(quiz.points)"></span>
+                  </td>
+                </tr>
+              </tfoot>
             </table>
           </div>
-
-          <p>
-            Tes
-            <span x-html="quiz.total"> </span>
-            points sont sauvegardés !
-          </p>
 
           <div class="button button-primary" onclick="unstack('Chapters')">
             <i class="fa-solid fa-list-Ul"></i>
