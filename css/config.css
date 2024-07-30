@@ -49,7 +49,7 @@
 
   /* raccourcis */
   --c-bg-body: var(--c-primary-20-desat);
-  --c-bg-header: black;
+  --c-bg-header: var(--c-primary-10-desat);
   --c-text: var(--c-primary-90-desat);
 
   --c-secondary-70: oklch(70% 90% var(--hue-secondary));

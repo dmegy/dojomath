@@ -27,3 +27,20 @@
   display: flex;
   justify-content: space-between;
 }
+
+/* MODALS*/
+#abortQuizModal {
+  margin: 0;
+  border: 0;
+  width: 100vw;
+  height: 100vh;
+  outline: none;
+  background-color: var(--c-primary-10-desat);
+  color: var(--c-text);
+  display: grid;
+  place-items: center;
+}
+
+dialog::backdrop {
+  background: rgba(0, 0, 0, 0.7);
+}

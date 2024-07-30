@@ -57,6 +57,17 @@
           x-html="htmlPoints()"
           x-show="(state!='Quiz') && (state!='End')"
         ></div>
+        <div
+          id="quizHeader"
+          style="width: 100%"
+          x-show="(state=='Quiz') || (state=='End')"
+        >
+          <div style="display: flex; justify-content: space-between">
+            <!-- flex-container-->
+            <div onClick="abortQuizModal.showModal()">✖</div>
+            <div>+??pts</div>
+          </div>
+        </div>
       </header>
       <main>
         <!-- - - - - - -H O M E - - - - --->
@@ -551,10 +562,34 @@
     </div>
     <dialog id="abortQuizModal">
       <h1 class="glow">Attention !</h1>
-      Souhaitez-tu vraiment quitter le quiz en cours ?
-      <br />
-      Aucun point ne sera sauvegardé.<br />
-      Revenir au quiz / Quitter le quiz.
+      <p>Souhaites-tu vraiment quitter le quiz en cours ?</p>
+      <p>Aucun point ne sera sauvegardé.</p>
+      <div
+        class="button"
+        style="
+          border: none;
+          background-color: var(--c-primary);
+          color: var(--c-text);
+          width: 100%;
+          text-align: center;
+        "
+        onclick="abortQuizModal.close()"
+      >
+        Reprendre le Quiz
+      </div>
+      <div
+        class="button"
+        style="
+          border: none;
+          background-color: var(--c-danger);
+          color: white;
+          width: 100%;
+          text-align: center;
+        "
+        onclick="abortQuiz()"
+      >
+        ✖ Quitter le Quiz
+      </div>
     </dialog>
   </body>
 </html>

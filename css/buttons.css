@@ -1,10 +1,14 @@
+button {
+  font-family: inherit;
+}
+
 .button {
   cursor: pointer;
   border-radius: 2rem;
   position: relative;
   padding: 0.5rem 1rem;
   margin: 1rem;
-  font-size: 1.2rem;
+  font-size: 1.2rem; /* bouger ceci ? */
 
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
