@@ -126,8 +126,12 @@
               ><span x-html="user.nbQuestionsFailed">?</span> ratées,
             </span>
             <span style="color: var(--c-warning)"
-              ><span x-html="user.nbQuestionsSkipped">?</span> sautées,
-            </span>
+              ><span
+                x-html="user.nbQuestionsViewed - user.nbQuestionsFailed - user.nbQuestionsSuccessful"
+                >?</span
+              >
+              ignorées, </span
+            ><!-- pour prendre en compte les questions vues avant d'interrompre le quiz (pas comptés comme skipped) -->
             <span style="color: var(--c-success)"
               ><span x-html="user.nbQuestionsSuccessful">?</span> réussies.
             </span>
@@ -141,8 +145,9 @@
           <h3>🔥 Séries consécutives</h3>
 
           <div>
-            Journées de pratique : <span x-html="getUserStreak()"></span> 🔥
-            (Record : ??)
+            Journées de pratique :
+            <span x-html="getUserStreak()"></span> 🔥 (Record :
+            <span x-html="user.longestStreak"></span>)
           </div>
           <div>
             Réponses correctes :

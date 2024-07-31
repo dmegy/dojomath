@@ -157,6 +157,8 @@ function showQuizResults() {
     quiz.nbQuestionsSuccessful,
     quiz.quizLength
   );
+  if (quiz.finalGrade == 20) user.nbQuizPerfect++;
+
   // remplacer success par result pour tenir compte des erreurs
   user.points += quiz.points;
   statsThemes[theme.id].nbQuizFinished += 1;

@@ -80,7 +80,7 @@ function htmlMultipleProgress(numbers, colorsCSSvarnames) {
   }); // initialisation d'un tableau de même longueur et rempli de zéros.
   if (sum != 0)
     percentages = numbers.map((x) => {
-      return Math.floor((100 * x) / sum);
+      return (100 * x) / sum;
     });
   let s = "<div class='progress-bar-container'>";
   for (let i = 0; i < numbers.length; i++) {
