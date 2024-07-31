@@ -24,20 +24,23 @@ let user = {
   firstConnection: t0,
   userId: toB64(t0),
   userName: toB64(t0),
-  avatar: "" /* type : dataURL*/,
+  avatarURL: "" /* type : dataURL*/,
   depCode: "",
   mathClub: "",
   combo: 0,
+  longestCombo: 0,
   points: 0,
   nbQuestionsViewed: 0,
   nbQuestionsFailed: 0,
   nbQuestionsSkipped: 0,
   nbQuestionsSuccessful: 0,
-  perfects: 2,
+  nbQuizStarted: 0,
+  nbQuizGameover: 0,
+  nbQuizAborted: 0,
+  nbQuizPerfect: 0,
   lastActive: "" /* date ou stringified date */,
   lastStreak: 2,
   longestStreak: 7,
-  weakStreak: 10,
 };
 
 function getUserStreak() {
@@ -50,7 +53,9 @@ function getUserStreak() {
   else return 0;
 }
 
-function updateUserStreak() {}
+function updateUserStreak() {
+  /* attention */
+}
 
 const removeCircles = () => {
   document
@@ -159,26 +164,6 @@ const render = () => {
   xHtml();
   //MathJax.typeset();// bcp trop lent !
 };
-
-window.addEventListener("load", () => {
-  state = "Home";
-  getScript("js/initMathJax.js", () => {
-    console.log("MathJax config initialisée!");
-    questionsLoaded = true;
-  });
-
-  render(); //rendu des points
-  getHighscores();
-});
-
-/*
-fetch("questions.json?again=" + Math.random())
-  .then((response) => response.json())
-  .then((json) => {
-    questions = json;
-    console.log(questions[3]);
-  });
-*/
 
 function getHighscores() {
   document.getElementById("highscores").innerHTML = "Chargement...";

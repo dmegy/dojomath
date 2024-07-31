@@ -75,6 +75,7 @@ function validateAnswer() {
 
     statsThemes[theme.id].nbQuestionsSuccessful += 1;
     user.combo += 1;
+    user.longestCombo = Math.max(user.combo, user.longestCombo);
     user.nbQuestionsSuccessful += 1;
     quiz.nbQuestionsSuccessful += 1;
     console.log("question réussie");

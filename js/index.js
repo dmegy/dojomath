@@ -12,6 +12,7 @@ getScript("js/components.js");
 getScript("js/svg-paths.js");
 getScript("js/app.js");
 getScript("data_questions.js", () => {
+  window.statsQuestions ??= [];
   for (let i = 0; i < questions.length; i++) {
     //initialisation
     statsQuestions[i] ??= {
@@ -28,6 +29,7 @@ getScript("data_questions.js", () => {
 });
 getScript("data_chapters.js");
 getScript("data_themes.js", () => {
+  window.statsThemes ??= {};
   for (let themeId in themes) {
     //initialisation
     statsThemes[themeId] ??= {
@@ -43,3 +45,24 @@ getScript("data_themes.js", () => {
   }
 });
 getScript("js/quiz.js");
+//getScript("js/avatar.js");
+
+window.addEventListener("load", () => {
+  state = "Home";
+  getScript("js/initMathJax.js", () => {
+    console.log("MathJax config initialisée!");
+    questionsLoaded = true;
+  });
+
+  render(); //rendu des points
+  getHighscores();
+});
+
+/*
+fetch("questions.json?again=" + Math.random())
+  .then((response) => response.json())
+  .then((json) => {
+    questions = json;
+    console.log(questions[3]);
+  });
+*/
