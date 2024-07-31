@@ -1,12 +1,5 @@
 let t0 = performance.timeOrigin + performance.now();
 
-if (window.localStorage.getItem("firstConnectionDate") !== null) {
-} else
-  window.localStorage.setItem(
-    "firstConnectionDate",
-    JSON.stringify(new Date())
-  );
-
 const QUIZ_MIN_RESULT = 2; // attention certains quiz peuvent faire moins de 2 questions ?
 const QUIZ_MAX_LENGTH = 10;
 const QUESTION_MAX_POINTS = 20; //maximum de pts que l'on peut gagner à chaque question

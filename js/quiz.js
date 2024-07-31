@@ -1,4 +1,5 @@
 // ceci doit tourner après que les questions soient loadées !
+// ce script comporte uniquement des fonctions.
 
 function shuffleArray(array) {
   // attention !  le tableau est muté sur place
@@ -132,10 +133,11 @@ function validateAnswer() {
   });
 
   /* gestion des combos, éventuellement affichage de messages (combo etc)*/
+  // type "10 d'affilée etc ? mais déjà affiché dans le toast"
+  // ou alors : "100ème question réussie"
 
-  /* gestion du game over anticipé */
-
-  /* enregistrement stats*/
+  // event pour enregistrement dans le storage si activé :
+  window.dispatchEvent(new Event("questionValidated"));
 
   if (quiz.questions.length > 0) nextQuestion();
   else showQuizResults();
@@ -160,6 +162,8 @@ function showQuizResults() {
   /* calculer stats etc, récompenses, bonus */
   /* empile les messages, les récompenses etc ?*/
 
+  // gérer avec des toasts ?
+
   quiz.finalGrade = grade20FromResult(
     quiz.nbQuestionsSuccessful,
     quiz.quizLength
@@ -170,6 +174,8 @@ function showQuizResults() {
   user.points += quiz.points;
   statsThemes[theme.id].nbQuizFinished++;
   user.nbQuizFinished++;
+  // event pour enregistrement éventuel dans le storage
+  window.dispatchEvent(new Event("quizFinished"));
   state = "End";
   render();
 }

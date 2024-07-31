@@ -49,7 +49,9 @@ getScript("data_themes.js", () => {
   }
 });
 getScript("js/quiz.js");
+
 //getScript("js/avatar.js");
+getScript("js/localStorage.js");
 
 window.addEventListener("load", () => {
   state = "Home";

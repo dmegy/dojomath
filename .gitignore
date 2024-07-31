@@ -1,6 +1,8 @@
 ignore
 .parcel-cache
 
+dist
+
 
 .env
 .env-development

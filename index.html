@@ -4,7 +4,6 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="manifest" href="manifest.webmanifest" />
-
     <link rel="stylesheet" href="css/style.css" />
     <link href="assets/fontawesome/css/fontawesome.min.css" rel="stylesheet" />
     <link href="assets/fontawesome/css/solid.min.css" rel="stylesheet" />
@@ -56,13 +55,27 @@
           <span x-html="htmlPoints(user.points)"></span>
           <span class="notif">Niv. 2</span>
         </div>
-        <div id="quizHeader" style="width: 100%" x-show="(state=='Quiz')">
+        <div
+          id="quizHeader"
+          style="width: 100%"
+          x-show="(state=='Quiz')||(state=='End')"
+        >
           <div style="display: flex; justify-content: space-between">
             <!-- flex-container-->
-            <div onClick="showAbortQuizModal()">✖</div>
+            <div
+              x-show="state=='Quiz'"
+              style="
+                cursor: pointer;
+                background-color: var(--c-primary-10-desat);
+              "
+              onClick="showAbortQuizModal()"
+            >
+              ✖
+            </div>
+            <div x-show="state=='End'">Partie terminée ! Bravo !</div>
             <div>
               <span
-                x-html="(quiz.result>=0 ? '+' : '')+htmlPoints(quiz.result)"
+                x-html="(quiz.points>=0 ? '+' : '')+htmlPoints(quiz.points)"
               ></span>
             </div>
           </div>
@@ -359,6 +372,13 @@
           x-show="(state=='theme')"
           style="display: none"
         >
+          <div
+            style="margin-top: 1.5rem"
+            class="button button-primary"
+            onclick="gotoChapters()"
+          >
+            ❮❮ Retour aux chapitres
+          </div>
           <h3 x-html="theme.title"></h3>
           <p x-html="theme.info"></p>
           <div class="stats-theme">
@@ -413,13 +433,6 @@
             </div>
           </div>
 
-          <div
-            style="margin-top: 1.5rem"
-            class="button button-primary"
-            onclick="gotoChapters()"
-          >
-            ❮❮ Retour aux chapitres
-          </div>
           <div
             style="margin-top: 1.5rem"
             class="button button-secondary"
