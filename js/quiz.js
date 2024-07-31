@@ -28,7 +28,7 @@ function startQuiz() {
   /* tableau d'objets de la forme :
     {questionNumber:num,submittedAnswer:true;result:-1}
     */
-
+  user.nbQuizStarted += 1;
   nextQuestion();
 }
 
@@ -103,6 +103,7 @@ function validateAnswer() {
   let isGameover = maxAchievableResult < QUIZ_MIN_RESULT;
   if (isGameover) {
     alert("GAMEOVER :\nTrop de questions ratées ou sautées");
+    user.nbQuizGameover++;
     abortQuiz();
     return;
   }
@@ -131,6 +132,20 @@ function validateAnswer() {
 
   if (quiz.questions.length > 0) nextQuestion();
   else showQuizResults();
+}
+
+function showAbortQuizModal() {
+  let text =
+    "DEMANDE DE CONFIRMATION :\n\nSouhaites-tu vraiment interrompre le Quiz ?\n\n(Attention, aucun point ne sera sauvegardé.)";
+  if (confirm(text) == true) {
+    user.nbQuizAborted++;
+    abortQuiz();
+  }
+}
+function abortQuiz() {
+  // appelé lorsque l'utilisateur confirme la fermeture, ou en cas de gameover ?
+  // éventuel appel serveur, gestion des stats ? ajout quiz interrompu ?
+  gotoTheme(theme.id);
 }
 
 function showQuizResults() {
@@ -176,17 +191,3 @@ function grade20FromResult(result, maxResult) {
 }
 
 function getBooster() {}
-
-function showAbortQuizModal() {
-  let text =
-    "DEMANDE DE CONFIRMATION :\n\nSouhaites-tu vraiment interrompre le Quiz ?\n\n(Attention, aucun point ne sera sauvegardé.)";
-  if (confirm(text) == true) {
-    abortQuiz();
-  }
-}
-function abortQuiz() {
-  // appelé lorsque l'utilisateur confirme la fermeture, ou en cas de gameover ?
-  // éventuel appel serveur, gestion des stats ? ajout quiz interrompu ?
-
-  gotoTheme(theme.id);
-}

@@ -1,5 +1,9 @@
 // entry point
 
+// TODO : problèmes à résoudre
+// désactiver les boutons du haut tant que les scripts ne sont pas chargés.
+// Il manque les goto... par exemple
+
 function getScript(scriptUrl, callback) {
   const script = document.createElement("script");
   script.src = scriptUrl + "?unique=" + Math.random();

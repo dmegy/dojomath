@@ -37,6 +37,7 @@ let user = {
   nbQuizStarted: 0,
   nbQuizGameover: 0,
   nbQuizAborted: 0,
+  nbQuizFinished: 0,
   nbQuizPerfect: 0,
   lastActive: "" /* date ou stringified date */,
   lastStreak: 2,

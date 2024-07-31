@@ -36,6 +36,7 @@
   --c-danger: oklch(70% 70% var(--hue-danger));
   --c-warning: oklch(70% 70% var(--hue-warning));
   --c-success: oklch(70% 70% var(--hue-success));
+  --c-success-accent: oklch(90% 70% var(--hue-success));
 
   --c-primary-40: oklch(40% 70% var(--hue-primary));
   --c-primary-30: oklch(30% 70% var(--hue-primary));

@@ -70,19 +70,23 @@ function htmlProgress(a, b) {
 			</div>`;
 }
 
-function htmlTripleProgress([a, b, c]) {
-  // retourne un div html avec des barres de progression dans le ratio a:b:c
-
-  let n = a + b + c;
-  let [pa, pb, pc] = [0, 0, 0];
-  if (n != 0) [pa, pb, pc] = [(100 * a) / n, (100 * b) / n, (100 * c) / n];
-
-  let s = "";
-  s = `	<div class='progress-bar-container'>
-				<div style='width:${pa}%;background-color:var(--c-danger)'></div>
-				<div style='width:${pb}%;background-color:var(--c-warning)'></div>
-				<div style='width:${pc}%;background-color:var(--c-success)'></div>
-			</div>`;
+function htmlMultipleProgress(numbers, colorsCSSvarnames) {
+  // input : deux tableaux de même taille
+  //retourne une barre de stats de type cumulative avec les valeurs et couleurs fournies
+  if (numbers.length != colorsCSSvarnames.length) throw Error;
+  let sum = numbers.reduce((partialSum, k) => partialSum + k, 0);
+  let percentages = numbers.map((x) => {
+    return 0;
+  }); // initialisation d'un tableau de même longueur et rempli de zéros.
+  if (sum != 0)
+    percentages = numbers.map((x) => {
+      return Math.floor((100 * x) / sum);
+    });
+  let s = "<div class='progress-bar-container'>";
+  for (let i = 0; i < numbers.length; i++) {
+    s += `<div style='width:${percentages[i]}%;background-color:var(${colorsCSSvarnames[i]})'></div>`;
+  }
+  s += "</div>";
   return s;
 }
 

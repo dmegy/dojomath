@@ -95,15 +95,29 @@
           <!-- - - - S T A T S > > > BILAN- - - -->
           <!--<h3>Bilan</h3>-->
           <div>
-            <strong>Parties</strong> : ? commencées dont<br />
-            ? gameover, ? interrompues, ? terminées
+            <strong>Parties</strong> :
+            <span x-html="user.nbQuizStarted">?</span> commencées dont : <br />
+            <span style="color: var(--c-danger)"
+              ><span x-html="user.nbQuizGameover">?</span> ratées</span
+            >,
+            <span style="color: var(--c-warning)"
+              ><span x-html="user.nbQuizAborted">?</span> quittées</span
+            >,
+            <span style="color: var(--c-success)"
+              ><span x-html="user.nbQuizFinished">?</span> terminées</span
+            >,<br />
+            dont
+            <span style="color: var(--c-success-accent)"
+              ><span x-html="user.nbQuizPerfect">?</span> terminées avec
+              20/20</span
+            >
+            🏆
           </div>
 
           <div
-            x-html="htmlTripleProgress([2,3,7])"
+            x-html="htmlMultipleProgress([user.nbQuizGameover, user.nbQuizAborted,user.nbQuizFinished,user.nbQuizPerfect],['--c-danger','--c-warning','--c-success','--c-success-accent'])"
             style="height: 0.5rem; margin: 1rem 0"
           ></div>
-          <div>?? Parties terminées avec 20/20 🏆</div>
           <div>
             <strong>Questions : </strong>
             <span x-html="user.nbQuestionsViewed">?</span> commencées dont :
@@ -119,7 +133,7 @@
             </span>
           </div>
           <div
-            x-html="htmlTripleProgress([2,3,7])"
+            x-html="htmlMultipleProgress([user.nbQuestionsFailed,user.nbQuestionsSkipped,user.nbQuestionsSuccessful],['--c-danger','--c-warning','--c-success'])"
             style="height: 0.5rem; margin: 1rem 0"
           ></div>
 
