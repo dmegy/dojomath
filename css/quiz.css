@@ -1,4 +1,5 @@
 .button-answer {
+  cursor: pointer;
   padding: 0.8rem 0.8rem;
   border-radius: 3rem;
   color: #eeeeee;
@@ -8,9 +9,14 @@
   width: calc((100% - 2 * var(--margin)) / 3);
 }
 
+.button-answer:active {
+  transform: scale(1.15);
+}
+
 .button-answer-true {
   background-color: oklch(50% 50% var(--hue-success));
 }
+
 .button-answer-undefined {
   background-color: oklch(50% 50% var(--hue-warning));
 }

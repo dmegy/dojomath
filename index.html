@@ -13,6 +13,11 @@
       rel="icon"
       href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 110 100'><text y='0.9em' font-size='90'>🏆</text></svg>"
     />
+    <link
+      rel="stylesheet"
+      type="text/css"
+      href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css"
+    />
     <title>DojoMath</title>
   </head>
   <body>
@@ -55,13 +60,17 @@
           <div style="display: flex; justify-content: space-between">
             <!-- flex-container-->
             <div onClick="showAbortQuizModal()">✖</div>
-            <div>+??pts</div>
+            <div>
+              <span
+                x-html="(quiz.result>=0 ? '+' : '')+htmlPoints(quiz.result)"
+              ></span>
+            </div>
           </div>
         </div>
       </header>
       <main>
         <!-- - - - - - -H O M E - - - - --->
-        <section id="home" x-show="(state=='Home')">
+        <section id="section-home" x-show="(state=='Home')">
           <h1 class="glow">Bienvenue</h1>
           <h3>Règles du jeu</h3>
           <p>
@@ -87,7 +96,7 @@
 
         <!-- - - - - - S T A T S  - - - - - -->
         <section
-          id="statistics"
+          id="section-statistics"
           x-show="state=='Statistics'"
           style="display: none"
         >
@@ -115,7 +124,7 @@
           </div>
 
           <div
-            x-html="htmlMultipleProgress([user.nbQuizGameover, user.nbQuizAborted,user.nbQuizFinished,user.nbQuizPerfect],['--c-danger','--c-warning','--c-success','--c-success-accent'])"
+            x-html="htmlMultipleProgress([user.nbQuizGameover, user.nbQuizAborted, user.nbQuizFinished, user.nbQuizPerfect],['--c-danger','--c-warning','--c-success','--c-success-accent'])"
             style="height: 0.5rem; margin: 1rem 0"
           ></div>
           <div>
@@ -260,8 +269,13 @@
 
         <!-- - - - - - P R O F I L - - - - - -->
 
-        <section id="profile" x-show="(state=='Profile')" style="display: none">
+        <section
+          id="section-profile"
+          x-show="(state=='Profile')"
+          style="display: none"
+        >
           <h1 class="glow">Profil Utilisateur</h1>
+          <!--
           <div style="width: 100%; display: flex; justify-content: center">
             <div class="avatar" style="width: 6rem; height: 6rem">
               <div id="avatarDisk" class="avatar-disk avatar-missing">
@@ -294,6 +308,7 @@
               </label>
             </div>
           </div>
+        -->
 
           <div>
             <p>Identifiant utilisateur : <span x-html="user.userId"></span></p>
@@ -301,7 +316,7 @@
             <p>Département (si France) :</p>
             <p>Club :</p>
           </div>
-
+          <!--
           <div>
             <h3>Sauvegarde du compte</h3>
             <p>Utilisateur côté serveur :</p>
@@ -315,12 +330,12 @@
               effaces l'historique de ton navigateur, ou si tu joues depuis une
               autre machine.
             </p>
-          </div>
+          </div>-->
         </section>
 
         <!-- - - - - - T R O P H E E S  - - - - - -->
         <section
-          id="trophies"
+          id="section-trophies"
           x-show="(state=='Trophies')"
           style="display: none"
         >
@@ -331,7 +346,7 @@
         <!-- - - - - - C H A P I T R E S - - - - - -->
 
         <section
-          id="chapters"
+          id="section-chapters"
           x-show="(state=='Chapters')"
           style="display: none"
         >
@@ -339,7 +354,11 @@
         </section>
 
         <!-- - - - - - D E T A I L S   T H E M E - - - - - -->
-        <section id="theme" x-show="(state=='theme')" style="display: none">
+        <section
+          id="section-theme"
+          x-show="(state=='theme')"
+          style="display: none"
+        >
           <h3 x-html="theme.title"></h3>
           <p x-html="theme.info"></p>
           <div class="stats-theme">
@@ -413,7 +432,11 @@
 
         <!-- - - - - -  / ! \  - - Q U I Z - - / ! \ - - - - - -->
 
-        <section id="quiz" x-show="(state=='Quiz')" style="display: none">
+        <section
+          id="section-quiz"
+          x-show="(state=='Quiz')"
+          style="display: none"
+        >
           <div
             style="
               height: 100%;
@@ -451,7 +474,7 @@
         </section>
 
         <!-- - - - - - E N D  / Q U I Z  T E R M I N É  - - - - - -->
-        <section id="trophies" x-show="(state=='End')" style="display: none">
+        <section id="section-end" x-show="(state=='End')" style="display: none">
           <h1 style="text-align: center">
             <span x-html="quiz.finalGrade"></span>/20
             <!-- icône suivant le résultat-->
@@ -588,5 +611,9 @@
         </footer>
       </main>
     </div>
+    <script
+      type="text/javascript"
+      src="https://cdn.jsdelivr.net/npm/toastify-js"
+    ></script>
   </body>
 </html>

@@ -1,5 +1,5 @@
 function htmlPoints(points) {
-  return points + " pt" + (points == 1 ? "" : "s");
+  return points + " pt" + (points == 1 || points == -1 ? "" : "s");
 }
 
 // pour l'écran des thèmes et chapitres :

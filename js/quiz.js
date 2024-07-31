@@ -9,6 +9,7 @@ function shuffleArray(array) {
 }
 
 function startQuiz() {
+  console.log("startQuiz() sur le thème " + theme);
   quiz = structuredClone(theme);
 
   shuffleArray(quiz.questions);
@@ -65,6 +66,7 @@ function validateAnswer() {
     user.nbQuestionsSkipped += 1;
     quiz.nbQuestionsSkipped += 1;
     console.log("question sautée");
+    toast("+0pts", "var(--c-warning)");
   } else if (question.submittedAnswer === question.answer) {
     // SUCCESS
     question.result = 1;
@@ -78,25 +80,30 @@ function validateAnswer() {
     user.longestCombo = Math.max(user.combo, user.longestCombo);
     user.nbQuestionsSuccessful += 1;
     quiz.nbQuestionsSuccessful += 1;
-    console.log("question réussie");
+
+    // toast success
+    let congratulationsMessage =
+      "BRAVO !\n+" + user.combo + " PT" + (user.combo > 1 ? "S" : "");
+    toast(congratulationsMessage, "var(--c-success)");
+    //toast Combo:
+    if (user.combo > 1)
+      toast(user.combo + " D'AFFILÉE !\n", "var(--c-success)");
   } else {
     // FAIL
     question.result = -1;
-    statsQuestions[question.num].failed += 1;
+    statsQuestions[question.num].failed++;
     statsQuestions[question.num].successfulLastTime = false;
     statsQuestions[question.num].successfulLastTwoTimes = false;
-    statsThemes[theme.id].nbQuestionsFailed += 1;
+    statsThemes[theme.id].nbQuestionsFailed++;
     user.combo = 0;
-    user.nbQuestionsFailed += 1;
-    quiz.nbQuestionsFailed += 1;
-    console.log("question ratée");
+    user.nbQuestionsFailed++;
+    quiz.nbQuestionsFailed++;
+    toast("-1pt", "var(--c-danger)");
   }
   quiz.result += question.result;
   statsQuestions[question.num].penultimateResult =
     statsQuestions[question.num].lastResult;
   statsQuestions[question.num].lastResult = question.result;
-
-  console.log("question.result : " + question.result);
 
   // CHECK GAMEOVER ??
   let maxAchievableResult = quiz.result + quiz.questions.length;
@@ -161,7 +168,8 @@ function showQuizResults() {
 
   // remplacer success par result pour tenir compte des erreurs
   user.points += quiz.points;
-  statsThemes[theme.id].nbQuizFinished += 1;
+  statsThemes[theme.id].nbQuizFinished++;
+  user.nbQuizFinished++;
   state = "End";
   render();
 }
@@ -193,3 +201,22 @@ function grade20FromResult(result, maxResult) {
 }
 
 function getBooster() {}
+
+function toast(message, color) {
+  Toastify({
+    text: message,
+    duration: 800,
+    destination: "",
+    newWindow: true,
+    close: false,
+    gravity: "top", // `top` or `bottom`
+    position: "center", // `left`, `center` or `right`
+    stopOnFocus: true, // Prevents dismissing of toast on hover
+    style: {
+      "border-radius": "1rem",
+      background: color,
+      "text-align": "center",
+    },
+    onClick: function () {}, // Callback after click
+  }).showToast();
+}

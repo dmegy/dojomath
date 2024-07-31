@@ -15,6 +15,7 @@ let questionNumber; // int, question courante
 let question; // question courante : object
 let state = "Loading";
 let theme = {}; // thème courant, celui affiché lorsqu'on clique sur un thème dans la page des chapitres.
+let quiz = {}; // quiz courant
 
 let statsQuestions = [];
 let statsThemes = {}; //quest. vues, réussies, ratées, sautées, double-réussies
@@ -40,8 +41,8 @@ let user = {
   nbQuizFinished: 0,
   nbQuizPerfect: 0,
   lastActive: "" /* date ou stringified date */,
-  lastStreak: 2,
-  longestStreak: 7,
+  lastStreak: 0,
+  longestStreak: 0,
 };
 
 function getUserStreak() {
