@@ -1,3 +1,9 @@
+/* - - - - - - - - - - - - - - - -
+- - - - - - M A I N   - - - - - 
+- - - - - - - - - - - - - - - - */
+
+
+
 body {
   font-family: Nunito, Futura, Arial;
   width: 100%;
@@ -169,4 +175,12 @@ summary {
   height: 1em;
   fill: var(--c-text);
   transform: translateY(8%);
+}
+
+.margin-t-1 {
+  margin-top: 1rem;
+}
+
+.margin-b-1 {
+  margin-bottom: 1rem;
 }

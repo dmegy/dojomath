@@ -1,4 +1,8 @@
-/* styles composants*/
+/* - - - - - - - - - - - - - - - -
+- - - - - C O M P O S A N T S - - - - - 
+- - - - - - - - - - - - - - - - */
+
+
 .progress-bar-container {
   background-color: var(--c-primary-40-desat);
   width: 100%; /* de son contenant */

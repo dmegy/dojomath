@@ -11,6 +11,21 @@ let theme = {}; // thème courant, celui affiché lorsqu'on clique sur un thème
 let quiz = {}; // quiz courant
 
 let statsQuestions = [];
+for (let i = 0; i < 3000; i++) {
+  // attention initialisation avec 3000 il faudrait questions.length mais on ne l'a pas encore
+  //initialisation
+  statsQuestions[i] ??= {
+    viewed: 0,
+    failed: 0,
+    skipped: 0,
+    successful: 0,
+    lastResult: 0,
+    penultimateResult: 0,
+    successfulLastTime: false,
+    successfulLastTwoTimes: false,
+  };
+}
+
 let statsThemes = {}; //quest. vues, réussies, ratées, sautées, double-réussies
 
 /* données pour tester l'affihage */
@@ -37,6 +52,8 @@ let user = {
   lastStreak: 0,
   longestStreak: 0,
 };
+
+loadFromLocalStorage();
 
 function getUserStreak() {
   if (user.lastActive == "") return 0;
@@ -158,3 +175,94 @@ function fromB64(x) {
     "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_";
   return x.split("").reduce((s, v) => s * 64 + digit.indexOf(v), 0);
 }
+
+function saveToLocalStorage() {
+  console.log("sauvegarde-> localStorage");
+  window.localStorage.setItem("statsQuestions", JSON.stringify(statsQuestions));
+  window.localStorage.setItem("statsThemes", JSON.stringify(statsThemes));
+  window.localStorage.setItem("user", JSON.stringify(user));
+}
+
+function loadFromLocalStorage() {
+  console.log("Récupération des données sauvegardées en local");
+  if (window.localStorage.getItem("user") !== null)
+    user = { ...user, ...JSON.parse(window.localStorage.getItem("user")) };
+  if (window.localStorage.getItem("statsQuestions") !== null)
+    user = {
+      ...user,
+      ...JSON.parse(window.localStorage.getItem("statsQuestions")),
+    };
+  if (window.localStorage.getItem("statsThemes") !== null)
+    user = {
+      ...user,
+      ...JSON.parse(window.localStorage.getItem("statsThemes")),
+    };
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - - - Mini-Alpine :-) - - - - - - - - -
+// - - - - - - - - - - - - - - - - - - - - - - - - -
+
+const xShow = () => {
+  // boucle sur les éléments avec x-show et les affiche conditionnellement à l'argument
+  let elements = document.querySelectorAll("[x-show]");
+  for (let i = 0; i < elements.length; i++) {
+    if (eval(elements[i].attributes["x-show"].value)) {
+      elements[i].style.display = "";
+    } else {
+      elements[i].style.display = "none";
+    }
+  }
+};
+
+const xHtml = () => {
+  // boucle sur les éléments avec x-html  visibles et affiche le contenu
+  let elements = document.querySelectorAll("[x-html]");
+  for (let i = 0; i < elements.length; i++) {
+    if (elements[i].offsetParent === null) {
+      // seule méthode trouvée pour vérifier la visibilité
+      continue;
+    }
+    let content = eval(elements[i].attributes["x-html"].value);
+    elements[i].innerHTML = content;
+  }
+};
+
+// éventuellement coder le x-for pour le composant de références de thèmes, avec liste de liens à afficher...
+
+const render = () => {
+  xShow();
+  xHtml();
+};
+
+// - - - - - - - - - - - - - - -
+// - - - - ON LOAD and getScript, Mathjax etc
+// - - - - - - - - - - - - - - -
+function getScript(scriptUrl, callback) {
+  const script = document.createElement("script");
+  script.src = scriptUrl + "?unique=" + Math.random();
+  script.defer = true;
+  script.onload = callback;
+  document.body.appendChild(script);
+}
+
+window.addEventListener("load", () => {
+  state = "Home";
+  getScript("js/initMathJax.js", () => {
+    console.log("MathJax config initialisée!");
+    questionsLoaded = true;
+  });
+  getScript("data_questions.js");
+
+  render(); //rendu des points
+  getHighscores();
+});
+
+/*
+fetch("questions.json?again=" + Math.random())
+  .then((response) => response.json())
+  .then((json) => {
+    questions = json;
+    console.log(questions[3]);
+  });
+*/

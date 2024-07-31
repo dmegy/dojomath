@@ -1,5 +1,19 @@
 // ceci doit tourner après que les questions soient loadées !
-// ce script comporte uniquement des fonctions.
+// à part la boucle  suivante, ce script comporte uniquement des fonctions.
+
+for (let themeId in themes) {
+  //initialisation
+  statsThemes[themeId] ??= {
+    nbQuestionsViewed: 0,
+    nbQuestionsSuccessful: 0,
+    nbQuestionsFailed: 0,
+    nbQuestionsSkipped: 0,
+    nbQuizFinished: 0,
+    questionsAlreadySeen: 0,
+    questionsSuccessfulLastTime: 0,
+    questionsSuccessfulLastTwoTimes: 0,
+  };
+}
 
 function shuffleArray(array) {
   // attention !  le tableau est muté sur place
@@ -136,8 +150,7 @@ function validateAnswer() {
   // type "10 d'affilée etc ? mais déjà affiché dans le toast"
   // ou alors : "100ème question réussie"
 
-  // event pour enregistrement dans le storage si activé :
-  window.dispatchEvent(new Event("questionValidated"));
+  saveToLocalStorage();
 
   if (quiz.questions.length > 0) nextQuestion();
   else showQuizResults();
@@ -174,8 +187,7 @@ function showQuizResults() {
   user.points += quiz.points;
   statsThemes[theme.id].nbQuizFinished++;
   user.nbQuizFinished++;
-  // event pour enregistrement éventuel dans le storage
-  window.dispatchEvent(new Event("quizFinished"));
+  saveToLocalStorage();
   state = "End";
   render();
 }
