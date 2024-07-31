@@ -11,7 +11,7 @@ function getScript(scriptUrl, callback) {
   script.onload = callback;
   document.body.appendChild(script);
 }
-
+getScript("js/alpine-minimal.js");
 getScript("js/components.js");
 getScript("js/svg-paths.js");
 getScript("js/app.js");

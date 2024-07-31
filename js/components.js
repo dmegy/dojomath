@@ -43,6 +43,7 @@ function htmlButtonTheme(i, j) {
 }
 
 function htmlThemeReferences() {
+  // composant car boucle for dedans...
   let s = "";
   let list = theme.links; // le thème courant : passer en paramètre ?
   if (list == undefined) return s;

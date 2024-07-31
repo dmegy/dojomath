@@ -11,7 +11,7 @@ function shuffleArray(array) {
 
 function startQuiz() {
   console.log("startQuiz() sur le thème " + theme);
-  quiz = structuredClone(theme);
+  quiz = structuredClone(theme); // ATTENTION ICI BUG BIZARRE ?
 
   shuffleArray(quiz.questions);
 
