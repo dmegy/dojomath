@@ -2,8 +2,6 @@
 - - - - - - M A I N   - - - - - 
 - - - - - - - - - - - - - - - - */
 
-
-
 body {
   font-family: Nunito, Futura, Arial;
   width: 100%;
@@ -170,11 +168,20 @@ summary {
   border-radius: 50%;
   background-color: var(--c-bg-body);
 }
-.svg-icon {
-  width: 1em;
-  height: 1em;
+
+.svg-icon-nav {
+  width: 2.5rem;
+  height: 2.5rem;
   fill: var(--c-text);
-  transform: translateY(8%);
+}
+.svg-icon-secondary {
+  width: 1.5rem;
+  height: 1.5rem;
+  fill: var(--c-secondary-60);
+  transform: translateY(0.2rem);
+}
+.svg-icon {
+  fill: var(--c-text);
 }
 
 .margin-t-1 {

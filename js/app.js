@@ -71,7 +71,7 @@ function updateUserStreak() {
 
 const removeCircles = () => {
   document
-    .querySelectorAll("i")
+    .querySelectorAll("svg")
     .forEach((el) => el.classList.remove("circled"));
 };
 

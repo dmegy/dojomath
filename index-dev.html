@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="manifest" href="manifest.webmanifest" />
     <link rel="stylesheet" href="css/style.css" />
-    <link href="assets/fontawesome/css/fontawesome.min.css" rel="stylesheet" />
-    <link href="assets/fontawesome/css/solid.min.css" rel="stylesheet" />
     <script defer src="js/app.js"></script>
     <script defer src="js/components.js"></script>
     <script defer src="js/svg-paths.js"></script>
@@ -29,28 +27,36 @@
       <header class="glow">
         <nav x-show="(state!='Quiz') && (state!='End')" style="display: none">
           <div class="nav-button" onClick="goto('Home')">
-            <i
+            <svg
               id="navButtonHome"
-              class="fa-solid fa-home nav-button-icon circled"
-            ></i>
+              class="svg-icon-nav nav-button-icon circled"
+              viewBox="0 0 576 512"
+              x-html="svgPathFasHouse"
+            ></svg>
           </div>
           <div class="nav-button" onClick="goto('Profile')">
-            <i id="navButtonProfile" class="fa-solid fa-user nav-button-icon">
-            </i>
+            <svg
+              id="navButtonProfile"
+              class="svg-icon-nav nav-button-icon"
+              viewBox="0 0 576 512"
+              x-html="svgPathFasUserLarge"
+            ></svg>
           </div>
           <div class="nav-button" onClick="goto('Statistics')">
-            <i
+            <svg
               id="navButtonStatistics"
-              class="fa-solid fa-dumbbell nav-button-icon"
-            >
-            </i>
+              class="svg-icon-nav nav-button-icon"
+              viewBox="0 0 576 512"
+              x-html="svgPathFasDumbbell"
+            ></svg>
           </div>
           <div class="nav-button" onClick="goto('Trophies')">
-            <i
+            <svg
               id="navButtonTrophies"
-              class="fa-solid fa-trophy nav-button-icon"
-            >
-            </i>
+              class="svg-icon-nav nav-button-icon"
+              viewBox="0 0 576 512"
+              x-html="svgPathFasTrophy"
+            ></svg>
           </div>
         </nav>
         <div
@@ -110,6 +116,38 @@
           </h3>
           <p>Tous les temps / Plus récents / Meilleurs Streaks</p>
           <div id="highscores">- - - Chargement des scores - - -</div>
+        </section>
+
+        <!-- - - - - - P R O F I L - - - - - -->
+
+        <section
+          id="section-profile"
+          x-show="(state=='Profile')"
+          style="display: none"
+        >
+          <h1 class="glow">Profil Utilisateur</h1>
+
+          <div>
+            <p>Identifiant utilisateur : <span x-html="user.userId"></span></p>
+            <p>Nom utilisateur : <span x-html="user.userId"></span></p>
+            <p>Département (si France) :</p>
+            <p>Club :</p>
+          </div>
+          <!--
+          <div>
+            <h3>Sauvegarde du compte</h3>
+            <p>Utilisateur côté serveur :</p>
+            <p>Tu n'est pas loggué(e)</p>
+            <p>Boutons se loguer (pour loader un utilisateur déjà existant)</p>
+            <p>
+              (Apparaît lorsqu'on dépasse 100 pts) Félicitations tu as plus de
+              100 pts, tu as le droit de créer un compte sur le serveur. Tes
+              points sont de toute façon sauvegardés sur ton nagifateur, mais un
+              compte sur le serveur permettra de récupérer tes points si tu
+              effaces l'historique de ton navigateur, ou si tu joues depuis une
+              autre machine.
+            </p>
+          </div>-->
         </section>
 
         <!-- - - - - - S T A T S  - - - - - -->
@@ -183,7 +221,14 @@
           </div>
 
           <!-- - - - S T A T S > > > OBJECTIFS DU JOUR - - - -->
-          <h3><i class="fa-solid fa-list-check"></i> Objectifs du jour</h3>
+          <h3>
+            <svg
+              class="svg-icon-secondary"
+              viewBox="0 0 512 512"
+              x-html="svgPathFasListCheck"
+            ></svg>
+            Objectifs du jour
+          </h3>
           <div class="margin-l-r">
             <div style="display: flex; gap: 0.5rem; align-items: center">
               <div
@@ -243,7 +288,12 @@
           </div>
           <!-- - - - S T A T S > > > P R O C H A I N E S   E T A P E S - - - -->
           <h3>
-            <i style="rotate: 20deg" class="fa-solid fa-dumbbell"></i>
+            <svg
+              class="svg-icon-secondary"
+              viewBox="0 0 640 512"
+              x-html="svgPathFasDumbbell"
+              style="transform: rotate(20deg)"
+            ></svg>
             Prochaines étapes
           </h3>
           <div class="margin-l-r">
@@ -286,72 +336,6 @@
           </div>
         </section>
         <!-- - - - - - / S T A T S - - - - - -->
-
-        <!-- - - - - - P R O F I L - - - - - -->
-
-        <section
-          id="section-profile"
-          x-show="(state=='Profile')"
-          style="display: none"
-        >
-          <h1 class="glow">Profil Utilisateur</h1>
-          <!--
-          <div style="width: 100%; display: flex; justify-content: center">
-            <div class="avatar" style="width: 6rem; height: 6rem">
-              <div id="avatarDisk" class="avatar-disk avatar-missing">
-                <svg
-                  id="beforeAvatar"
-                  style="width: 90%; height: 90%; opacity: 0.1"
-                  viewBox="0 0 512 512"
-                  class="svg-icon"
-                  x-html="svgPathFasUserLarge"
-                ></svg>
-                <img
-                  id="avatarImg"
-                  width="100%"
-                  height="100%"
-                  style="display: none"
-                />
-              </div>
-              <label for="inputTag" class="change-avatar" style="">
-                <svg
-                  class="svg-icon"
-                  viewBox="0 0 512 512"
-                  x-html="svgPathFasPenToSquare"
-                ></svg>
-                <input
-                  id="inputTag"
-                  type="file"
-                  accept="image/jpeg, image/png"
-                  style="display: none"
-                />
-              </label>
-            </div>
-          </div>
-        -->
-
-          <div>
-            <p>Identifiant utilisateur : <span x-html="user.userId"></span></p>
-            <p>Nom utilisateur : <span x-html="user.userId"></span></p>
-            <p>Département (si France) :</p>
-            <p>Club :</p>
-          </div>
-          <!--
-          <div>
-            <h3>Sauvegarde du compte</h3>
-            <p>Utilisateur côté serveur :</p>
-            <p>Tu n'est pas loggué(e)</p>
-            <p>Boutons se loguer (pour loader un utilisateur déjà existant)</p>
-            <p>
-              (Apparaît lorsqu'on dépasse 100 pts) Félicitations tu as plus de
-              100 pts, tu as le droit de créer un compte sur le serveur. Tes
-              points sont de toute façon sauvegardés sur ton nagifateur, mais un
-              compte sur le serveur permettra de récupérer tes points si tu
-              effaces l'historique de ton navigateur, ou si tu joues depuis une
-              autre machine.
-            </p>
-          </div>-->
-        </section>
 
         <!-- - - - - - T R O P H E E S  - - - - - -->
         <section
@@ -399,7 +383,7 @@
                 <svg
                   class="svg-icon"
                   viewBox="0 0 580 512"
-                  style="margin-right: 0.7rem"
+                  style="margin-right: 0.7rem; width: 1rem; height: 1rem"
                   x-html="svgPathFarEye"
                 ></svg>
                 <span x-html="theme.nbQuestionsSeen || '0' ">?</span>
@@ -413,7 +397,7 @@
                 <svg
                   class="svg-icon"
                   viewBox="0 0 512 512"
-                  style="margin-right: 0.7rem"
+                  style="margin-right: 0.7rem; width: 1rem; height: 1rem"
                   x-html="svgPathFasCheck"
                 ></svg>
                 <span x-html="theme.nbQuestionsChecked || '0' ">?</span>
@@ -428,7 +412,7 @@
                 <svg
                   class="svg-icon"
                   viewBox="0 0 512 512"
-                  style="margin-right: 0.7rem"
+                  style="margin-right: 0.7rem; width: 1rem; height: 1rem"
                   x-html="svgPathFasCheckDouble"
                 ></svg>
                 <span x-html="theme.nbQuestionsDbChecked || '0' ">?</span>
@@ -619,7 +603,13 @@
           x-show="(state=='Home')||(state=='Profile')||(state=='Statistics')||(state=='Trophies')"
         >
           <div class="fab-triangle">
-            <i class="fa-solid fa-play"></i>
+            <svg
+              id="navButtonProfile"
+              class="svg-icon-nav"
+              viewBox="0 0 576 512"
+              x-html="svgPathFasPlay"
+              style="transform: translateX(0.35rem)"
+            ></svg>
           </div>
         </div>
         <!-- - - - - - F O O T E R  - - - - - -->
@@ -635,9 +625,6 @@
         </footer>
       </main>
     </div>
-    <script
-      type="text/javascript"
-      src="https://cdn.jsdelivr.net/npm/toastify-js"
-    ></script>
+    <script type="text/javascript" src="assets/toastify.js" async></script>
   </body>
 </html>
