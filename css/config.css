@@ -21,7 +21,7 @@
 :root {
   --header-height: 3.5rem;
   --max-width: 500px;
-  --footer-min-height: 5rem;
+  --footer-min-height: 10rem;
 
   --margin: 1rem; /* marge à gauche et à droite de l'écran*/
 

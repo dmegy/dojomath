@@ -36,6 +36,7 @@ header {
 }
 footer {
   width: 100%;
+  min-height: var(--footer-min-height);
   background-color: var(--c-bg-header);
   /*min-height: var(--footer-min-height);*/
   font-size: 0.8rem;

@@ -15,12 +15,14 @@ getScript("data_questions.js", () => {
   for (let i = 0; i < questions.length; i++) {
     //initialisation
     statsQuestions[i] ??= {
-      views: 0,
-      fail: 0,
+      viewed: 0,
+      failed: 0,
       skipped: 0,
-      success: 0,
+      successful: 0,
       lastResult: 0,
       penultimateResult: 0,
+      successfulLastTime: false,
+      successfulLastTwoTimes: false,
     };
   }
 });
@@ -30,9 +32,13 @@ getScript("data_themes.js", () => {
     //initialisation
     statsThemes[themeId] ??= {
       nbQuestionsViewed: 0,
-      nbAnswersCorrect: 0,
-      nbAnswersIncorrect: 0,
+      nbQuestionsSuccessful: 0,
+      nbQuestionsFailed: 0,
+      nbQuestionsSkipped: 0,
       nbQuizFinished: 0,
+      questionsAlreadySeen: 0,
+      questionsSuccessfulLastTime: 0,
+      questionsSuccessfulLastTwoTimes: 0,
     };
   }
 });

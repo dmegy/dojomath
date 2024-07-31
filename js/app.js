@@ -29,8 +29,11 @@ let user = {
   mathClub: "",
   combo: 0,
   points: 0,
+  nbQuestionsViewed: 0,
+  nbQuestionsFailed: 0,
+  nbQuestionsSkipped: 0,
+  nbQuestionsSuccessful: 0,
   perfects: 2,
-  nbCorrectAnswers: 0,
   lastActive: "" /* date ou stringified date */,
   lastStreak: 2,
   longestStreak: 7,
@@ -55,12 +58,6 @@ const removeCircles = () => {
     .forEach((el) => el.classList.remove("circled"));
 };
 
-const gotoChapters = () => {
-  state = "Chapters";
-  removeCircles();
-  render();
-};
-
 const goto = (newState) => {
   oldState = state;
   state = newState;
@@ -69,6 +66,41 @@ const goto = (newState) => {
   document.getElementById("navButton" + newState).classList.add("circled");
   render();
 };
+
+const gotoChapters = () => {
+  state = "Chapters";
+  removeCircles();
+  render();
+};
+
+function computeThemeStats(themeId) {
+  // bug sur alreadyseen ?
+  // écrit dans statsThemes, à partir des données de statsQuestions
+  let th = themes[themeId]; // référence ?
+  let questionsAlreadySeen = 0;
+  let questionsSuccessfulLastTime = 0;
+  let questionsSuccessfulLastTwoTimes = 0;
+
+  for (let i = 0; i < th.questions.length; i++) {
+    let questionNumber = th.questions[i];
+    if (statsQuestions[questionNumber].viewed > 0) questionsAlreadySeen++;
+    if (statsQuestions[questionNumber].successfulLastTime)
+      questionsSuccessfulLastTime++;
+    if (statsQuestions[questionNumber].successfulLastTwoTimes)
+      questionsSuccessfulLastTwoTimes++;
+  }
+  statsThemes[themeId].questionsAlreadySeen = questionsAlreadySeen;
+  statsThemes[themeId].questionsSuccessfulLastTime =
+    questionsSuccessfulLastTime;
+  statsThemes[themeId].questionsSuccessfulLastTwoTimes =
+    questionsSuccessfulLastTwoTimes;
+}
+
+function computeAllThemeStats() {
+  for (let themeId in statsThemes) {
+    computeThemeStats(themeId);
+  }
+}
 
 const gotoTheme = (id) => {
   console.log("appel de gotoTheme avec id " + id);

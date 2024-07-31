@@ -17,9 +17,9 @@ function startQuiz() {
   while (quiz.questions.length > QUIZ_MAX_LENGTH) quiz.questions.shift();
 
   quiz.quizLength = quiz.questions.length;
-  quiz.fail = 0;
-  quiz.success = 0;
-  quiz.skipped = 0;
+  quiz.nbQuestionsFailed = 0;
+  quiz.nbQuestionsSuccessful = 0;
+  quiz.nbQuestionsSkipped = 0;
   quiz.history = [];
   quiz.result = 0;
   quiz.points = 0;
@@ -42,6 +42,8 @@ function nextQuestion() {
   render();
   MathJax.typeset();
   statsQuestions[question.num].views += 1;
+  statsThemes[theme.id].nbQuestionsViewed += 1;
+  user.nbQuestionsViewed += 1;
 }
 
 function submitAnswer(answer) {
@@ -53,22 +55,39 @@ function submitAnswer(answer) {
 function validateAnswer() {
   //appelée à la fin de  submitAnswer()
   if (question.submittedAnswer === undefined) {
+    // SKIPPED
     question.result = 0;
-    statsQuestions[question.num].pass += 1;
+    statsQuestions[question.num].skipped += 1;
+    statsQuestions[question.num].successfulLastTime = false;
+    statsQuestions[question.num].successfulLastTwoTimes = false;
+    statsThemes[theme.id].nbQuestionsSkipped += 1;
     user.combo = 0;
-    quiz.skipped += 1;
+    user.nbQuestionsSkipped += 1;
+    quiz.nbQuestionsSkipped += 1;
     console.log("question sautée");
   } else if (question.submittedAnswer === question.answer) {
+    // SUCCESS
     question.result = 1;
-    statsQuestions[question.num].success += 1;
+    statsQuestions[question.num].successful += 1;
+    if (statsQuestions[question.num].successfulLastTime)
+      statsQuestions[question.num].successfulLastTwoTimes = true;
+    statsQuestions[question.num].successfulLastTime = true;
+
+    statsThemes[theme.id].nbQuestionsSuccessful += 1;
     user.combo += 1;
-    quiz.success += 1;
+    user.nbQuestionsSuccessful += 1;
+    quiz.nbQuestionsSuccessful += 1;
     console.log("question réussie");
   } else {
+    // FAIL
     question.result = -1;
-    statsQuestions[question.num].fail += 1;
+    statsQuestions[question.num].failed += 1;
+    statsQuestions[question.num].successfulLastTime = false;
+    statsQuestions[question.num].successfulLastTwoTimes = false;
+    statsThemes[theme.id].nbQuestionsFailed += 1;
     user.combo = 0;
-    quiz.fail += 1;
+    user.nbQuestionsFailed += 1;
+    quiz.nbQuestionsFailed += 1;
     console.log("question ratée");
   }
   quiz.result += question.result;
@@ -118,9 +137,13 @@ function showQuizResults() {
   /* calculer stats etc, récompenses, bonus */
   /* empile les messages, les récompenses etc ?*/
 
-  quiz.finalGrade = grade20FromResult(quiz.success, quiz.quizLength);
+  quiz.finalGrade = grade20FromResult(
+    quiz.nbQuestionsSuccessful,
+    quiz.quizLength
+  );
   // remplacer success par result pour tenir compte des erreurs
   user.points += quiz.points;
+  statsThemes[theme.id].nbQuizFinished += 1;
   state = "End";
   render();
 }
