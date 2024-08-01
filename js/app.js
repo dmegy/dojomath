@@ -248,11 +248,11 @@ function getScript(scriptUrl, callback) {
 
 window.addEventListener("load", () => {
   state = "Home";
-  getScript("js/initMathJax.js", () => {
+  getScript("js/_initMathJax.js", () => {
     console.log("MathJax config initialisée!");
     questionsLoaded = true;
   });
-  getScript("data_questions.js");
+  getScript("js/_questions.js");
 
   render(); //rendu des points
   getHighscores();

@@ -25,7 +25,7 @@ done
 echo "Tous les fichiers de style ont été bundlés dans $css_output_file."
 
 
-# - - - - - 2. minify bundle.css - - - -
+# - - - - - 1bis. "minify" bundle.css - - - -
 
 # Définir les chemins des fichiers
 input_css="css/bundle.css"
@@ -41,32 +41,57 @@ echo "Le fichier $input_css a été compressé et écrit dans $output_css."
 
 
 
+# - - - - - - - - - - - - - - - - - - -
+# - - - - 1. JS bundler - - - - - - -
+# - - - - - - - - - - - - - - - - - - -
+
+# Chemin du dossier JS
+js_dir="js"
+# Nom du fichier de sortie
+js_output_file="js/bundle.js"
+
+# Vider le fichier de sortie s'il existe déjà
+echo " " > "$js_output_file"
+
+# Concaténer tous les fichiers sauf ceux qui commencent par _ et le fichier style.css, ainsi que le bundle.css lui-même
+for file in "$js_dir"/*; do
+    filename=$(basename "$file")
+
+    if [[ ! "$filename" =~ ^_  && "$filename" != "index.js" && "$filename" != "bundle.js" && "$filename" != "bundle.min.js" && -f "$file" ]]; then
+        cat "$file" >> "$js_output_file"
+        echo >> "$js_output_file"  # Ajouter une nouvelle ligne pour séparer les fichiers
+    fi
+done
+
+echo "Tous les fichiers de js ont été bundlés dans $js_output_file."
+
+
+
 # - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - -  BUILD INDEX.HTML   - - - - - - - -
+# - - - - -  3. BUILD INDEX.HTML   - - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-# Nom du fichier source
-input_file="index-dev.html"
 
-# Nom du nouveau fichier
-output_file="index.html"
+cp index-dev.html index.html
 
 
+# rajout du js bundle et du preload
 
 
-# Lire le fichier source et remplacer les occurrences
-awk '{
-    while (match($0, /\.js"><\/script>/)) {
-        srand()
-        random_num = int(rand() * 1000000)
-        $0 = substr($0, 1, RSTART-1) ".js?unique=" random_num "\"></script>" substr($0, RSTART + RLENGTH)
-    }
-    gsub(/href="css\/style.css"/, "href=\"css\/bundle.min.css\"")
-    print
-}' "$input_file" > "$output_file"
+# Définir le chemin du fichier index.html
+index_file="index.html"
 
-echo "Identifiants uniques rajoutés dans le fichier $output_file."
+# Supprimer toutes les lignes contenant la chaîne '<script defer src="'
+sed -i '' -e '/<script defer src="/d' "$index_file"
 
+# Générer un identifiant unique basé sur la date et l'heure
+unique_id=$(date +%Y%m%d%H%M%S)
+
+# Remplacer la chaîne <!-- INSERT PRELOADER HERE --> par <link rel="preload" href="js/bundle.js etc avec identifiant unique
+sed -i '' -e "s/<!-- INSERT PRELOADER HERE -->/<link rel='preload' href='js\/bundle.js?unique=${unique_id}' as='script'>/g" "$index_file"
+
+# Remplacer la chaîne <!-- INSERT SCRIPT TAG HERE --> par <script src="js/bundle.js?unique=[UNIQUE_ID]" defer></script>
+sed -i '' -e "s/<!-- INSERT SCRIPT TAG HERE -->/<script src='js\/bundle.js?unique=${unique_id}' defer><\/script>/g" "$index_file"
 
 
 
@@ -110,7 +135,7 @@ escaped_css_content=$(printf '%s' "$new_css_content" | sed -e 's/[\/&]/\\&/g')
 
 
 # Supprimer la chaîne <link rel="stylesheet" href="css/bundle.min.css" />
-sed -i '' '/<link rel="stylesheet" href="css\/bundle\.min\.css" \/>/d' "$index_file"
+sed -i '' '/<link rel="stylesheet" href="css\/style\.css" \/>/d' "$index_file"
 
 # Remplacer la chaîne /* INLINE STYLES HERE */ par le contenu du CSS
 #perl -i -pe "s/\/\* INLINE STYLES HERE \*\//${escaped_css_content}/g" "$index_file"
