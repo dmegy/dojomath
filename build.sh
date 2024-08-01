@@ -111,18 +111,19 @@ index_file="index.html"
 sed -i '' -e '/<script defer src="/d' "$index_file"
 
 
-
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # - - - - CHOIX 1:
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 # rajout du js bundle et du preload avec le même identifiant unique
 
 # commenter les trois prochaines (ligne+comment) si on veut plutôt inliner le js
 
 # Générer un identifiant unique basé sur la date et l'heure
-unique_id=$(date +%Y%m%d%H%M%S)
+#unique_id=$(date +%Y%m%d%H%M%S)
 # Remplacer la chaîne <!-- INSERT PRELOADER HERE --> par <link rel="preload" href="js/bundle.min.js etc avec identifiant unique
-sed -i '' -e "s/<!-- INSERT PRELOADER HERE -->/<link rel='preload' href='js\/bundle.min.js?unique=${unique_id}' as='script'>/g" "$index_file"
+#sed -i '' -e "s/<!-- INSERT PRELOADER HERE -->/<link rel='preload' href='js\/bundle.min.js?unique=${unique_id}' as='script'>/g" "$index_file"
 # Remplacer la chaîne <!-- INSERT SCRIPT TAG HERE --> par <script src="js/bundle.min.js?unique=[UNIQUE_ID]" defer></script>
-sed -i '' -e "s/<!-- INSERT SCRIPT TAG HERE -->/<script src='js\/bundle.min.js?unique=${unique_id}' defer><\/script>/g" "$index_file"
+#sed -i '' -e "s/<!-- INSERT SCRIPT TAG HERE -->/<script src='js\/bundle.min.js?unique=${unique_id}' defer><\/script>/g" "$index_file"
 
 
 
@@ -163,9 +164,21 @@ echo "Le fichier $css_file a été inliné dans $index_file"
 
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-#- - - - - -  OPTIONAL : INLINE JAVASCRIPT  BUNDLE - - - - - - -
+#- - - - - -  CHOIX 2 : INLINE JAVASCRIPT  BUNDLE - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # Définir les chemins des fichiers
 index_file="index.html"
-css_file="js/bundle.js" # on a enlevé les sauts de ligne
+js_file="js/bundle.min.js" # on a enlevé les sauts de ligne
+
+# Lire le contenu du fichier JS
+js_content=$(<"$js_file")
+
+# Échapper les barres obliques et les caractères spéciaux
+escaped_js_content=$(printf '%s' "$js_content" | sed -e 's/[\/&]/\\&/g')
+# Remplacer /* INLINE JAVASCRIPT HERE */ par le JS. Ne *pas* utiliser perl à cause des '@'
+sed -i '' -e "s/\/\* INLINE JAVASCRIPT HERE \*\//${escaped_js_content}/g" "$index_file" # BSD sed
+
+
+
+
