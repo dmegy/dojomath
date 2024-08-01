@@ -1,5 +1,6 @@
  
 let t0 = performance.timeOrigin + performance.now();
+console.log("Bienvenue ! ");
 
 const QUIZ_MIN_RESULT = 2; // attention certains quiz peuvent faire moins de 2 questions ?
 const QUIZ_MAX_LENGTH = 10;
@@ -36,14 +37,18 @@ let user = {
   longestStreak: 0,
 };
 if (window.localStorage.getItem("user") !== null) {
+  console.log("user already exists in storage");
   user = JSON.parse(window.localStorage.getItem("user"));
+  console.log("User updated");
 }
 
 let finishedQuizHistory = []; // historique des quiz finis
 if (window.localStorage.getItem("finishedQuizHistory") !== null) {
+  console.log("Quiz history exists in storage");
   finishedQuizHistory = JSON.parse(
     window.localStorage.getItem("finishedQuizHistory")
   );
+  console.log("Quiz history updated");
 }
 
 
@@ -53,6 +58,7 @@ let statsThemes = {}; //quest. vues, réussies, ratées, sautées, double-réuss
 
 
 function saveToLocalStorage() {
+  console.log("sauvegarde-> localStorage");
   window.localStorage.setItem("statsQuestions", JSON.stringify(statsQuestions));
   window.localStorage.setItem("statsThemes", JSON.stringify(statsThemes));
   window.localStorage.setItem("user", JSON.stringify(user));
@@ -121,6 +127,7 @@ function computeAllThemeStats() {
 }
 
 function gotoTheme(id) {
+  console.log("appel de gotoTheme avec id " + id);
   state = "theme";
   theme = structuredClone(themes[id]);
   theme.id = id; // on rajoute l'id sinon il n'est plus là...
@@ -217,6 +224,7 @@ window.addEventListener("DOMContentLoaded", () => {
 window.addEventListener("load", () => {
   if (window.localStorage.getItem("statsThemes") !== null) {
     loadedStatsThemes = JSON.parse(window.localStorage.getItem("statsThemes"));
+    console.log("statsThemes : data exists in storage. Loaded.");
 
     for (themeId in themes) {
       statsThemes[themeId] = {};
@@ -225,11 +233,14 @@ window.addEventListener("load", () => {
       }
     }
 
+    console.log("statsThemes updated");
   }
   state = "Home";
   getScript("js/-initMathJax.js", () => {
+    console.log("Callback de getScript -initMathjax.js");
   });
   getScript("js/-questions.js", () => {
+    console.log("callback de getScript -questions.js");
     questionsLoaded = true;
     afterQuestionsLoaded();
   });
@@ -237,6 +248,7 @@ window.addEventListener("load", () => {
 });
 
 function afterQuestionsLoaded() {
+  console.log("Nb de questions téléchargées : " + questions.length);
   for (let i = 0; i < questions.length; i++) {
     statsQuestions[i] ??= {
       viewed: 0,
@@ -254,6 +266,7 @@ function afterQuestionsLoaded() {
     let loadedStatsQuestions = JSON.parse(
       window.localStorage.getItem("statsQuestions")
     );
+    console.log(
       "Questions possédant des données dans le storage : " +
         loadedStatsQuestions.length
     );
@@ -268,6 +281,7 @@ fetch("questions.json?again=" + Math.random())
   .then((response) => response.json())
   .then((json) => {
     questions = json;
+    console.log(questions[3]);
   });
 */
 
@@ -1022,11 +1036,13 @@ function shuffleArray(array) {
 }
 
 function startQuiz() {
+  console.log("startQuiz() sur le thème " + theme.id);
   quiz = structuredClone(theme);
 
   shuffleArray(quiz.questions);
 
   while (quiz.questions.length > QUIZ_MAX_LENGTH) quiz.questions.shift();
+  console.log("questions qui vont tomber : " + quiz.questions);
 
   quiz.quizLength = quiz.questions.length;
   quiz.nbQuestionsFailed = 0;
@@ -1068,6 +1084,7 @@ function validateAnswer() {
     user.combo = 0;
     user.nbQuestionsSkipped += 1;
     quiz.nbQuestionsSkipped += 1;
+    console.log("question sautée");
     toast("+0pts", "var(--c-warning)");
   } else if (question.submittedAnswer === question.answer) {
     question.result = 1;

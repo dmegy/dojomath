@@ -24,15 +24,15 @@ done
 
 echo "Tous les fichiers de style ont été bundlés dans $css_output_file."
 
-# - - - - - - - - - - - - - - - - - - -
-# - - - - - 1bis. "MINIFY" bundle.css - - - -
-# - - - - - - - - - - - - - - - - - - -
+
+# - - - - - 1bis. "minify" bundle.css - - - -
 
 # Définir les chemins des fichiers
 input_css="css/bundle.css"
 output_css="css/bundle.min.css"
 
-# Supprimer tous les sauts de ligne du fichier CSS, ça aidera pour inliner le css
+
+# Supprimer tous les sauts de ligne du fichier CSS
 
 tr -d '\n' < "$input_css" > "$output_css"
 
@@ -42,7 +42,7 @@ echo "Le fichier $input_css a été compressé et écrit dans $output_css."
 
 
 # - - - - - - - - - - - - - - - - - - -
-# - - - - 2. JS bundler (+ "minify") - - -
+# - - - - 1. JS bundler - - - - - - -
 # - - - - - - - - - - - - - - - - - - -
 
 # Chemin du dossier JS
@@ -77,33 +77,36 @@ grep -v "^\s*//" js/bundle.js > tmp && mv tmp js/bundle.js
 
 
 
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-# - - - - -  3. BUILD INDEX.HTML from index-dev.html  - - - - - - - -
-# - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - - - - - - - - - - - - - - - - - - - - - - -
+# - - - - -  3. BUILD INDEX.HTML   - - - - - - - -
+# - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-# création d'index.html, à partir de index-dev.html (écrase)
+
 cp index-dev.html index.html
 
 
+# rajout du js bundle et du preload avec le même identifiant unique.
+
+
+# Définir le chemin du fichier index.html
 index_file="index.html"
 
-
-
 # Supprimer toutes les lignes contenant la chaîne '<script defer src="'
-# le js va être soit linké, soit inliné
 sed -i '' -e '/<script defer src="/d' "$index_file"
 
 
-
-# - - - - CHOIX 1:
-# rajout du js bundle et du preload avec le même identifiant unique
-
-# commenter tout ce qui reste de cette section si on veut plutôt inliner le JS au lieu de linker le bundle
+# - - - - CHOIX : 
+# commenter touce qui reste de cette section si on veut plutôt inliner le JS au lieu de linker le bundle
 
 # Générer un identifiant unique basé sur la date et l'heure
 unique_id=$(date +%Y%m%d%H%M%S)
+
 # Remplacer la chaîne <!-- INSERT PRELOADER HERE --> par <link rel="preload" href="js/bundle.js etc avec identifiant unique
 sed -i '' -e "s/<!-- INSERT PRELOADER HERE -->/<link rel='preload' href='js\/bundle.js?unique=${unique_id}' as='script'>/g" "$index_file"
+
+
+# ceci rajoute un script src vers le bundle JS. On pourrait aussi inliner le js...
+
 # Remplacer la chaîne <!-- INSERT SCRIPT TAG HERE --> par <script src="js/bundle.js?unique=[UNIQUE_ID]" defer></script>
 sed -i '' -e "s/<!-- INSERT SCRIPT TAG HERE -->/<script src='js\/bundle.js?unique=${unique_id}' defer><\/script>/g" "$index_file"
 
