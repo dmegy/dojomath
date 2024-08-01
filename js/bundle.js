@@ -38,6 +38,7 @@ let user = {
 };
 if (window.localStorage.getItem("user") !== null) {
   console.log("user already exists in storage");
+  // on écrase :
   user = JSON.parse(window.localStorage.getItem("user"));
   console.log("User updated");
 }
@@ -45,19 +46,25 @@ if (window.localStorage.getItem("user") !== null) {
 let finishedQuizHistory = []; // historique des quiz finis
 if (window.localStorage.getItem("finishedQuizHistory") !== null) {
   console.log("Quiz history exists in storage");
+  // on écrase :
   finishedQuizHistory = JSON.parse(
     window.localStorage.getItem("finishedQuizHistory")
   );
   console.log("Quiz history updated");
 }
 
+// - - - - - - - - - - - - -
+// variables qui devront être synchronisées plus tard :
 
 let statsQuestions = [];
 
 let statsThemes = {}; //quest. vues, réussies, ratées, sautées, double-réussies
 
+// - - - - - - - - - -
 
 function saveToLocalStorage() {
+  // à mettre ici et pas dans quiz.js
+  // En effet : modifications/enregistrement de user dans la page de profil
   console.log("sauvegarde-> localStorage");
   window.localStorage.setItem("statsQuestions", JSON.stringify(statsQuestions));
   window.localStorage.setItem("statsThemes", JSON.stringify(statsThemes));
@@ -100,6 +107,8 @@ function gotoChapters() {
 }
 
 function computeThemeStats(themeId) {
+  // bug sur alreadyseen ?
+  // écrit dans statsThemes, à partir des données de statsQuestions
   let th = themes[themeId]; // référence ?
   let questionsAlreadySeen = 0;
   let questionsSuccessfulLastTime = 0;
@@ -131,6 +140,7 @@ function gotoTheme(id) {
   state = "theme";
   theme = structuredClone(themes[id]);
   theme.id = id; // on rajoute l'id sinon il n'est plus là...
+  // calculer theme.progress, theme.nbQuestionsSeens, nbQuestionsChecked, theme.nbQuestionsDbChecked
   render();
 }
 
@@ -141,11 +151,14 @@ function startQuiz() {
 }
 
 function level(points) {
+  // correspondances points<->niv :
+  // 20->niv1, 40->niv2, 80->niv3 etc
   if (points < 20) return 0;
   else return Math.floor(Math.log(points / 10) / Math.log(2));
 }
 
 function nextLevelThreshold(points) {
+  // on retourne la prochaine (puissance de 2 multiplée par 10)
   return 10 * 2 ** (level(points) + 1);
 }
 
@@ -161,6 +174,7 @@ function getHighscores() {
         .classList.remove("fa-spin");
     });
 }
+// transformation nombres en b64
 
 function toB64(x) {
   let digit =
@@ -178,8 +192,12 @@ function fromB64(x) {
   return x.split("").reduce((s, v) => s * 64 + digit.indexOf(v), 0);
 }
 
+// - - - - - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - - - Mini-Alpine :-) - - - - - - - - -
+// - - - - - - - - - - - - - - - - - - - - - - - - -
 
 function xShow() {
+  // boucle sur les éléments avec x-show et les affiche conditionnellement à l'argument
   let elements = document.querySelectorAll("[x-show]");
   for (let i = 0; i < elements.length; i++) {
     if (eval(elements[i].attributes["x-show"].value)) {
@@ -191,9 +209,11 @@ function xShow() {
 }
 
 function xHtml() {
+  // boucle sur les éléments avec x-html  visibles et affiche le contenu
   let elements = document.querySelectorAll("[x-html]");
   for (let i = 0; i < elements.length; i++) {
     if (elements[i].offsetParent === null) {
+      // seule méthode trouvée pour vérifier la visibilité
       continue;
     }
     let content = eval(elements[i].attributes["x-html"].value);
@@ -201,12 +221,16 @@ function xHtml() {
   }
 }
 
+// éventuellement coder le x-for pour le composant de références de thèmes, avec liste de liens à afficher...
 
 function render() {
   xShow();
   xHtml();
 }
 
+// - - - - - - - - - - - - - - -
+// - - - - ON LOAD and getScript, Mathjax etc
+// - - - - - - - - - - - - - - -
 
 function getScript(scriptUrl, callback) {
   const script = document.createElement("script");
@@ -220,8 +244,14 @@ window.addEventListener("DOMContentLoaded", () => {
   getHighscores(); // fetch un fichier texte et inneHTML dans le div, qui doit donc exister
 });
 
+// - - - - - - - - - - - - - - - - - - -
+// - - - - - - O N L O A D   - - - - - -
+// - - - - - - - - - - - - - - - - - - -
 
 window.addEventListener("load", () => {
+  // l'appli, les thèmes et chapitres sont loadés.
+  // On peut initialiser les stats des thèmes
+  // puis synchroniser avec  le storage
   if (window.localStorage.getItem("statsThemes") !== null) {
     loadedStatsThemes = JSON.parse(window.localStorage.getItem("statsThemes"));
     console.log("statsThemes : data exists in storage. Loaded.");
@@ -235,6 +265,7 @@ window.addEventListener("load", () => {
 
     console.log("statsThemes updated");
   }
+  // passage du state de Loading à Home
   state = "Home";
   getScript("js/-initMathJax.js", () => {
     console.log("Callback de getScript -initMathjax.js");
@@ -249,6 +280,8 @@ window.addEventListener("load", () => {
 
 function afterQuestionsLoaded() {
   console.log("Nb de questions téléchargées : " + questions.length);
+  // initialisation de statsQuestions par des stats vides
+  // pour chaque question officielle venant d'être chargée
   for (let i = 0; i < questions.length; i++) {
     statsQuestions[i] ??= {
       viewed: 0,
@@ -270,6 +303,8 @@ function afterQuestionsLoaded() {
       "Questions possédant des données dans le storage : " +
         loadedStatsQuestions.length
     );
+    // ceci contient des valeurs non nulles,
+    //mais peut-être moins de clés que statsQuestions si des questions ont été traitées entre-temps.
     for (let i = 0; i < loadedStatsQuestions.length; i++) {
       statsQuestions[i] = loadedStatsQuestions[i]; // on écrase quand il existe une valeur loadée
     }
@@ -289,6 +324,7 @@ function htmlPoints(points) {
   return points + " pt" + (points == 1 || points == -1 ? "" : "s");
 }
 
+// pour l'écran des thèmes et chapitres :
 
 function htmlChapters() {
   let s = "";
@@ -329,6 +365,7 @@ function htmlButtonTheme(i, j) {
 }
 
 function htmlThemeReferences() {
+  // composant car boucle for dedans...
   let s = "";
   let list = theme.links; // le thème courant : passer en paramètre ?
   if (list == undefined) return s;
@@ -340,12 +377,14 @@ function htmlThemeReferences() {
   return s;
 }
 
+// pour l'écran des stats utilisateur : barres de progression etc
 
 function htmlProfile() {
   return "";
 }
 
 function htmlProgress(a, b) {
+  // retourne un div html avec une barre de progression
   if (a > b) a = b; // on tronque
   let p = 0;
   if (b != 0) p = a / b;
@@ -355,6 +394,8 @@ function htmlProgress(a, b) {
 }
 
 function htmlMultipleProgress(numbers, colorsCSSvarnames) {
+  // input : deux tableaux de même taille
+  //retourne une barre de stats de type cumulative avec les valeurs et couleurs fournies
   if (numbers.length != colorsCSSvarnames.length) throw Error;
   let sum = numbers.reduce((partialSum, k) => partialSum + k, 0);
   let percentages = numbers.map((x) => {
@@ -381,6 +422,8 @@ function htmlCheckbox(bool) {
 }
 
 function htmlNumAdj(n, adj) {
+  // l'adjectif doit être déjà conjugué en genre
+  // exemple : htmlNombreAdj(3,"vérolée") retourne "3 vérolées"
   return n + " " + adj + (n == 1 ? "" : "s"); // pour zéro on met au plurieu ?
 }
 
@@ -396,6 +439,11 @@ let svgPathFasCheck = `<path d="M470.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256
 let svgPathFasUserLarge = `<path d="M256 288c79.5 0 144-64.5 144-144S335.5 0 256 0S112 64.5 112 144s64.5 144 144 144zm-94.7 32C72.2 320 0 392.2 0 481.3c0 17 13.8 30.7 30.7 30.7H481.3c17 0 30.7-13.8 30.7-30.7C512 392.2 439.8 320 350.7 320H161.3z"/>`;
 let svgPathFasTrophy = `<path d="M400 0H176c-26.5 0-48.1 21.8-47.1 48.2c.2 5.3 .4 10.6 .7 15.8H24C10.7 64 0 74.7 0 88c0 92.6 33.5 157 78.5 200.7c44.3 43.1 98.3 64.8 138.1 75.8c23.4 6.5 39.4 26 39.4 45.6c0 20.9-17 37.9-37.9 37.9H192c-17.7 0-32 14.3-32 32s14.3 32 32 32H384c17.7 0 32-14.3 32-32s-14.3-32-32-32H357.9C337 448 320 431 320 410.1c0-19.6 15.9-39.2 39.4-45.6c39.9-11 93.9-32.7 138.2-75.8C542.5 245 576 180.6 576 88c0-13.3-10.7-24-24-24H446.4c.3-5.2 .5-10.4 .7-15.8C448.1 21.8 426.5 0 400 0zM48.9 112h84.4c9.1 90.1 29.2 150.3 51.9 190.6c-24.9-11-50.8-26.5-73.2-48.3c-32-31.1-58-76-63-142.3zM464.1 254.3c-22.4 21.8-48.3 37.3-73.2 48.3c22.7-40.3 42.8-100.5 51.9-190.6h84.4c-5.1 66.3-31.1 111.2-63 142.3z"/>`;
 
+// - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - C H A P I T R E S - - - - - -
+// - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - - - - - - - - - - - - - - - -
 
 let chapters = [
   {
@@ -582,6 +630,9 @@ let chapters = [
   },
 ];
 
+// - - - - - - - - - - - - - - - - - - - - - -
+// - - - - - -- - T H E M E S  - - - - - - - -
+// - - - - - - - - - - - - - - - - - - - - - -
 
 const range = (start, stop) =>
   Array.from({ length: stop - start + 1 }, (_, i) => start + i);
@@ -1014,8 +1065,11 @@ let themes = {
   },
 };
 
+// ceci doit tourner après que les questions soient loadées !
+// à part la boucle  suivante, ce script comporte uniquement des fonctions.
 
 for (let themeId in themes) {
+  //initialisation
   statsThemes[themeId] ??= {
     nbQuestionsViewed: 0,
     nbQuestionsSuccessful: 0,
@@ -1029,6 +1083,7 @@ for (let themeId in themes) {
 }
 
 function shuffleArray(array) {
+  // attention !  le tableau est muté sur place
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [array[i], array[j]] = [array[j], array[i]];
@@ -1038,9 +1093,11 @@ function shuffleArray(array) {
 function startQuiz() {
   console.log("startQuiz() sur le thème " + theme.id);
   quiz = structuredClone(theme);
+  // ATTENTION ICI BUG BIZARRE ?
 
   shuffleArray(quiz.questions);
 
+  // on vide la fin pour ne garder au plus que QUIZ_LENGTH questions
   while (quiz.questions.length > QUIZ_MAX_LENGTH) quiz.questions.shift();
   console.log("questions qui vont tomber : " + quiz.questions);
 
@@ -1056,9 +1113,19 @@ function startQuiz() {
   user.nbQuizStarted += 1;
   nextQuestion();
 }
+// préciser le type des éléments de quiz.history :
+// c'est ce qui va être envoyé au serveur :
+// tableau d'objets du type 'quizFinishedEvent' :
+// {
+// questionNumber: int,
+// submittedAnswer: true, false ou undefined,
+// result:  : 1, 0 ou -1
+// }
 
 function nextQuestion() {
+  // appelée par startQuiz() ou bien validateAnswer()
   questionNumber = quiz.questions.splice(0, 1)[0];
+  // attention on l'enlève d ela liste
   question = structuredClone(questions[questionNumber]);
   question.num = questionNumber; // on rajoute dans l'objet
   state = "Quiz";
@@ -1070,12 +1137,15 @@ function nextQuestion() {
 }
 
 function submitAnswer(answer) {
+  //called by button
   question.submittedAnswer = answer;
   validateAnswer();
 }
 
 function validateAnswer() {
+  //appelée à la fin de  submitAnswer()
   if (question.submittedAnswer === undefined) {
+    // SKIPPED
     question.result = 0;
     statsQuestions[question.num].skipped += 1;
     statsQuestions[question.num].successfulLastTime = false;
@@ -1087,6 +1157,7 @@ function validateAnswer() {
     console.log("question sautée");
     toast("+0pts", "var(--c-warning)");
   } else if (question.submittedAnswer === question.answer) {
+    // SUCCESS
     question.result = 1;
     statsQuestions[question.num].successful += 1;
     if (statsQuestions[question.num].successfulLastTime)
@@ -1099,12 +1170,15 @@ function validateAnswer() {
     user.nbQuestionsSuccessful += 1;
     quiz.nbQuestionsSuccessful += 1;
 
+    // toast success
     let congratulationsMessage =
       "BRAVO !\n+" + user.combo + " PT" + (user.combo > 1 ? "S" : "");
     toast(congratulationsMessage, "var(--c-success)");
+    //toast Combo:
     if (user.combo > 1)
       toast(user.combo + " D'AFFILÉE !\n", "var(--c-success)");
   } else {
+    // FAIL
     question.result = -1;
     statsQuestions[question.num].failed++;
     statsQuestions[question.num].successfulLastTime = false;
@@ -1120,6 +1194,7 @@ function validateAnswer() {
     statsQuestions[question.num].lastResult;
   statsQuestions[question.num].lastResult = question.result;
 
+  // CHECK GAMEOVER ??
   let maxAchievableResult = quiz.result + quiz.questions.length;
   let isGameover = maxAchievableResult < QUIZ_MIN_RESULT;
   if (isGameover) {
@@ -1129,6 +1204,8 @@ function validateAnswer() {
     return;
   }
 
+  // ATTRIBUTION DES POINTS A LA QUESTION
+  // EN FONCTION DES RESULTATS :
   if (question.result == -1) question.points = -1;
   else question.points = Math.min(QUESTION_MAX_POINTS, user.combo);
 
@@ -1144,6 +1221,8 @@ function validateAnswer() {
   });
 
   /* gestion des combos, éventuellement affichage de messages (combo etc)*/
+  // type "10 d'affilée etc ? mais déjà affiché dans le toast"
+  // ou alors : "100ème question réussie"
 
   saveToLocalStorage();
 
@@ -1160,13 +1239,17 @@ function showAbortQuizModal() {
   }
 }
 function abortQuiz() {
+  // appelé lorsque l'utilisateur confirme la fermeture, ou en cas de gameover ?
+  // éventuel appel serveur, gestion des stats ? ajout quiz interrompu ?
   gotoTheme(theme.id);
 }
 
 function showQuizResults() {
+  //appelée par validateResults()
   /* calculer stats etc, récompenses, bonus */
   /* empile les messages, les récompenses etc ?*/
 
+  // gérer avec des toasts ?
 
   quiz.finalGrade = grade20FromResult(
     quiz.nbQuestionsSuccessful,
@@ -1174,6 +1257,7 @@ function showQuizResults() {
   );
   if (quiz.finalGrade == 20) user.nbQuizPerfect++;
 
+  // remplacer success par result pour tenir compte des erreurs
   user.points += quiz.points;
   statsThemes[theme.id].nbQuizFinished++;
   user.nbQuizFinished++;
@@ -1189,8 +1273,10 @@ function unstack(targetName) {
   else gotoTheme(theme.id);
 }
 
+// - - - COMPOSANTS - - - --
 
 function glyphResult(note) {
+  // écran de fin de quiz
   let glyph = "";
   if (note == 20) glyph = "🏆";
   else if (note >= 15) glyph = "🎉";
@@ -1241,3 +1327,4 @@ function toast(message, color) {
  * Copyright (C) 2018 Varun A P
  */
 !function(t,o){"object"==typeof module&&module.exports?module.exports=o():t.Toastify=o()}(this,(function(t){var o=function(t){return new o.lib.init(t)};function i(t,o){return o.offset[t]?isNaN(o.offset[t])?o.offset[t]:o.offset[t]+"px":"0px"}function s(t,o){return!(!t||"string"!=typeof o)&&!!(t.className&&t.className.trim().split(/\s+/gi).indexOf(o)>-1)}return o.defaults={oldestFirst:!0,text:"Toastify is awesome!",node:void 0,duration:3e3,selector:void 0,callback:function(){},destination:void 0,newWindow:!1,close:!1,gravity:"toastify-top",positionLeft:!1,position:"",backgroundColor:"",avatar:"",className:"",stopOnFocus:!0,onClick:function(){},offset:{x:0,y:0},escapeMarkup:!0,ariaLive:"polite",style:{background:""}},o.lib=o.prototype={toastify:"1.12.0",constructor:o,init:function(t){return t||(t={}),this.options={},this.toastElement=null,this.options.text=t.text||o.defaults.text,this.options.node=t.node||o.defaults.node,this.options.duration=0===t.duration?0:t.duration||o.defaults.duration,this.options.selector=t.selector||o.defaults.selector,this.options.callback=t.callback||o.defaults.callback,this.options.destination=t.destination||o.defaults.destination,this.options.newWindow=t.newWindow||o.defaults.newWindow,this.options.close=t.close||o.defaults.close,this.options.gravity="bottom"===t.gravity?"toastify-bottom":o.defaults.gravity,this.options.positionLeft=t.positionLeft||o.defaults.positionLeft,this.options.position=t.position||o.defaults.position,this.options.backgroundColor=t.backgroundColor||o.defaults.backgroundColor,this.options.avatar=t.avatar||o.defaults.avatar,this.options.className=t.className||o.defaults.className,this.options.stopOnFocus=void 0===t.stopOnFocus?o.defaults.stopOnFocus:t.stopOnFocus,this.options.onClick=t.onClick||o.defaults.onClick,this.options.offset=t.offset||o.defaults.offset,this.options.escapeMarkup=void 0!==t.escapeMarkup?t.escapeMarkup:o.defaults.escapeMarkup,this.options.ariaLive=t.ariaLive||o.defaults.ariaLive,this.options.style=t.style||o.defaults.style,t.backgroundColor&&(this.options.style.background=t.backgroundColor),this},buildToast:function(){if(!this.options)throw"Toastify is not initialized";var t=document.createElement("div");for(var o in t.className="toastify on "+this.options.className,this.options.position?t.className+=" toastify-"+this.options.position:!0===this.options.positionLeft?(t.className+=" toastify-left",console.warn("Property `positionLeft` will be depreciated in further versions. Please use `position` instead.")):t.className+=" toastify-right",t.className+=" "+this.options.gravity,this.options.backgroundColor&&console.warn('DEPRECATION NOTICE: "backgroundColor" is being deprecated. Please use the "style.background" property.'),this.options.style)t.style[o]=this.options.style[o];if(this.options.ariaLive&&t.setAttribute("aria-live",this.options.ariaLive),this.options.node&&this.options.node.nodeType===Node.ELEMENT_NODE)t.appendChild(this.options.node);else if(this.options.escapeMarkup?t.innerText=this.options.text:t.innerHTML=this.options.text,""!==this.options.avatar){var s=document.createElement("img");s.src=this.options.avatar,s.className="toastify-avatar","left"==this.options.position||!0===this.options.positionLeft?t.appendChild(s):t.insertAdjacentElement("afterbegin",s)}if(!0===this.options.close){var e=document.createElement("button");e.type="button",e.setAttribute("aria-label","Close"),e.className="toast-close",e.innerHTML="&#10006;",e.addEventListener("click",function(t){t.stopPropagation(),this.removeElement(this.toastElement),window.clearTimeout(this.toastElement.timeOutValue)}.bind(this));var n=window.innerWidth>0?window.innerWidth:screen.width;("left"==this.options.position||!0===this.options.positionLeft)&&n>360?t.insertAdjacentElement("afterbegin",e):t.appendChild(e)}if(this.options.stopOnFocus&&this.options.duration>0){var a=this;t.addEventListener("mouseover",(function(o){window.clearTimeout(t.timeOutValue)})),t.addEventListener("mouseleave",(function(){t.timeOutValue=window.setTimeout((function(){a.removeElement(t)}),a.options.duration)}))}if(void 0!==this.options.destination&&t.addEventListener("click",function(t){t.stopPropagation(),!0===this.options.newWindow?window.open(this.options.destination,"_blank"):window.location=this.options.destination}.bind(this)),"function"==typeof this.options.onClick&&void 0===this.options.destination&&t.addEventListener("click",function(t){t.stopPropagation(),this.options.onClick()}.bind(this)),"object"==typeof this.options.offset){var l=i("x",this.options),r=i("y",this.options),p="left"==this.options.position?l:"-"+l,d="toastify-top"==this.options.gravity?r:"-"+r;t.style.transform="translate("+p+","+d+")"}return t},showToast:function(){var t;if(this.toastElement=this.buildToast(),!(t="string"==typeof this.options.selector?document.getElementById(this.options.selector):this.options.selector instanceof HTMLElement||"undefined"!=typeof ShadowRoot&&this.options.selector instanceof ShadowRoot?this.options.selector:document.body))throw"Root element is not defined";var i=o.defaults.oldestFirst?t.firstChild:t.lastChild;return t.insertBefore(this.toastElement,i),o.reposition(),this.options.duration>0&&(this.toastElement.timeOutValue=window.setTimeout(function(){this.removeElement(this.toastElement)}.bind(this),this.options.duration)),this},hideToast:function(){this.toastElement.timeOutValue&&clearTimeout(this.toastElement.timeOutValue),this.removeElement(this.toastElement)},removeElement:function(t){t.className=t.className.replace(" on",""),window.setTimeout(function(){this.options.node&&this.options.node.parentNode&&this.options.node.parentNode.removeChild(this.options.node),t.parentNode&&t.parentNode.removeChild(t),this.options.callback.call(t),o.reposition()}.bind(this),400)}},o.reposition=function(){for(var t,o={top:15,bottom:15},i={top:15,bottom:15},e={top:15,bottom:15},n=document.getElementsByClassName("toastify"),a=0;a<n.length;a++){t=!0===s(n[a],"toastify-top")?"toastify-top":"toastify-bottom";var l=n[a].offsetHeight;t=t.substr(9,t.length-1);(window.innerWidth>0?window.innerWidth:screen.width)<=360?(n[a].style[t]=e[t]+"px",e[t]+=l+15):!0===s(n[a],"toastify-left")?(n[a].style[t]=o[t]+"px",o[t]+=l+15):(n[a].style[t]=i[t]+"px",i[t]+=l+15)}return this},o.lib.init.prototype=o.lib,o}));
+//# sourceMappingURL=/sm/e1ebbfe1bf0b0061f0726ebc83434e1c2f8308e6354c415fd05ecccdaad47617.map
