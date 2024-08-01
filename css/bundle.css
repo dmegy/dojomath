@@ -3,7 +3,6 @@
 - - - - - B O U T O N S - - - - - 
 - - - - - - - - - - - - - - - - */
 
-
 button {
   font-family: inherit;
 }
@@ -54,7 +53,7 @@ button {
 .nav-button {
   cursor: pointer;
   --c-border: transparent;
-  height: 2.4rem;
+  height: 2.6rem;
   margin-right: 0.5rem;
   display: grid;
   place-items: center;
@@ -67,7 +66,7 @@ button {
 .nav-button-icon {
   border: 3px solid var(--c-border);
   border-radius: 1rem;
-  padding: 0.3rem;
+  padding: 0.1rem;
 }
 
 .fab {
@@ -384,8 +383,8 @@ summary {
 }
 
 .svg-icon-nav {
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 2.6rem;
+  height: 2.7rem;
   fill: var(--c-text);
 }
 .svg-icon-secondary {
