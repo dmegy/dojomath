@@ -9,6 +9,9 @@ css_dir="css"
 # Nom du fichier de sortie
 css_output_file="css/bundle.css"
 
+# Vider le fichier de sortie s'il existe déjà
+echo " " > "$css_output_file"
+
 # Concaténer tous les fichiers sauf ceux qui commencent par _ et le fichier style.css, ainsi que le bundle.css lui-même
 for file in "$css_dir"/*; do
     filename=$(basename "$file")

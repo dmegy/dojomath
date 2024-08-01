@@ -15,17 +15,12 @@
       rel="icon"
       href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 110 100'><text y='0.9em' font-size='90'>🏆</text></svg>"
     />
-    <link
-      rel="stylesheet"
-      type="text/css"
-      href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css"
-    />
     <title>DojoMath</title>
   </head>
   <body>
     <div class="body-container">
       <header class="glow">
-        <nav x-show="(state!='Quiz') && (state!='End')" style="display: none">
+        <nav x-show="(state!='Quiz') && (state!='End')">
           <div class="nav-button" onClick="goto('Home')">
             <svg
               id="navButtonHome"
