@@ -231,7 +231,7 @@ function toast(message, color) {
     position: "center", // `left`, `center` or `right`
     stopOnFocus: true, // Prevents dismissing of toast on hover
     style: {
-      "border-radius": "1rem",
+      "border-radius": "2rem",
       background: color,
       "text-align": "center",
     },

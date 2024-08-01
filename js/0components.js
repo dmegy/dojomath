@@ -98,3 +98,9 @@ function htmlCheckbox(bool) {
     return `•`;
   }
 }
+
+function htmlNumAdj(n, adj) {
+  // l'adjectif doit être déjà conjugué en genre
+  // exemple : htmlNombreAdj(3,"vérolée") retourne "3 vérolées"
+  return n + " " + adj + (n == 1 ? "" : "s"); // pour zéro on met au plurieu ?
+}

@@ -39,6 +39,7 @@ let user = {
   combo: 0,
   longestCombo: 0,
   points: 0,
+  pointsToday: 0,
   nbQuestionsViewed: 0,
   nbQuestionsFailed: 0,
   nbQuestionsSkipped: 0,
@@ -52,6 +53,8 @@ let user = {
   lastStreak: 0,
   longestStreak: 0,
 };
+
+let finishedQuizHistory = []; // histoorique des quiz finis
 
 loadFromLocalStorage();
 
@@ -185,18 +188,31 @@ function saveToLocalStorage() {
 
 function loadFromLocalStorage() {
   console.log("Récupération des données sauvegardées en local");
-  if (window.localStorage.getItem("user") !== null)
-    user = { ...user, ...JSON.parse(window.localStorage.getItem("user")) };
-  if (window.localStorage.getItem("statsQuestions") !== null)
-    user = {
-      ...user,
-      ...JSON.parse(window.localStorage.getItem("statsQuestions")),
-    };
-  if (window.localStorage.getItem("statsThemes") !== null)
-    user = {
-      ...user,
-      ...JSON.parse(window.localStorage.getItem("statsThemes")),
-    };
+
+  if (window.localStorage.getItem("user") !== null) {
+    // on écrase :
+    user = JSON.parse(window.localStorage.getItem("user"));
+  }
+  if (window.localStorage.getItem("finishedQuizHistory") !== null) {
+    // on écrase :
+    finishedQuizHistory = JSON.parse(
+      window.localStorage.getItem("finishedQuizHistory")
+    );
+  }
+
+  if (window.localStorage.getItem("statsQuestions") !== null) {
+    let loadedstatsQuestions = JSON.parse(
+      window.localStorage.getItem("statsQuestions")
+    );
+    // ceci contient des valeurs non nulles,
+    //mais peut-être moins de clés que statsQuestions si des questions ont été traitées entre-temps.
+    for (let i = 0; i < loadedstatsQuestions.length; i++) {
+      statsQuestions[i] = loadedstatsQuestions[i]; // on écrase quand il existe une valeur loadée
+    }
+  }
+
+  if (window.localStorage.getItem("statsThemes") !== null) {
+  }
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - -

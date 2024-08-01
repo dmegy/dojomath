@@ -34,6 +34,7 @@
     <script defer src="js/1themes.js"></script>
     <script defer src="js/2quiz.js"></script>
     <script defer src="js/2toastify.js"></script>
+    <script defer src="js/-tests.js"></script>
     <link
       rel="icon"
       href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 110 100'><text y='0.9em' font-size='90'>🏆</text></svg>"
@@ -82,7 +83,7 @@
           x-show="(state!='Quiz') && (state!='End')"
           style="position: relative; display: none"
         >
-          <span x-html="htmlPoints(user.points)"></span>
+          <span x-html="htmlNumAdj(user.points,'pt')"></span>
           <span class="notif">Niv. 2</span>
         </div>
         <div
@@ -180,22 +181,28 @@
           <!--<h3>Bilan</h3>-->
           <div>
             <strong>Parties</strong> :
-            <span x-html="user.nbQuizStarted">?</span> commencées dont : <br />
-            <span style="color: var(--c-danger)"
-              ><span x-html="user.nbQuizGameover">?</span> ratées</span
+            <span x-html="htmlNumAdj(user.nbQuizStarted,'commencée')">?</span>
+            dont : <br />
+            <span
+              style="color: var(--c-danger)"
+              x-html="htmlNumAdj(user.nbQuizGameover,'ratée')"
+            ></span
             >,
-            <span style="color: var(--c-warning)"
-              ><span x-html="user.nbQuizAborted">?</span> quittées</span
+            <span
+              style="color: var(--c-warning)"
+              x-html="htmlNumAdj(user.nbQuizAborted,'interrompue')"
+            ></span
             >,
-            <span style="color: var(--c-success)"
-              ><span x-html="user.nbQuizFinished">?</span> terminées</span
-            >,<br />
+            <span
+              style="color: var(--c-success)"
+              x-html="htmlNumAdj(user.nbQuizFinished,'terminée')"
+            ></span
+            ><br />
             dont
-            <span style="color: var(--c-success-accent)"
-              ><span x-html="user.nbQuizPerfect">?</span> terminées avec
-              20/20</span
-            >
-            🏆
+            <span
+              style="color: var(--c-success-accent)"
+              x-html="htmlNumAdj(user.nbQuizPerfect,'réussie')+' avec un score parfait 🏆'"
+            ></span>
           </div>
 
           <div
@@ -204,21 +211,29 @@
           ></div>
           <div>
             <strong>Questions : </strong>
-            <span x-html="user.nbQuestionsViewed">?</span> commencées dont :
+            <span x-html="htmlNumAdj(user.nbQuestionsViewed,'commencée')"
+              >?</span
+            >
+            dont :
             <br />
-            <span style="color: var(--c-danger)"
-              ><span x-html="user.nbQuestionsFailed">?</span> ratées,
-            </span>
-            <span style="color: var(--c-warning)"
-              ><span
-                x-html="user.nbQuestionsViewed - user.nbQuestionsFailed - user.nbQuestionsSuccessful"
-                >?</span
-              >
-              ignorées, </span
-            ><!-- pour prendre en compte les questions vues avant d'interrompre le quiz (pas comptés comme skipped) -->
-            <span style="color: var(--c-success)"
-              ><span x-html="user.nbQuestionsSuccessful">?</span> réussies.
-            </span>
+            <span
+              style="color: var(--c-danger)"
+              x-html="htmlNumAdj(user.nbQuestionsFailed,'ratée')"
+              >?</span
+            >,
+
+            <span
+              style="color: var(--c-warning)"
+              x-html="htmlNumAdj(user.nbQuestionsViewed - user.nbQuestionsFailed - user.nbQuestionsSuccessful,'ignorée')"
+              >?</span
+            >,
+            <!-- pour prendre en compte les questions vues avant d'interrompre le quiz (pas comptés comme skipped) -->
+            <!-- ATTENTION BUG ?? somme non nulle donc pdifférence arfois negative -->
+            <span
+              style="color: var(--c-success)"
+              x-html="htmlNumAdj(user.nbQuestionsSuccessful,'réussie')"
+              >?</span
+            >.
           </div>
           <div
             x-html="htmlMultipleProgress([user.nbQuestionsFailed,user.nbQuestionsSkipped,user.nbQuestionsSuccessful],['--c-danger','--c-warning','--c-success'])"
