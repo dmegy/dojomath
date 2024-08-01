@@ -69,26 +69,26 @@ function updateUserStreak() {
   /* attention */
 }
 
-const removeCircles = () => {
+function removeCircles() {
   document
     .querySelectorAll("svg")
     .forEach((el) => el.classList.remove("circled"));
-};
+}
 
-const goto = (newState) => {
+function goto(newState) {
   oldState = state;
   state = newState;
 
   removeCircles();
   document.getElementById("navButton" + newState).classList.add("circled");
   render();
-};
+}
 
-const gotoChapters = () => {
+function gotoChapters() {
   state = "Chapters";
   removeCircles();
   render();
-};
+}
 
 function computeThemeStats(themeId) {
   // bug sur alreadyseen ?
@@ -119,14 +119,14 @@ function computeAllThemeStats() {
   }
 }
 
-const gotoTheme = (id) => {
+function gotoTheme(id) {
   console.log("appel de gotoTheme avec id " + id);
   state = "theme";
   theme = structuredClone(themes[id]);
   theme.id = id; // on rajoute l'id sinon il n'est plus là...
   // calculer theme.progress, theme.nbQuestionsSeens, nbQuestionsChecked, theme.nbQuestionsDbChecked
   render();
-};
+}
 
 function startQuiz() {
   /* ou gotoQuiz ?*/
@@ -134,17 +134,17 @@ function startQuiz() {
   render();
 }
 
-const level = (points) => {
+function level(points) {
   // correspondances points<->niv :
   // 20->niv1, 40->niv2, 80->niv3 etc
   if (points < 20) return 0;
   else return Math.floor(Math.log(points / 10) / Math.log(2));
-};
+}
 
-const nextLevelThreshold = (points) => {
+function nextLevelThreshold(points) {
   // on retourne la prochaine (puissance de 2 multiplée par 10)
   return 10 * 2 ** (level(points) + 1);
-};
+}
 
 function getHighscores() {
   document.getElementById("highscores").innerHTML = "Chargement...";
@@ -203,7 +203,7 @@ function loadFromLocalStorage() {
 // - - - - - - - - Mini-Alpine :-) - - - - - - - - -
 // - - - - - - - - - - - - - - - - - - - - - - - - -
 
-const xShow = () => {
+function xShow() {
   // boucle sur les éléments avec x-show et les affiche conditionnellement à l'argument
   let elements = document.querySelectorAll("[x-show]");
   for (let i = 0; i < elements.length; i++) {
@@ -213,9 +213,9 @@ const xShow = () => {
       elements[i].style.display = "none";
     }
   }
-};
+}
 
-const xHtml = () => {
+function xHtml() {
   // boucle sur les éléments avec x-html  visibles et affiche le contenu
   let elements = document.querySelectorAll("[x-html]");
   for (let i = 0; i < elements.length; i++) {
@@ -226,14 +226,14 @@ const xHtml = () => {
     let content = eval(elements[i].attributes["x-html"].value);
     elements[i].innerHTML = content;
   }
-};
+}
 
 // éventuellement coder le x-for pour le composant de références de thèmes, avec liste de liens à afficher...
 
-const render = () => {
+function render() {
   xShow();
   xHtml();
-};
+}
 
 // - - - - - - - - - - - - - - -
 // - - - - ON LOAD and getScript, Mathjax etc

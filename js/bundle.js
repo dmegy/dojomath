@@ -70,26 +70,26 @@ function updateUserStreak() {
   /* attention */
 }
 
-const removeCircles = () => {
+function removeCircles() {
   document
     .querySelectorAll("svg")
     .forEach((el) => el.classList.remove("circled"));
-};
+}
 
-const goto = (newState) => {
+function goto(newState) {
   oldState = state;
   state = newState;
 
   removeCircles();
   document.getElementById("navButton" + newState).classList.add("circled");
   render();
-};
+}
 
-const gotoChapters = () => {
+function gotoChapters() {
   state = "Chapters";
   removeCircles();
   render();
-};
+}
 
 function computeThemeStats(themeId) {
   // bug sur alreadyseen ?
@@ -120,14 +120,14 @@ function computeAllThemeStats() {
   }
 }
 
-const gotoTheme = (id) => {
+function gotoTheme(id) {
   console.log("appel de gotoTheme avec id " + id);
   state = "theme";
   theme = structuredClone(themes[id]);
   theme.id = id; // on rajoute l'id sinon il n'est plus là...
   // calculer theme.progress, theme.nbQuestionsSeens, nbQuestionsChecked, theme.nbQuestionsDbChecked
   render();
-};
+}
 
 function startQuiz() {
   /* ou gotoQuiz ?*/
@@ -135,17 +135,17 @@ function startQuiz() {
   render();
 }
 
-const level = (points) => {
+function level(points) {
   // correspondances points<->niv :
   // 20->niv1, 40->niv2, 80->niv3 etc
   if (points < 20) return 0;
   else return Math.floor(Math.log(points / 10) / Math.log(2));
-};
+}
 
-const nextLevelThreshold = (points) => {
+function nextLevelThreshold(points) {
   // on retourne la prochaine (puissance de 2 multiplée par 10)
   return 10 * 2 ** (level(points) + 1);
-};
+}
 
 function getHighscores() {
   document.getElementById("highscores").innerHTML = "Chargement...";
@@ -204,7 +204,7 @@ function loadFromLocalStorage() {
 // - - - - - - - - Mini-Alpine :-) - - - - - - - - -
 // - - - - - - - - - - - - - - - - - - - - - - - - -
 
-const xShow = () => {
+function xShow() {
   // boucle sur les éléments avec x-show et les affiche conditionnellement à l'argument
   let elements = document.querySelectorAll("[x-show]");
   for (let i = 0; i < elements.length; i++) {
@@ -214,9 +214,9 @@ const xShow = () => {
       elements[i].style.display = "none";
     }
   }
-};
+}
 
-const xHtml = () => {
+function xHtml() {
   // boucle sur les éléments avec x-html  visibles et affiche le contenu
   let elements = document.querySelectorAll("[x-html]");
   for (let i = 0; i < elements.length; i++) {
@@ -227,14 +227,14 @@ const xHtml = () => {
     let content = eval(elements[i].attributes["x-html"].value);
     elements[i].innerHTML = content;
   }
-};
+}
 
 // éventuellement coder le x-for pour le composant de références de thèmes, avec liste de liens à afficher...
 
-const render = () => {
+function render() {
   xShow();
   xHtml();
-};
+}
 
 // - - - - - - - - - - - - - - -
 // - - - - ON LOAD and getScript, Mathjax etc
@@ -267,6 +267,119 @@ fetch("questions.json?again=" + Math.random())
     console.log(questions[3]);
   });
 */
+
+function htmlPoints(points) {
+  return points + " pt" + (points == 1 || points == -1 ? "" : "s");
+}
+
+// pour l'écran des thèmes et chapitres :
+
+function htmlChapters() {
+  let s = "";
+  for (let i = 0; i < chapters.length; i++) {
+    s += `<details open>
+			<summary>${chapters[i].name}</summary>
+			<div id='chapter_${i}'>`;
+    for (let j = 0; j < chapters[i].themes.length; j++) {
+      s += htmlButtonTheme(i, j);
+    }
+    s += `</div></details>`;
+  }
+  return s;
+}
+function htmlButtonTheme(i, j) {
+  let label = chapters[i]["themes"][j].label;
+  let id = chapters[i]["themes"][j].id;
+  return `
+		<div style="
+                --progression:0;
+                background-color: var(--c-secondary-40);
+                text-align: center;" 
+			class="button-small" 
+			id="boutonTheme_${i}_${j}" 
+			onclick="gotoTheme('${id}')">
+			<div style="
+                opacity:50%;
+		        background:var(--c-secondary-70);
+		        position:absolute;
+		        top:0;
+		        left:0;
+		        height:100%;
+		        width: calc( var(--progression,0) * 1%);">
+            </div>
+			<div style="position:relative;">${label}</div>
+		</div>
+	`;
+}
+
+function htmlThemeReferences() {
+  // composant car boucle for dedans...
+  let s = "";
+  let list = theme.links; // le thème courant : passer en paramètre ?
+  if (list == undefined) return s;
+  s += "Si besoin, ressources externes:<ul>";
+  for (let i = 0; i < list.length; i++) {
+    s += `<li><a target="_blank" href="${list[i].URL}">${list[i].title}</a></li>`;
+  }
+  s += "</ul>(Les liens s'ouvrent dans une nouvelle fenêtre.)";
+  return s;
+}
+
+// pour l'écran des stats utilisateur : barres de progression etc
+
+function htmlProfile() {
+  return "";
+}
+
+function htmlProgress(a, b) {
+  // retourne un div html avec une barre de progression
+  if (a > b) a = b; // on tronque
+  let p = 0;
+  if (b != 0) p = a / b;
+  return `<div class='progress-bar-container'>
+				<div style='width:${100 * p}% ;' class='progress-bar'></div>
+			</div>`;
+}
+
+function htmlMultipleProgress(numbers, colorsCSSvarnames) {
+  // input : deux tableaux de même taille
+  //retourne une barre de stats de type cumulative avec les valeurs et couleurs fournies
+  if (numbers.length != colorsCSSvarnames.length) throw Error;
+  let sum = numbers.reduce((partialSum, k) => partialSum + k, 0);
+  let percentages = numbers.map((x) => {
+    return 0;
+  }); // initialisation d'un tableau de même longueur et rempli de zéros.
+  if (sum != 0)
+    percentages = numbers.map((x) => {
+      return (100 * x) / sum;
+    });
+  let s = "<div class='progress-bar-container'>";
+  for (let i = 0; i < numbers.length; i++) {
+    s += `<div style='width:${percentages[i]}%;background-color:var(${colorsCSSvarnames[i]})'></div>`;
+  }
+  s += "</div>";
+  return s;
+}
+
+function htmlCheckbox(bool) {
+  if (bool) {
+    return `<svg class="svg-icon" viewBox="0 0 512 512">${svgPathFasCheck}</svg>`;
+  } else {
+    return `•`;
+  }
+}
+
+let svgPathFasDumbbell = `<path d="M112 96c0-17.7 14.3-32 32-32h16c17.7 0 32 14.3 32 32V224v64V416c0 17.7-14.3 32-32 32H144c-17.7 0-32-14.3-32-32V384H64c-17.7 0-32-14.3-32-32V288c-17.7 0-32-14.3-32-32s14.3-32 32-32V160c0-17.7 14.3-32 32-32h48V96zm416 0v32h48c17.7 0 32 14.3 32 32v64c17.7 0 32 14.3 32 32s-14.3 32-32 32v64c0 17.7-14.3 32-32 32H528v32c0 17.7-14.3 32-32 32H480c-17.7 0-32-14.3-32-32V288 224 96c0-17.7 14.3-32 32-32h16c17.7 0 32 14.3 32 32zM416 224v64H224V224H416z"/>`;
+let svgPathFasListCheck = `<path d="M152.1 38.2c9.9 8.9 10.7 24 1.8 33.9l-72 80c-4.4 4.9-10.6 7.8-17.2 7.9s-12.9-2.4-17.6-7L7 113C-2.3 103.6-2.3 88.4 7 79s24.6-9.4 33.9 0l22.1 22.1 55.1-61.2c8.9-9.9 24-10.7 33.9-1.8zm0 160c9.9 8.9 10.7 24 1.8 33.9l-72 80c-4.4 4.9-10.6 7.8-17.2 7.9s-12.9-2.4-17.6-7L7 273c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l22.1 22.1 55.1-61.2c8.9-9.9 24-10.7 33.9-1.8zM224 96c0-17.7 14.3-32 32-32l224 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-224 0c-17.7 0-32-14.3-32-32zm0 160c0-17.7 14.3-32 32-32l224 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-224 0c-17.7 0-32-14.3-32-32zM160 416c0-17.7 14.3-32 32-32l288 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-288 0c-17.7 0-32-14.3-32-32zM48 368a48 48 0 1 1 0 96 48 48 0 1 1 0-96z"/>`;
+let svgPathFasHouse = `<path d="M575.8 255.5c0 18-15 32.1-32 32.1l-32 0 .7 160.2c0 2.7-.2 5.4-.5 8.1l0 16.2c0 22.1-17.9 40-40 40l-16 0c-1.1 0-2.2 0-3.3-.1c-1.4 .1-2.8 .1-4.2 .1L416 512l-24 0c-22.1 0-40-17.9-40-40l0-24 0-64c0-17.7-14.3-32-32-32l-64 0c-17.7 0-32 14.3-32 32l0 64 0 24c0 22.1-17.9 40-40 40l-24 0-31.9 0c-1.5 0-3-.1-4.5-.2c-1.2 .1-2.4 .2-3.6 .2l-16 0c-22.1 0-40-17.9-40-40l0-112c0-.9 0-1.9 .1-2.8l0-69.7-32 0c-18 0-32-14-32-32.1c0-9 3-17 10-24L266.4 8c7-7 15-8 22-8s15 2 21 7L564.8 231.5c8 7 12 15 11 24z"/>`;
+let svgPathFarEye = `<path d="M288 80c-65.2 0-118.8 29.6-159.9 67.7C89.6 183.5 63 226 49.4 256c13.6 30 40.2 72.5 78.6 108.3C169.2 402.4 222.8 432 288 432s118.8-29.6 159.9-67.7C486.4 328.5 513 286 526.6 256c-13.6-30-40.2-72.5-78.6-108.3C406.8 109.6 353.2 80 288 80zM95.4 112.6C142.5 68.8 207.2 32 288 32s145.5 36.8 192.6 80.6c46.8 43.5 78.1 95.4 93 131.1c3.3 7.9 3.3 16.7 0 24.6c-14.9 35.7-46.2 87.7-93 131.1C433.5 443.2 368.8 480 288 480s-145.5-36.8-192.6-80.6C48.6 356 17.3 304 2.5 268.3c-3.3-7.9-3.3-16.7 0-24.6C17.3 208 48.6 156 95.4 112.6zM288 336c44.2 0 80-35.8 80-80s-35.8-80-80-80c-.7 0-1.3 0-2 0c1.3 5.1 2 10.5 2 16c0 35.3-28.7 64-64 64c-5.5 0-10.9-.7-16-2c0 .7 0 1.3 0 2c0 44.2 35.8 80 80 80zm0-208a128 128 0 1 1 0 256 128 128 0 1 1 0-256z"/>`;
+let svgPathFasPlay = `<path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/>`;
+
+let svgPathFasCheckDouble = `<path d="M374.6 86.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 178.7l-57.4-57.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l80 80c12.5 12.5 32.8 12.5 45.3 0l160-160zm96 128c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 402.7 86.6 297.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l128 128c12.5 12.5 32.8 12.5 45.3 0l256-256z"/>`;
+let svgPathFasCheck = `<path d="M470.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L192 338.7 425.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/>`;
+
+let svgPathFasUserLarge = `<path d="M256 288c79.5 0 144-64.5 144-144S335.5 0 256 0S112 64.5 112 144s64.5 144 144 144zm-94.7 32C72.2 320 0 392.2 0 481.3c0 17 13.8 30.7 30.7 30.7H481.3c17 0 30.7-13.8 30.7-30.7C512 392.2 439.8 320 350.7 320H161.3z"/>`;
+let svgPathFasTrophy = `<path d="M400 0H176c-26.5 0-48.1 21.8-47.1 48.2c.2 5.3 .4 10.6 .7 15.8H24C10.7 64 0 74.7 0 88c0 92.6 33.5 157 78.5 200.7c44.3 43.1 98.3 64.8 138.1 75.8c23.4 6.5 39.4 26 39.4 45.6c0 20.9-17 37.9-37.9 37.9H192c-17.7 0-32 14.3-32 32s14.3 32 32 32H384c17.7 0 32-14.3 32-32s-14.3-32-32-32H357.9C337 448 320 431 320 410.1c0-19.6 15.9-39.2 39.4-45.6c39.9-11 93.9-32.7 138.2-75.8C542.5 245 576 180.6 576 88c0-13.3-10.7-24-24-24H446.4c.3-5.2 .5-10.4 .7-15.8C448.1 21.8 426.5 0 400 0zM48.9 112h84.4c9.1 90.1 29.2 150.3 51.9 190.6c-24.9-11-50.8-26.5-73.2-48.3c-32-31.1-58-76-63-142.3zM464.1 254.3c-22.4 21.8-48.3 37.3-73.2 48.3c22.7-40.3 42.8-100.5 51.9-190.6h84.4c-5.1 66.3-31.1 111.2-63 142.3z"/>`;
 
 // - - - - - - - - - - - - - - - - - - - - -
 // - - - - - - - - - - - - - - - - - - - - -
@@ -458,360 +571,6 @@ let chapters = [
     ],
   },
 ];
-
-function htmlPoints(points) {
-  return points + " pt" + (points == 1 || points == -1 ? "" : "s");
-}
-
-// pour l'écran des thèmes et chapitres :
-
-function htmlChapters() {
-  let s = "";
-  for (let i = 0; i < chapters.length; i++) {
-    s += `<details open>
-			<summary>${chapters[i].name}</summary>
-			<div id='chapter_${i}'>`;
-    for (let j = 0; j < chapters[i].themes.length; j++) {
-      s += htmlButtonTheme(i, j);
-    }
-    s += `</div></details>`;
-  }
-  return s;
-}
-function htmlButtonTheme(i, j) {
-  let label = chapters[i]["themes"][j].label;
-  let id = chapters[i]["themes"][j].id;
-  return `
-		<div style="
-                --progression:0;
-                background-color: var(--c-secondary-40);
-                text-align: center;" 
-			class="button-small" 
-			id="boutonTheme_${i}_${j}" 
-			onclick="gotoTheme('${id}')">
-			<div style="
-                opacity:50%;
-		        background:var(--c-secondary-70);
-		        position:absolute;
-		        top:0;
-		        left:0;
-		        height:100%;
-		        width: calc( var(--progression,0) * 1%);">
-            </div>
-			<div style="position:relative;">${label}</div>
-		</div>
-	`;
-}
-
-function htmlThemeReferences() {
-  // composant car boucle for dedans...
-  let s = "";
-  let list = theme.links; // le thème courant : passer en paramètre ?
-  if (list == undefined) return s;
-  s += "Si besoin, ressources externes:<ul>";
-  for (let i = 0; i < list.length; i++) {
-    s += `<li><a target="_blank" href="${list[i].URL}">${list[i].title}</a></li>`;
-  }
-  s += "</ul>(Les liens s'ouvrent dans une nouvelle fenêtre.)";
-  return s;
-}
-
-// pour l'écran des stats utilisateur : barres de progression etc
-
-function htmlProfile() {
-  return "";
-}
-
-function htmlProgress(a, b) {
-  // retourne un div html avec une barre de progression
-  if (a > b) a = b; // on tronque
-  let p = 0;
-  if (b != 0) p = a / b;
-  return `<div class='progress-bar-container'>
-				<div style='width:${100 * p}% ;' class='progress-bar'></div>
-			</div>`;
-}
-
-function htmlMultipleProgress(numbers, colorsCSSvarnames) {
-  // input : deux tableaux de même taille
-  //retourne une barre de stats de type cumulative avec les valeurs et couleurs fournies
-  if (numbers.length != colorsCSSvarnames.length) throw Error;
-  let sum = numbers.reduce((partialSum, k) => partialSum + k, 0);
-  let percentages = numbers.map((x) => {
-    return 0;
-  }); // initialisation d'un tableau de même longueur et rempli de zéros.
-  if (sum != 0)
-    percentages = numbers.map((x) => {
-      return (100 * x) / sum;
-    });
-  let s = "<div class='progress-bar-container'>";
-  for (let i = 0; i < numbers.length; i++) {
-    s += `<div style='width:${percentages[i]}%;background-color:var(${colorsCSSvarnames[i]})'></div>`;
-  }
-  s += "</div>";
-  return s;
-}
-
-function htmlCheckbox(bool) {
-  if (bool) {
-    return `<svg class="svg-icon" viewBox="0 0 512 512">${svgPathFasCheck}</svg>`;
-  } else {
-    return `•`;
-  }
-}
-
-// ceci doit tourner après que les questions soient loadées !
-// à part la boucle  suivante, ce script comporte uniquement des fonctions.
-
-for (let themeId in themes) {
-  //initialisation
-  statsThemes[themeId] ??= {
-    nbQuestionsViewed: 0,
-    nbQuestionsSuccessful: 0,
-    nbQuestionsFailed: 0,
-    nbQuestionsSkipped: 0,
-    nbQuizFinished: 0,
-    questionsAlreadySeen: 0,
-    questionsSuccessfulLastTime: 0,
-    questionsSuccessfulLastTwoTimes: 0,
-  };
-}
-
-function shuffleArray(array) {
-  // attention !  le tableau est muté sur place
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-}
-
-function startQuiz() {
-  console.log("startQuiz() sur le thème " + theme);
-  quiz = structuredClone(theme); // ATTENTION ICI BUG BIZARRE ?
-
-  shuffleArray(quiz.questions);
-
-  // on vide la fin pour ne garder au plus que QUIZ_LENGTH questions
-  while (quiz.questions.length > QUIZ_MAX_LENGTH) quiz.questions.shift();
-
-  quiz.quizLength = quiz.questions.length;
-  quiz.nbQuestionsFailed = 0;
-  quiz.nbQuestionsSuccessful = 0;
-  quiz.nbQuestionsSkipped = 0;
-  quiz.history = [];
-  quiz.result = 0;
-  quiz.points = 0;
-  quiz.bonus = 0;
-  quiz.finalGrade = 0;
-  /* tableau d'objets de la forme :
-    {questionNumber:num,submittedAnswer:true;result:-1}
-    */
-  user.nbQuizStarted += 1;
-  nextQuestion();
-}
-
-function nextQuestion() {
-  // appelée par startQuiz() ou bien validateAnswer()
-  questionNumber = quiz.questions.splice(0, 1)[0];
-  // attention on l'enlève d ela liste
-  question = structuredClone(questions[questionNumber]);
-  question.num = questionNumber; // on rajoute dans l'objet
-  state = "Quiz";
-  render();
-  MathJax.typeset();
-  statsQuestions[question.num].views += 1;
-  statsThemes[theme.id].nbQuestionsViewed += 1;
-  user.nbQuestionsViewed += 1;
-}
-
-function submitAnswer(answer) {
-  //called by button
-  question.submittedAnswer = answer;
-  validateAnswer();
-}
-
-function validateAnswer() {
-  //appelée à la fin de  submitAnswer()
-  if (question.submittedAnswer === undefined) {
-    // SKIPPED
-    question.result = 0;
-    statsQuestions[question.num].skipped += 1;
-    statsQuestions[question.num].successfulLastTime = false;
-    statsQuestions[question.num].successfulLastTwoTimes = false;
-    statsThemes[theme.id].nbQuestionsSkipped += 1;
-    user.combo = 0;
-    user.nbQuestionsSkipped += 1;
-    quiz.nbQuestionsSkipped += 1;
-    console.log("question sautée");
-    toast("+0pts", "var(--c-warning)");
-  } else if (question.submittedAnswer === question.answer) {
-    // SUCCESS
-    question.result = 1;
-    statsQuestions[question.num].successful += 1;
-    if (statsQuestions[question.num].successfulLastTime)
-      statsQuestions[question.num].successfulLastTwoTimes = true;
-    statsQuestions[question.num].successfulLastTime = true;
-
-    statsThemes[theme.id].nbQuestionsSuccessful += 1;
-    user.combo += 1;
-    user.longestCombo = Math.max(user.combo, user.longestCombo);
-    user.nbQuestionsSuccessful += 1;
-    quiz.nbQuestionsSuccessful += 1;
-
-    // toast success
-    let congratulationsMessage =
-      "BRAVO !\n+" + user.combo + " PT" + (user.combo > 1 ? "S" : "");
-    toast(congratulationsMessage, "var(--c-success)");
-    //toast Combo:
-    if (user.combo > 1)
-      toast(user.combo + " D'AFFILÉE !\n", "var(--c-success)");
-  } else {
-    // FAIL
-    question.result = -1;
-    statsQuestions[question.num].failed++;
-    statsQuestions[question.num].successfulLastTime = false;
-    statsQuestions[question.num].successfulLastTwoTimes = false;
-    statsThemes[theme.id].nbQuestionsFailed++;
-    user.combo = 0;
-    user.nbQuestionsFailed++;
-    quiz.nbQuestionsFailed++;
-    toast("-1pt", "var(--c-danger)");
-  }
-  quiz.result += question.result;
-  statsQuestions[question.num].penultimateResult =
-    statsQuestions[question.num].lastResult;
-  statsQuestions[question.num].lastResult = question.result;
-
-  // CHECK GAMEOVER ??
-  let maxAchievableResult = quiz.result + quiz.questions.length;
-  let isGameover = maxAchievableResult < QUIZ_MIN_RESULT;
-  if (isGameover) {
-    alert("GAMEOVER :\nTrop de questions ratées ou sautées");
-    user.nbQuizGameover++;
-    abortQuiz();
-    return;
-  }
-
-  // ATTRIBUTION DES POINTS A LA QUESTION
-  // EN FONCTION DES RESULTATS :
-  if (question.result == -1) question.points = -1;
-  else question.points = Math.min(QUESTION_MAX_POINTS, user.combo);
-
-  question.bonus = Math.max(question.points - 1, 0); // pts gagnés à cause d'un bonus
-
-  quiz.points += question.points;
-  quiz.bonus += question.bonus;
-
-  quiz.history.push({
-    questionNumber: question.num,
-    submittedAnswer: question.submittedAnswer,
-    result: question.result,
-  });
-
-  /* gestion des combos, éventuellement affichage de messages (combo etc)*/
-  // type "10 d'affilée etc ? mais déjà affiché dans le toast"
-  // ou alors : "100ème question réussie"
-
-  saveToLocalStorage();
-
-  if (quiz.questions.length > 0) nextQuestion();
-  else showQuizResults();
-}
-
-function showAbortQuizModal() {
-  let text =
-    "DEMANDE DE CONFIRMATION :\n\nSouhaites-tu vraiment interrompre le Quiz ?\n\n(Attention, aucun point ne sera sauvegardé.)";
-  if (confirm(text) == true) {
-    user.nbQuizAborted++;
-    abortQuiz();
-  }
-}
-function abortQuiz() {
-  // appelé lorsque l'utilisateur confirme la fermeture, ou en cas de gameover ?
-  // éventuel appel serveur, gestion des stats ? ajout quiz interrompu ?
-  gotoTheme(theme.id);
-}
-
-function showQuizResults() {
-  //appelée par validateResults()
-  /* calculer stats etc, récompenses, bonus */
-  /* empile les messages, les récompenses etc ?*/
-
-  // gérer avec des toasts ?
-
-  quiz.finalGrade = grade20FromResult(
-    quiz.nbQuestionsSuccessful,
-    quiz.quizLength
-  );
-  if (quiz.finalGrade == 20) user.nbQuizPerfect++;
-
-  // remplacer success par result pour tenir compte des erreurs
-  user.points += quiz.points;
-  statsThemes[theme.id].nbQuizFinished++;
-  user.nbQuizFinished++;
-  saveToLocalStorage();
-  state = "End";
-  render();
-}
-
-function unstack(targetName) {
-  /* appelé lorsque le joueur sort de l'écran de fin : il faut afficher tous les messages empilés */
-  /* provisoire */
-  if (targetName == "Chapters") gotoChapters();
-  else gotoTheme(theme.id);
-}
-
-// - - - COMPOSANTS - - - --
-
-function glyphResult(note) {
-  // écran de fin de quiz
-  let glyph = "";
-  if (note == 20) glyph = "🏆";
-  else if (note >= 15) glyph = "🎉";
-  else if (note >= 10) glyph = "👍";
-  else glyph = "😅";
-  return glyph;
-}
-function grade20FromResult(result, maxResult) {
-  let MAX_GRADE = 20; // ou 100
-  let posResult = Math.max(0, result);
-  let grade = (MAX_GRADE * posResult) / maxResult;
-  let roundedGrade = Math.floor(grade);
-  return roundedGrade;
-}
-
-function getBooster() {}
-
-function toast(message, color) {
-  Toastify({
-    text: message,
-    duration: 800,
-    destination: "",
-    newWindow: true,
-    close: false,
-    gravity: "top", // `top` or `bottom`
-    position: "center", // `left`, `center` or `right`
-    stopOnFocus: true, // Prevents dismissing of toast on hover
-    style: {
-      "border-radius": "1rem",
-      background: color,
-      "text-align": "center",
-    },
-    onClick: function () {}, // Callback after click
-  }).showToast();
-}
-
-let svgPathFasDumbbell = `<path d="M112 96c0-17.7 14.3-32 32-32h16c17.7 0 32 14.3 32 32V224v64V416c0 17.7-14.3 32-32 32H144c-17.7 0-32-14.3-32-32V384H64c-17.7 0-32-14.3-32-32V288c-17.7 0-32-14.3-32-32s14.3-32 32-32V160c0-17.7 14.3-32 32-32h48V96zm416 0v32h48c17.7 0 32 14.3 32 32v64c17.7 0 32 14.3 32 32s-14.3 32-32 32v64c0 17.7-14.3 32-32 32H528v32c0 17.7-14.3 32-32 32H480c-17.7 0-32-14.3-32-32V288 224 96c0-17.7 14.3-32 32-32h16c17.7 0 32 14.3 32 32zM416 224v64H224V224H416z"/>`;
-let svgPathFasListCheck = `<path d="M152.1 38.2c9.9 8.9 10.7 24 1.8 33.9l-72 80c-4.4 4.9-10.6 7.8-17.2 7.9s-12.9-2.4-17.6-7L7 113C-2.3 103.6-2.3 88.4 7 79s24.6-9.4 33.9 0l22.1 22.1 55.1-61.2c8.9-9.9 24-10.7 33.9-1.8zm0 160c9.9 8.9 10.7 24 1.8 33.9l-72 80c-4.4 4.9-10.6 7.8-17.2 7.9s-12.9-2.4-17.6-7L7 273c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l22.1 22.1 55.1-61.2c8.9-9.9 24-10.7 33.9-1.8zM224 96c0-17.7 14.3-32 32-32l224 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-224 0c-17.7 0-32-14.3-32-32zm0 160c0-17.7 14.3-32 32-32l224 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-224 0c-17.7 0-32-14.3-32-32zM160 416c0-17.7 14.3-32 32-32l288 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-288 0c-17.7 0-32-14.3-32-32zM48 368a48 48 0 1 1 0 96 48 48 0 1 1 0-96z"/>`;
-let svgPathFasHouse = `<path d="M575.8 255.5c0 18-15 32.1-32 32.1l-32 0 .7 160.2c0 2.7-.2 5.4-.5 8.1l0 16.2c0 22.1-17.9 40-40 40l-16 0c-1.1 0-2.2 0-3.3-.1c-1.4 .1-2.8 .1-4.2 .1L416 512l-24 0c-22.1 0-40-17.9-40-40l0-24 0-64c0-17.7-14.3-32-32-32l-64 0c-17.7 0-32 14.3-32 32l0 64 0 24c0 22.1-17.9 40-40 40l-24 0-31.9 0c-1.5 0-3-.1-4.5-.2c-1.2 .1-2.4 .2-3.6 .2l-16 0c-22.1 0-40-17.9-40-40l0-112c0-.9 0-1.9 .1-2.8l0-69.7-32 0c-18 0-32-14-32-32.1c0-9 3-17 10-24L266.4 8c7-7 15-8 22-8s15 2 21 7L564.8 231.5c8 7 12 15 11 24z"/>`;
-let svgPathFarEye = `<path d="M288 80c-65.2 0-118.8 29.6-159.9 67.7C89.6 183.5 63 226 49.4 256c13.6 30 40.2 72.5 78.6 108.3C169.2 402.4 222.8 432 288 432s118.8-29.6 159.9-67.7C486.4 328.5 513 286 526.6 256c-13.6-30-40.2-72.5-78.6-108.3C406.8 109.6 353.2 80 288 80zM95.4 112.6C142.5 68.8 207.2 32 288 32s145.5 36.8 192.6 80.6c46.8 43.5 78.1 95.4 93 131.1c3.3 7.9 3.3 16.7 0 24.6c-14.9 35.7-46.2 87.7-93 131.1C433.5 443.2 368.8 480 288 480s-145.5-36.8-192.6-80.6C48.6 356 17.3 304 2.5 268.3c-3.3-7.9-3.3-16.7 0-24.6C17.3 208 48.6 156 95.4 112.6zM288 336c44.2 0 80-35.8 80-80s-35.8-80-80-80c-.7 0-1.3 0-2 0c1.3 5.1 2 10.5 2 16c0 35.3-28.7 64-64 64c-5.5 0-10.9-.7-16-2c0 .7 0 1.3 0 2c0 44.2 35.8 80 80 80zm0-208a128 128 0 1 1 0 256 128 128 0 1 1 0-256z"/>`;
-let svgPathFasPlay = `<path d="M73 39c-14.8-9.1-33.4-9.4-48.5-.9S0 62.6 0 80V432c0 17.4 9.4 33.4 24.5 41.9s33.7 8.1 48.5-.9L361 297c14.3-8.7 23-24.2 23-41s-8.7-32.2-23-41L73 39z"/>`;
-
-let svgPathFasCheckDouble = `<path d="M374.6 86.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 178.7l-57.4-57.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l80 80c12.5 12.5 32.8 12.5 45.3 0l160-160zm96 128c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 402.7 86.6 297.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l128 128c12.5 12.5 32.8 12.5 45.3 0l256-256z"/>`;
-let svgPathFasCheck = `<path d="M470.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L192 338.7 425.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/>`;
-
-let svgPathFasUserLarge = `<path d="M256 288c79.5 0 144-64.5 144-144S335.5 0 256 0S112 64.5 112 144s64.5 144 144 144zm-94.7 32C72.2 320 0 392.2 0 481.3c0 17 13.8 30.7 30.7 30.7H481.3c17 0 30.7-13.8 30.7-30.7C512 392.2 439.8 320 350.7 320H161.3z"/>`;
-let svgPathFasTrophy = `<path d="M400 0H176c-26.5 0-48.1 21.8-47.1 48.2c.2 5.3 .4 10.6 .7 15.8H24C10.7 64 0 74.7 0 88c0 92.6 33.5 157 78.5 200.7c44.3 43.1 98.3 64.8 138.1 75.8c23.4 6.5 39.4 26 39.4 45.6c0 20.9-17 37.9-37.9 37.9H192c-17.7 0-32 14.3-32 32s14.3 32 32 32H384c17.7 0 32-14.3 32-32s-14.3-32-32-32H357.9C337 448 320 431 320 410.1c0-19.6 15.9-39.2 39.4-45.6c39.9-11 93.9-32.7 138.2-75.8C542.5 245 576 180.6 576 88c0-13.3-10.7-24-24-24H446.4c.3-5.2 .5-10.4 .7-15.8C448.1 21.8 426.5 0 400 0zM48.9 112h84.4c9.1 90.1 29.2 150.3 51.9 190.6c-24.9-11-50.8-26.5-73.2-48.3c-32-31.1-58-76-63-142.3zM464.1 254.3c-22.4 21.8-48.3 37.3-73.2 48.3c22.7-40.3 42.8-100.5 51.9-190.6h84.4c-5.1 66.3-31.1 111.2-63 142.3z"/>`;
 
 // - - - - - - - - - - - - - - - - - - - - - -
 // - - - - - -- - T H E M E S  - - - - - - - -
@@ -1247,6 +1006,247 @@ let themes = {
     questions: [...range(1515, 1554)],
   },
 };
+
+// ceci doit tourner après que les questions soient loadées !
+// à part la boucle  suivante, ce script comporte uniquement des fonctions.
+
+for (let themeId in themes) {
+  //initialisation
+  statsThemes[themeId] ??= {
+    nbQuestionsViewed: 0,
+    nbQuestionsSuccessful: 0,
+    nbQuestionsFailed: 0,
+    nbQuestionsSkipped: 0,
+    nbQuizFinished: 0,
+    questionsAlreadySeen: 0,
+    questionsSuccessfulLastTime: 0,
+    questionsSuccessfulLastTwoTimes: 0,
+  };
+}
+
+function shuffleArray(array) {
+  // attention !  le tableau est muté sur place
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+
+function startQuiz() {
+  console.log("startQuiz() sur le thème " + theme);
+  quiz = structuredClone(theme); // ATTENTION ICI BUG BIZARRE ?
+
+  shuffleArray(quiz.questions);
+
+  // on vide la fin pour ne garder au plus que QUIZ_LENGTH questions
+  while (quiz.questions.length > QUIZ_MAX_LENGTH) quiz.questions.shift();
+
+  quiz.quizLength = quiz.questions.length;
+  quiz.nbQuestionsFailed = 0;
+  quiz.nbQuestionsSuccessful = 0;
+  quiz.nbQuestionsSkipped = 0;
+  quiz.history = [];
+  quiz.result = 0;
+  quiz.points = 0;
+  quiz.bonus = 0;
+  quiz.finalGrade = 0;
+  /* tableau d'objets de la forme :
+    {questionNumber:num,submittedAnswer:true;result:-1}
+    */
+  user.nbQuizStarted += 1;
+  nextQuestion();
+}
+
+function nextQuestion() {
+  // appelée par startQuiz() ou bien validateAnswer()
+  questionNumber = quiz.questions.splice(0, 1)[0];
+  // attention on l'enlève d ela liste
+  question = structuredClone(questions[questionNumber]);
+  question.num = questionNumber; // on rajoute dans l'objet
+  state = "Quiz";
+  render();
+  MathJax.typeset();
+  statsQuestions[question.num].views += 1;
+  statsThemes[theme.id].nbQuestionsViewed += 1;
+  user.nbQuestionsViewed += 1;
+}
+
+function submitAnswer(answer) {
+  //called by button
+  question.submittedAnswer = answer;
+  validateAnswer();
+}
+
+function validateAnswer() {
+  //appelée à la fin de  submitAnswer()
+  if (question.submittedAnswer === undefined) {
+    // SKIPPED
+    question.result = 0;
+    statsQuestions[question.num].skipped += 1;
+    statsQuestions[question.num].successfulLastTime = false;
+    statsQuestions[question.num].successfulLastTwoTimes = false;
+    statsThemes[theme.id].nbQuestionsSkipped += 1;
+    user.combo = 0;
+    user.nbQuestionsSkipped += 1;
+    quiz.nbQuestionsSkipped += 1;
+    console.log("question sautée");
+    toast("+0pts", "var(--c-warning)");
+  } else if (question.submittedAnswer === question.answer) {
+    // SUCCESS
+    question.result = 1;
+    statsQuestions[question.num].successful += 1;
+    if (statsQuestions[question.num].successfulLastTime)
+      statsQuestions[question.num].successfulLastTwoTimes = true;
+    statsQuestions[question.num].successfulLastTime = true;
+
+    statsThemes[theme.id].nbQuestionsSuccessful += 1;
+    user.combo += 1;
+    user.longestCombo = Math.max(user.combo, user.longestCombo);
+    user.nbQuestionsSuccessful += 1;
+    quiz.nbQuestionsSuccessful += 1;
+
+    // toast success
+    let congratulationsMessage =
+      "BRAVO !\n+" + user.combo + " PT" + (user.combo > 1 ? "S" : "");
+    toast(congratulationsMessage, "var(--c-success)");
+    //toast Combo:
+    if (user.combo > 1)
+      toast(user.combo + " D'AFFILÉE !\n", "var(--c-success)");
+  } else {
+    // FAIL
+    question.result = -1;
+    statsQuestions[question.num].failed++;
+    statsQuestions[question.num].successfulLastTime = false;
+    statsQuestions[question.num].successfulLastTwoTimes = false;
+    statsThemes[theme.id].nbQuestionsFailed++;
+    user.combo = 0;
+    user.nbQuestionsFailed++;
+    quiz.nbQuestionsFailed++;
+    toast("-1pt", "var(--c-danger)");
+  }
+  quiz.result += question.result;
+  statsQuestions[question.num].penultimateResult =
+    statsQuestions[question.num].lastResult;
+  statsQuestions[question.num].lastResult = question.result;
+
+  // CHECK GAMEOVER ??
+  let maxAchievableResult = quiz.result + quiz.questions.length;
+  let isGameover = maxAchievableResult < QUIZ_MIN_RESULT;
+  if (isGameover) {
+    alert("GAMEOVER :\nTrop de questions ratées ou sautées");
+    user.nbQuizGameover++;
+    abortQuiz();
+    return;
+  }
+
+  // ATTRIBUTION DES POINTS A LA QUESTION
+  // EN FONCTION DES RESULTATS :
+  if (question.result == -1) question.points = -1;
+  else question.points = Math.min(QUESTION_MAX_POINTS, user.combo);
+
+  question.bonus = Math.max(question.points - 1, 0); // pts gagnés à cause d'un bonus
+
+  quiz.points += question.points;
+  quiz.bonus += question.bonus;
+
+  quiz.history.push({
+    questionNumber: question.num,
+    submittedAnswer: question.submittedAnswer,
+    result: question.result,
+  });
+
+  /* gestion des combos, éventuellement affichage de messages (combo etc)*/
+  // type "10 d'affilée etc ? mais déjà affiché dans le toast"
+  // ou alors : "100ème question réussie"
+
+  saveToLocalStorage();
+
+  if (quiz.questions.length > 0) nextQuestion();
+  else showQuizResults();
+}
+
+function showAbortQuizModal() {
+  let text =
+    "DEMANDE DE CONFIRMATION :\n\nSouhaites-tu vraiment interrompre le Quiz ?\n\n(Attention, aucun point ne sera sauvegardé.)";
+  if (confirm(text) == true) {
+    user.nbQuizAborted++;
+    abortQuiz();
+  }
+}
+function abortQuiz() {
+  // appelé lorsque l'utilisateur confirme la fermeture, ou en cas de gameover ?
+  // éventuel appel serveur, gestion des stats ? ajout quiz interrompu ?
+  gotoTheme(theme.id);
+}
+
+function showQuizResults() {
+  //appelée par validateResults()
+  /* calculer stats etc, récompenses, bonus */
+  /* empile les messages, les récompenses etc ?*/
+
+  // gérer avec des toasts ?
+
+  quiz.finalGrade = grade20FromResult(
+    quiz.nbQuestionsSuccessful,
+    quiz.quizLength
+  );
+  if (quiz.finalGrade == 20) user.nbQuizPerfect++;
+
+  // remplacer success par result pour tenir compte des erreurs
+  user.points += quiz.points;
+  statsThemes[theme.id].nbQuizFinished++;
+  user.nbQuizFinished++;
+  saveToLocalStorage();
+  state = "End";
+  render();
+}
+
+function unstack(targetName) {
+  /* appelé lorsque le joueur sort de l'écran de fin : il faut afficher tous les messages empilés */
+  /* provisoire */
+  if (targetName == "Chapters") gotoChapters();
+  else gotoTheme(theme.id);
+}
+
+// - - - COMPOSANTS - - - --
+
+function glyphResult(note) {
+  // écran de fin de quiz
+  let glyph = "";
+  if (note == 20) glyph = "🏆";
+  else if (note >= 15) glyph = "🎉";
+  else if (note >= 10) glyph = "👍";
+  else glyph = "😅";
+  return glyph;
+}
+function grade20FromResult(result, maxResult) {
+  let MAX_GRADE = 20; // ou 100
+  let posResult = Math.max(0, result);
+  let grade = (MAX_GRADE * posResult) / maxResult;
+  let roundedGrade = Math.floor(grade);
+  return roundedGrade;
+}
+
+function getBooster() {}
+
+function toast(message, color) {
+  Toastify({
+    text: message,
+    duration: 800,
+    destination: "",
+    newWindow: true,
+    close: false,
+    gravity: "top", // `top` or `bottom`
+    position: "center", // `left`, `center` or `right`
+    stopOnFocus: true, // Prevents dismissing of toast on hover
+    style: {
+      "border-radius": "1rem",
+      background: color,
+      "text-align": "center",
+    },
+    onClick: function () {}, // Callback after click
+  }).showToast();
+}
 
 /**
  * Minified by jsDelivr using Terser v5.14.1.
