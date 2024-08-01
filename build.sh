@@ -166,6 +166,11 @@ echo "Le fichier $css_file a été inliné dans $index_file"
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 #- - - - - -  CHOIX 2 : INLINE JAVASCRIPT  BUNDLE - - - - - - -
 # - - - - - - - - - - - - - - - - - - - - - - - - - - -
+# avantage : le js arrive  plus vite, du contenu s'affiche. 
+# Mais avant que les fontes soient là... glich sur les fontes
+# il faudrait inliner les fontes, dans ce cas
+# bon cela dit, sur firefox et chrome mobile sur le téléphone ça semble instantané
+# - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # Définir les chemins des fichiers
 index_file="index.html"

@@ -70,12 +70,12 @@
               x-html="svgPathFasDumbbell"
             ></svg>
           </div>
-          <div class="nav-button" onClick="goto('Highscores')">
+          <div class="nav-button" onClick="goto('Trophies')">
             <svg
-              id="navButtonHighscores"
+              id="navButtonTrophies"
               class="svg-icon-nav nav-button-icon"
-              viewBox="0 0 640 512"
-              x-html="svgPathFasRankingStar"
+              viewBox="0 0 576 512"
+              x-html="svgPathFasTrophy"
             ></svg>
           </div>
         </nav>
@@ -115,12 +115,7 @@
       <main>
         <!-- - - - - - -H O M E - - - - --->
         <section id="section-home" x-show="(state=='Home')">
-          <h1 class="glow">Bienvenue !</h1>
-          <p>
-            Cette web-application te permet de consolider ton niveau en maths de
-            manière ludique au moyen de quiz de type "vrai / faux" sur de
-            nombreux thèmes, du collège jusqu'à l'enseignement supérieur.
-          </p>
+          <h1 class="glow">Bienvenue</h1>
           <h3>Règles du jeu</h3>
           <p>
             Chaque réponse correcte rapporte un point, chaque réponse incorrecte
@@ -130,10 +125,17 @@
             Des bonus sont octroyés pour des séries de bonnes réponses
             consécutives.
           </p>
-          <p>
-            Pour commencer, clique sur le bouton bleu ci-dessous, puis choisis
-            un chapitre et lance une partie !
-          </p>
+          <h3>
+            Tableau des scores
+            <span onclick="getHighscores()"
+              ><i
+                id="refreshHighscoresButton"
+                class="fa-solid fa-arrow-rotate-right"
+              ></i
+            ></span>
+          </h3>
+          <p>Tous les temps / Plus récents / Meilleurs Streaks</p>
+          <div id="highscores">- - - Chargement des scores - - -</div>
         </section>
 
         <!-- - - - - - P R O F I L - - - - - -->
@@ -366,30 +368,14 @@
         </section>
         <!-- - - - - - / S T A T S - - - - - -->
 
-        <!-- - - - - - H I G H S C O R E S  - - - - - -->
+        <!-- - - - - - T R O P H E E S  - - - - - -->
         <section
-          id="section-highscores"
-          x-show="(state=='Highscores')"
+          id="section-trophies"
+          x-show="(state=='Trophies')"
           style="display: none"
         >
-          <h1 class="glow">
-            Highscores
-            <span
-              onclick="getHighscores()"
-              id="refreshHighscoresButton"
-              style="cursor: pointer"
-            >
-              <svg
-                style="width: 1.5rem; height: 1.5rem"
-                class="svg-icon"
-                viewBox="0 0 516 512"
-                x-html="svgPathFasArrowRotateRight"
-              ></svg>
-            </span>
-          </h1>
-
-          <p>Tous les temps / Plus récents / Meilleurs Streaks</p>
-          <div id="highscores">- - - Chargement des scores - - -</div>
+          <h1 class="glow">Trophées</h1>
+          <p>Tes trophées seront affichés ici.</p>
         </section>
 
         <!-- - - - - - C H A P I T R E S - - - - - -->

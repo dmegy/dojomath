@@ -163,14 +163,14 @@ function nextLevelThreshold(points) {
 
 function getHighscores() {
   document.getElementById("highscores").innerHTML = "Chargement...";
-  document.getElementById("refreshHighscoresButton").classList.add("fa-spin");
+  document.getElementById("refreshHighscoresButton").classList.add("rotating");
   fetch("static/highscores.html.txt?again=" + Math.random())
     .then((response) => response.text())
     .then((data) => {
       document.getElementById("highscores").innerHTML = data;
       document
         .getElementById("refreshHighscoresButton")
-        .classList.remove("fa-spin");
+        .classList.remove("rotating");
     });
 }
 // transformation nombres en b64
