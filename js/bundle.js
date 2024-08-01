@@ -249,11 +249,11 @@ function getScript(scriptUrl, callback) {
 
 window.addEventListener("load", () => {
   state = "Home";
-  getScript("js/_initMathJax.js", () => {
+  getScript("js/-initMathJax.js", () => {
     console.log("MathJax config initialisée!");
     questionsLoaded = true;
   });
-  getScript("js/_questions.js");
+  getScript("js/-questions.js");
 
   render(); //rendu des points
   getHighscores();

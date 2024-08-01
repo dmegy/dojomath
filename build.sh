@@ -53,11 +53,11 @@ js_output_file="js/bundle.js"
 # Vider le fichier de sortie s'il existe déjà
 echo " " > "$js_output_file"
 
-# Concaténer tous les fichiers sauf ceux qui commencent par _ et le fichier style.css, ainsi que le bundle.css lui-même
+# Concaténer tous les fichiers sauf ceux qui commencent par - et le fichier style.css, ainsi que le bundle.css lui-même
 for file in "$js_dir"/*; do
     filename=$(basename "$file")
 
-    if [[ ! "$filename" =~ ^_  && "$filename" != "index.js" && "$filename" != "bundle.js" && "$filename" != "bundle.min.js" && -f "$file" ]]; then
+    if [[ ! "$filename" =~ ^-  && "$filename" != "index.js" && "$filename" != "bundle.js" && "$filename" != "bundle.min.js" && -f "$file" ]]; then
         cat "$file" >> "$js_output_file"
         echo >> "$js_output_file"  # Ajouter une nouvelle ligne pour séparer les fichiers
     fi
