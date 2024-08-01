@@ -24,13 +24,15 @@ function shuffleArray(array) {
 }
 
 function startQuiz() {
-  console.log("startQuiz() sur le thème " + theme);
-  quiz = structuredClone(theme); // ATTENTION ICI BUG BIZARRE ?
+  console.log("startQuiz() sur le thème " + theme.id);
+  quiz = structuredClone(theme);
+  // ATTENTION ICI BUG BIZARRE ?
 
   shuffleArray(quiz.questions);
 
   // on vide la fin pour ne garder au plus que QUIZ_LENGTH questions
   while (quiz.questions.length > QUIZ_MAX_LENGTH) quiz.questions.shift();
+  console.log("questions qui vont tomber : " + quiz.questions);
 
   quiz.quizLength = quiz.questions.length;
   quiz.nbQuestionsFailed = 0;
@@ -41,12 +43,17 @@ function startQuiz() {
   quiz.points = 0;
   quiz.bonus = 0;
   quiz.finalGrade = 0;
-  /* tableau d'objets de la forme :
-    {questionNumber:num,submittedAnswer:true;result:-1}
-    */
   user.nbQuizStarted += 1;
   nextQuestion();
 }
+// préciser le type des éléments de quiz.history :
+// c'est ce qui va être envoyé au serveur :
+// tableau d'objets du type 'quizFinishedEvent' :
+// {
+// questionNumber: int,
+// submittedAnswer: true, false ou undefined,
+// result:  : 1, 0 ou -1
+// }
 
 function nextQuestion() {
   // appelée par startQuiz() ou bien validateAnswer()

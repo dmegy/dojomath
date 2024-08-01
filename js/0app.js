@@ -1,4 +1,5 @@
 let t0 = performance.timeOrigin + performance.now();
+console.log("Bienvenue ! ");
 
 const QUIZ_MIN_RESULT = 2; // attention certains quiz peuvent faire moins de 2 questions ?
 const QUIZ_MAX_LENGTH = 10;
@@ -10,25 +11,6 @@ let state = "Loading";
 let theme = {}; // thème courant, celui affiché lorsqu'on clique sur un thème dans la page des chapitres.
 let quiz = {}; // quiz courant
 
-let statsQuestions = [];
-for (let i = 0; i < 3000; i++) {
-  // attention initialisation avec 3000 il faudrait questions.length mais on ne l'a pas encore
-  //initialisation
-  statsQuestions[i] ??= {
-    viewed: 0,
-    failed: 0,
-    skipped: 0,
-    successful: 0,
-    lastResult: 0,
-    penultimateResult: 0,
-    successfulLastTime: false,
-    successfulLastTwoTimes: false,
-  };
-}
-
-let statsThemes = {}; //quest. vues, réussies, ratées, sautées, double-réussies
-
-/* données pour tester l'affihage */
 let user = {
   firstConnection: t0,
   userId: toB64(t0),
@@ -53,10 +35,40 @@ let user = {
   lastStreak: 0,
   longestStreak: 0,
 };
+if (window.localStorage.getItem("user") !== null) {
+  console.log("user already exists in storage");
+  // on écrase :
+  user = JSON.parse(window.localStorage.getItem("user"));
+  console.log("User updated");
+}
 
-let finishedQuizHistory = []; // histoorique des quiz finis
+let finishedQuizHistory = []; // historique des quiz finis
+if (window.localStorage.getItem("finishedQuizHistory") !== null) {
+  console.log("Quiz history exists in storage");
+  // on écrase :
+  finishedQuizHistory = JSON.parse(
+    window.localStorage.getItem("finishedQuizHistory")
+  );
+  console.log("Quiz history updated");
+}
 
-loadFromLocalStorage();
+// - - - - - - - - - - - - -
+// variables qui devront être synchronisées plus tard :
+
+let statsQuestions = [];
+
+let statsThemes = {}; //quest. vues, réussies, ratées, sautées, double-réussies
+
+// - - - - - - - - - -
+
+function saveToLocalStorage() {
+  // à mettre ici et pas dans quiz.js
+  // En effet : modifications/enregistrement de user dans la page de profil
+  console.log("sauvegarde-> localStorage");
+  window.localStorage.setItem("statsQuestions", JSON.stringify(statsQuestions));
+  window.localStorage.setItem("statsThemes", JSON.stringify(statsThemes));
+  window.localStorage.setItem("user", JSON.stringify(user));
+}
 
 function getUserStreak() {
   if (user.lastActive == "") return 0;
@@ -179,42 +191,6 @@ function fromB64(x) {
   return x.split("").reduce((s, v) => s * 64 + digit.indexOf(v), 0);
 }
 
-function saveToLocalStorage() {
-  console.log("sauvegarde-> localStorage");
-  window.localStorage.setItem("statsQuestions", JSON.stringify(statsQuestions));
-  window.localStorage.setItem("statsThemes", JSON.stringify(statsThemes));
-  window.localStorage.setItem("user", JSON.stringify(user));
-}
-
-function loadFromLocalStorage() {
-  console.log("Récupération des données sauvegardées en local");
-
-  if (window.localStorage.getItem("user") !== null) {
-    // on écrase :
-    user = JSON.parse(window.localStorage.getItem("user"));
-  }
-  if (window.localStorage.getItem("finishedQuizHistory") !== null) {
-    // on écrase :
-    finishedQuizHistory = JSON.parse(
-      window.localStorage.getItem("finishedQuizHistory")
-    );
-  }
-
-  if (window.localStorage.getItem("statsQuestions") !== null) {
-    let loadedstatsQuestions = JSON.parse(
-      window.localStorage.getItem("statsQuestions")
-    );
-    // ceci contient des valeurs non nulles,
-    //mais peut-être moins de clés que statsQuestions si des questions ont été traitées entre-temps.
-    for (let i = 0; i < loadedstatsQuestions.length; i++) {
-      statsQuestions[i] = loadedstatsQuestions[i]; // on écrase quand il existe une valeur loadée
-    }
-  }
-
-  if (window.localStorage.getItem("statsThemes") !== null) {
-  }
-}
-
 // - - - - - - - - - - - - - - - - - - - - - - - - -
 // - - - - - - - - Mini-Alpine :-) - - - - - - - - -
 // - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -254,6 +230,7 @@ function render() {
 // - - - - - - - - - - - - - - -
 // - - - - ON LOAD and getScript, Mathjax etc
 // - - - - - - - - - - - - - - -
+
 function getScript(scriptUrl, callback) {
   const script = document.createElement("script");
   script.src = scriptUrl + "?unique=" + Math.random();
@@ -262,17 +239,76 @@ function getScript(scriptUrl, callback) {
   document.body.appendChild(script);
 }
 
+window.addEventListener("DOMContentLoaded", () => {
+  getHighscores(); // fetch un fichier texte et inneHTML dans le div, qui doit donc exister
+});
+
+// - - - - - - - - - - - - - - - - - - -
+// - - - - - - O N L O A D   - - - - - -
+// - - - - - - - - - - - - - - - - - - -
+
 window.addEventListener("load", () => {
+  // l'appli, les thèmes et chapitres sont loadés.
+  // On peut initialiser les stats des thèmes
+  // puis synchroniser avec  le storage
+  if (window.localStorage.getItem("statsThemes") !== null) {
+    loadedStatsThemes = JSON.parse(window.localStorage.getItem("statsThemes"));
+    console.log("statsThemes : data exists in storage. Loaded.");
+
+    for (themeId in themes) {
+      statsThemes[themeId] = {};
+      if (themeId in loadedStatsThemes) {
+        statsThemes[themeId] = loadedStatsThemes[themeId];
+      }
+    }
+
+    console.log("statsThemes updated");
+  }
+  // passage du state de Loading à Home
   state = "Home";
   getScript("js/-initMathJax.js", () => {
-    console.log("MathJax config initialisée!");
-    questionsLoaded = true;
+    console.log("Callback de getScript -initMathjax.js");
   });
-  getScript("js/-questions.js");
-
-  render(); //rendu des points
-  getHighscores();
+  getScript("js/-questions.js", () => {
+    console.log("callback de getScript -questions.js");
+    questionsLoaded = true;
+    afterQuestionsLoaded();
+  });
+  render(); //rendu des points ? Mais il sont pas encore récupérés du storage
 });
+
+function afterQuestionsLoaded() {
+  console.log("Nb de questions téléchargées : " + questions.length);
+  // initialisation de statsQuestions par des stats vides
+  // pour chaque question officielle venant d'être chargée
+  for (let i = 0; i < questions.length; i++) {
+    statsQuestions[i] ??= {
+      viewed: 0,
+      failed: 0,
+      skipped: 0,
+      successful: 0,
+      lastResult: 0,
+      penultimateResult: 0,
+      successfulLastTime: false,
+      successfulLastTwoTimes: false,
+    };
+  }
+
+  if (window.localStorage.getItem("statsQuestions") !== null) {
+    let loadedStatsQuestions = JSON.parse(
+      window.localStorage.getItem("statsQuestions")
+    );
+    console.log(
+      "Questions possédant des données dans le storage : " +
+        loadedStatsQuestions.length
+    );
+    // ceci contient des valeurs non nulles,
+    //mais peut-être moins de clés que statsQuestions si des questions ont été traitées entre-temps.
+    for (let i = 0; i < loadedStatsQuestions.length; i++) {
+      statsQuestions[i] = loadedStatsQuestions[i]; // on écrase quand il existe une valeur loadée
+    }
+  }
+}
 
 /*
 fetch("questions.json?again=" + Math.random())

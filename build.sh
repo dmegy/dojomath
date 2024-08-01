@@ -65,6 +65,14 @@ done
 
 echo "Tous les fichiers de js ont été bundlés dans $js_output_file."
 
+# Petite minification : enlever tous les commentaires (d'une ligne) du js :
+# enlève uniquement les commentaires qui sont seuls sur leur ligne (espaces puis commentaire) 
+
+grep -v "^\s*//" js/bundle.js > tmp && mv tmp js/bundle.js
+
+# enlever les lignes avec juste un console.log ? NON, garder pour débugguer.
+grep -v "^\s*console.log(" js/bundle.js > tmp && mv tmp js/bundle.js
+
 
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - -
