@@ -2,10 +2,7 @@
 - - - - - B O U T O N S - - - - - 
 - - - - - - - - - - - - - - - - */
 
-button {
-  font-family: inherit;
-}
-
+/* séparer en deux classes */
 .button {
   cursor: pointer;
   border-radius: 2rem;
@@ -52,8 +49,8 @@ button {
 .nav-button {
   cursor: pointer;
   --c-border: transparent;
-  height: 2.6rem;
-  margin-right: 0.5rem;
+  height: 3rem;
+  margin-right: 1rem;
   display: grid;
   place-items: center;
 }
@@ -69,15 +66,15 @@ button {
 }
 
 .fab {
+  position: absolute;
   cursor: pointer;
   box-shadow:
     0 0 10px black,
     0 0 40px black;
   /*filter: drop-shadow(0 0 20px yellow);*/
   font-size: 2.5rem;
-  position: absolute;
   bottom: 1rem;
-  margin: auto;
+  right: 1rem;
   background-color: var(--c-primary);
   border-radius: 50%;
   width: 5rem;

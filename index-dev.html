@@ -45,41 +45,7 @@
   <body>
     <div class="body-container">
       <header class="glow">
-        <nav x-show="(state!='Quiz') && (state!='End')">
-          <div class="nav-button" onClick="goto('Home')">
-            <svg
-              id="navButtonHome"
-              class="svg-icon-nav nav-button-icon circled"
-              viewBox="0 0 576 512"
-              x-html="svgPathFasHouse"
-            ></svg>
-          </div>
-          <div class="nav-button" onClick="goto('Profile')">
-            <svg
-              id="navButtonProfile"
-              class="svg-icon-nav nav-button-icon"
-              viewBox="0 0 576 512"
-              x-html="svgPathFasUserLarge"
-            ></svg>
-          </div>
-          <div class="nav-button" onClick="goto('Statistics')">
-            <svg
-              id="navButtonStatistics"
-              class="svg-icon-nav nav-button-icon"
-              viewBox="0 0 640 512"
-              x-html="svgPathFasDumbbell"
-            ></svg>
-          </div>
-          <div class="nav-button" onClick="goto('Highscores')">
-            <svg
-              id="navButtonHighscores"
-              class="svg-icon-nav nav-button-icon"
-              viewBox="0 0 640 512"
-              x-html="svgPathFasRankingStar"
-              style="transform: scale(1.1)"
-            ></svg>
-          </div>
-        </nav>
+        <div>&nbsp;</div>
         <div
           x-show="(state!='Quiz') && (state!='End')"
           style="position: relative; display: none"
@@ -87,6 +53,7 @@
           <span x-html="htmlNumAdj(user.points,'pt')"></span>
           <span class="notif">Niv. 2</span>
         </div>
+
         <div
           id="quizHeader"
           style="width: 100%; display: none"
@@ -104,7 +71,8 @@
             >
               ✖
             </div>
-            <div x-show="state=='End'">Partie terminée ! Bravo !</div>
+            <div x-show="state=='End'">Partie terminée !</div>
+
             <div>
               <span
                 x-html="(quiz.points>=0 ? '+' : '')+htmlPoints(quiz.points)"
@@ -116,11 +84,13 @@
       <main>
         <!-- - - - - - -H O M E - - - - --->
         <section id="section-home" x-show="(state=='Home')">
-          <h1 class="glow">Bienvenue !</h1>
+          <h1 class="glow">Bienvenue sur<br />DojoMath.fr</h1>
           <p>
             Cette web-application te permet de consolider ton niveau en maths de
-            manière ludique au moyen de quiz de type "vrai / faux" sur de
-            nombreux thèmes, du collège jusqu'à l'enseignement supérieur.
+            manière ludique.
+            <br />
+            Elle propose des quiz de type "vrai / faux" sur de nombreux thèmes,
+            du collège jusqu'à l'enseignement supérieur.
           </p>
           <h3>Règles du jeu</h3>
           <p>
@@ -406,16 +376,9 @@
         <!-- - - - - - D E T A I L S   T H E M E - - - - - -->
         <section
           id="section-theme"
-          x-show="(state=='theme')"
+          x-show="(state=='Theme')"
           style="display: none"
         >
-          <div
-            style="margin-top: 1.5rem"
-            class="button button-primary"
-            onclick="gotoChapters()"
-          >
-            ❮❮ Retour aux chapitres
-          </div>
           <h3 x-html="theme.title"></h3>
           <p x-html="theme.info"></p>
           <div class="stats-theme">
@@ -470,13 +433,6 @@
             </div>
           </div>
 
-          <div
-            style="margin-top: 1.5rem"
-            class="button button-secondary"
-            onclick="startQuiz()"
-          >
-            Quiz de 10 questions ❯❯
-          </div>
           <!-- composant car boucle for... il faudrait un x-for-->
           <div
             x-html="htmlThemeReferences()"
@@ -504,26 +460,6 @@
               style="flex-grow: 1"
               x-html="question.statement"
             ></div>
-            <div class="quiz-answer">
-              <div
-                class="button-answer button-answer-false"
-                onclick="submitAnswer(false)"
-              >
-                FAUX
-              </div>
-              <div
-                class="button-answer button-answer-undefined"
-                onclick="submitAnswer(undefined)"
-              >
-                PASSER
-              </div>
-              <div
-                class="button-answer button-answer-true"
-                onclick="submitAnswer(true)"
-              >
-                VRAI
-              </div>
-            </div>
           </div>
         </section>
 
@@ -634,41 +570,111 @@
           </div>
           <div
             class="button button-primary margin-t-1"
-            onclick="unstack('Theme')"
+            onclick="unstack('Quiz')"
           >
             Rejouer ❯❯
           </div>
         </section>
-
-        <!-- - - - - - F A B (Floating Action Button ) - - - - - -->
+      </main>
+      <footer>
         <div
-          style="display: none"
-          id="fab"
-          class="fab pulse"
-          onClick="gotoChapters()"
-          x-show="(state=='Home')||(state=='Profile')||(state=='Statistics')||(state=='Trophies')"
+          x-show="(state!='Quiz') && (state!='End') && (state!='Theme')"
+          class="footer-content"
         >
-          <div class="fab-triangle">
-            <svg
-              class="svg-icon-nav"
-              viewBox="0 0 576 512"
-              x-html="svgPathFasPlay"
-              style="transform: translateX(0.35rem)"
-            ></svg>
+          <nav>
+            <div class="nav-button" onClick="goto('Home')">
+              <svg
+                id="navButtonHome"
+                class="svg-icon-nav nav-button-icon circled"
+                viewBox="0 0 576 512"
+                x-html="svgPathFasHouse"
+              ></svg>
+            </div>
+            <div class="nav-button" onClick="goto('Profile')">
+              <svg
+                id="navButtonProfile"
+                class="svg-icon-nav nav-button-icon"
+                viewBox="0 0 576 512"
+                x-html="svgPathFasUserLarge"
+              ></svg>
+            </div>
+            <div class="nav-button" onClick="goto('Statistics')">
+              <svg
+                id="navButtonStatistics"
+                class="svg-icon-nav nav-button-icon"
+                viewBox="0 0 640 512"
+                x-html="svgPathFasDumbbell"
+              ></svg>
+            </div>
+            <div class="nav-button" onClick="goto('Highscores')">
+              <svg
+                id="navButtonHighscores"
+                class="svg-icon-nav nav-button-icon"
+                viewBox="0 0 640 512"
+                x-html="svgPathFasRankingStar"
+                style="transform: scale(1.1)"
+              ></svg>
+            </div>
+          </nav>
+          <!-- - - - - - F A B (Floating Action Button ) - - - - - -->
+          <div
+            style="display: none"
+            id="fab"
+            class="fab pulse"
+            onClick="gotoChapters()"
+            x-show="(state=='Home')||(state=='Profile')||(state=='Statistics')||(state=='Highscores')"
+          >
+            <div class="fab-triangle">
+              <svg
+                class="svg-icon-nav"
+                viewBox="0 0 576 512"
+                x-html="svgPathFasPlay"
+                style="transform: translateX(0.35rem)"
+              ></svg>
+            </div>
           </div>
         </div>
-        <!-- - - - - - F O O T E R  - - - - - -->
-        <footer
-          x-show="state=='Home' || state=='Profile' || state=='Statistics' || state=='Trophies'"
-        >
-          <div>
-            DojoMath est une création du
-            <a href="https://dmegy.perso.math.cnrs.fr/club" target="_blank"
-              >Club Mathématique de Nancy</a
-            >
+        <div class="quiz-answer" x-show="state=='Quiz'" style="display: none">
+          <div
+            class="button-answer button-answer-false"
+            onclick="submitAnswer(false)"
+          >
+            FAUX
           </div>
-        </footer>
-      </main>
+          <div
+            class="button-answer button-answer-undefined"
+            onclick="submitAnswer(undefined)"
+          >
+            PASSER
+          </div>
+          <div
+            class="button-answer button-answer-true"
+            onclick="submitAnswer(true)"
+          >
+            VRAI
+          </div>
+        </div>
+        <div
+          class="footer-content"
+          x-show="state=='Theme'"
+          style="display: none; width: 100%"
+        >
+          <div
+            class="button button-secondary"
+            onclick="gotoChapters()"
+            style="width: calc(50% - 0.5rem)"
+          >
+            ❮❮ Thèmes
+          </div>
+          <div
+            class="button button-primary"
+            onclick="startQuiz()"
+            style="width: calc(50% - 0.5rem)"
+          >
+            Jouer ❯❯
+          </div>
+        </div>
+      </footer>
     </div>
     <script>
       /* INLINE JAVASCRIPT HERE */

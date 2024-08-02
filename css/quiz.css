@@ -2,8 +2,6 @@
 - - - - - - - Q U I Z - - - - - - 
 - - - - - - - - - - - - - - - - */
 
-
-
 .button-answer {
   cursor: pointer;
   padding: 0.8rem 0.8rem;
@@ -11,7 +9,6 @@
   color: #eeeeee;
   font-size: 1rem;
   text-align: center;
-  margin-top: 1rem;
   width: calc((100% - 2 * var(--margin)) / 3);
 }
 
@@ -36,6 +33,7 @@
 }
 
 .quiz-answer {
+  width: 100%;
   display: flex;
   justify-content: space-between;
 }
