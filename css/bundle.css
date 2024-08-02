@@ -472,6 +472,24 @@ summary {
   place-items: center;
 }
 
+select,
+input {
+  font-size: 1rem;
+  font-family: Nunito, Futura, Arial;
+}
+select {
+  background-color: var(--c-primary-20-desat);
+  color: var(--c-text);
+  border: 2px dashed var(--c-primary);
+  margin: 1px;
+}
+input[type="text"] {
+  background-color: var(--c-bg);
+  border: 2px dashed var(--c-primary);
+  color: var(--c-text);
+  margin: 1px;
+}
+
 /*!
  * Toastify js 1.12.0
  * https://github.com/apvarun/toastify-js

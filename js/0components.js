@@ -108,3 +108,34 @@ function htmlPoints(points) {
 function htmlGetUserLevel() {
   return "Niv. " + level(user.points);
 }
+
+function htmlInputUsername() {
+  let s = `
+      <input 
+        style="display:inline"
+        type="text"
+        id="userNameInputId"
+        name="userNameInputName"
+        size="10"
+        maxlength="10"
+        value="${user.userName}" />`;
+
+  return s;
+}
+
+function htmlSelectAreaCode() {
+  let s = `<select name="userAreaCodeSelectName" id="userAreaCodeSelectId">`;
+  let choices = []; // construction du tableau contenant tous les choix
+  choices.push("Aucun");
+  for (let i = 1; i <= 95; i++) choices.push(("0" + i).slice(-2));
+  for (let i = 971; i <= 978; i++) choices.push(i);
+  for (let i = 986; i <= 988; i++) choices.push(i);
+  choices.push("AEFE");
+  choices.push("Autre");
+  // construction du SELECT
+  for (let i = 0; i < choices.length; i++) {
+    s += `		<option value="${choices[i]}" ${user.areaCode == choices[i] ? "selected" : ""}>${choices[i]}</option>`;
+  }
+  s += "</select>";
+  return s;
+}

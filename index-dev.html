@@ -101,9 +101,10 @@
             Des bonus sont octroyés pour des séries de bonnes réponses
             consécutives.
           </p>
+          <h3>Démarrage</h3>
           <p>
-            Pour commencer, clique sur le bouton bleu ci-dessous, puis choisis
-            un chapitre et lance une partie !
+            Pour afficher la liste des thèmes disponibles et commencer une
+            partie, clique sur le bouton rond en bas à droite de l'écran.
           </p>
         </section>
 
@@ -114,14 +115,17 @@
           x-show="(state=='Profile')"
           style="display: none"
         >
-          <h1 class="glow">Profil Utilisateur</h1>
+          <h1 class="glow">Préférences</h1>
 
-          <div>
-            <p>Identifiant utilisateur : <span x-html="user.userId"></span></p>
-            <p>Nom utilisateur : <span x-html="user.userId"></span></p>
-            <p>Département (si France) :</p>
-            <p>Club :</p>
-          </div>
+          <!--<div>
+            Identifiant d'utilisateur (non modifiable):
+            <span x-html="user.userId"></span>
+          </div>-->
+          <p>Nom d'utilisateur (⩽10 caractères) :</p>
+          <p x-html="htmlInputUsername()">input username</p>
+
+          <p>Département (si France) :</p>
+          <p x-html="htmlSelectAreaCode()"></p>
           <!--
           <div>
             <h3>Sauvegarde du compte</h3>
@@ -579,8 +583,8 @@
               <svg
                 id="navButtonProfile"
                 class="svg-icon-nav btn-nav-icon"
-                viewBox="0 0 576 512"
-                x-html="svgPathFasUserLarge"
+                viewBox="0 0 512 512"
+                x-html="svgPathFasGear"
               ></svg>
             </div>
             <div class="btn btn-nav" onClick="goto('Statistics')">

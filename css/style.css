@@ -3,5 +3,6 @@
 @import "./main.css";
 @import "./components.css";
 @import "./buttons.css";
+@import "settings.css";
 @import "./quiz.css";
 @import "./toastify.css";

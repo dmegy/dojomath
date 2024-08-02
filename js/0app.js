@@ -17,9 +17,7 @@ let user = {
   firstConnection: t0,
   userId: toB64(t0),
   userName: toB64(t0),
-  avatarURL: "" /* type : dataURL*/,
-  depCode: "",
-  mathClub: "",
+  areaCode: "54" /* numéro de département */,
   combo: 0,
   longestCombo: 0,
   points: 0,
@@ -227,6 +225,22 @@ function xHtml() {
 function render() {
   xShow();
   xHtml();
+
+  // on rattache les listeners,
+  // attention l'élément est crée par un composant et n'existe peut-être pas :
+  let userNameInput = document.getElementById("userNameInputId");
+  if (userNameInput)
+    userNameInput.addEventListener("change", () => {
+      user.userName = userNameInput.value;
+      saveToLocalStorage();
+    });
+
+  let userAreaCodeSelect = document.getElementById("userAreaCodeSelectId");
+  if (userAreaCodeSelect)
+    userAreaCodeSelect.addEventListener("change", () => {
+      user.areaCode = userAreaCodeSelect.value;
+      saveToLocalStorage();
+    });
 }
 
 // - - - - - - - - - - - - - - -
