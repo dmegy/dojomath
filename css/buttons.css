@@ -47,7 +47,7 @@
 .btn-nav {
   --c-border: transparent;
   height: 3rem;
-  margin-right: 1rem;
+  margin-right: min(1.5rem, 4vw);
   display: grid;
   place-items: center;
 }
@@ -73,8 +73,8 @@
   right: 1rem;
   background-color: var(--c-secondary);
   border-radius: 50%;
-  width: 5rem;
-  height: 5rem;
+  width: clamp(4rem, 22vw, 6rem);
+  height: clamp(4rem, 22vw, 6rem);
 }
 
 .fab-triangle {
@@ -86,7 +86,7 @@
   transform: translateX(0.2rem);
 }
 
-.pulse {
+.puls {
   animation: pulse 1s ease-out infinite;
 }
 
