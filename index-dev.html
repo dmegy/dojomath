@@ -48,10 +48,10 @@
         <div>&nbsp;</div>
         <div
           x-show="(state!='Quiz') && (state!='End')"
-          style="position: relative; display: none"
+          style="position: relative"
         >
           <span x-html="htmlNumAdj(user.points,'pt')"></span>
-          <span class="notif">Niv. 2</span>
+          <span class="notif" x-html="htmlGetUserLevel()">Niv. 0</span>
         </div>
 
         <div

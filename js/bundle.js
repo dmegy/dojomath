@@ -322,10 +322,6 @@ fetch("questions.json?again=" + Math.random())
   });
 */
 
-function htmlPoints(points) {
-  return points + " pt" + (points == 1 || points == -1 ? "" : "s");
-}
-
 // pour l'écran des thèmes et chapitres :
 
 function htmlChapters() {
@@ -426,7 +422,15 @@ function htmlCheckbox(bool) {
 function htmlNumAdj(n, adj) {
   // l'adjectif doit être déjà conjugué en genre
   // exemple : htmlNombreAdj(3,"vérolée") retourne "3 vérolées"
-  return n + " " + adj + (n == 1 ? "" : "s"); // pour zéro on met au plurieu ?
+  return n + " " + adj + (n == 1 || n == -1 ? "" : "s"); // pour zéro on met au plurieu ?
+}
+
+function htmlPoints(points) {
+  return points + " pt" + (points == 1 || points == -1 ? "" : "s");
+}
+
+function htmlGetUserLevel() {
+  return "Niv. " + level(user.points);
 }
 
 let svgPathFasDumbbell = `<path d="M112 96c0-17.7 14.3-32 32-32h16c17.7 0 32 14.3 32 32V224v64V416c0 17.7-14.3 32-32 32H144c-17.7 0-32-14.3-32-32V384H64c-17.7 0-32-14.3-32-32V288c-17.7 0-32-14.3-32-32s14.3-32 32-32V160c0-17.7 14.3-32 32-32h48V96zm416 0v32h48c17.7 0 32 14.3 32 32v64c17.7 0 32 14.3 32 32s-14.3 32-32 32v64c0 17.7-14.3 32-32 32H528v32c0 17.7-14.3 32-32 32H480c-17.7 0-32-14.3-32-32V288 224 96c0-17.7 14.3-32 32-32h16c17.7 0 32 14.3 32 32zM416 224v64H224V224H416z"/>`;
@@ -1161,7 +1165,7 @@ function validateAnswer() {
     user.nbQuestionsSkipped += 1;
     quiz.nbQuestionsSkipped += 1;
     console.log("question sautée");
-    toast("+0pts", "var(--c-warning)");
+    toast("Question sautée", "var(--c-warning)");
   } else if (question.submittedAnswer === question.answer) {
     // SUCCESS
     question.result = 1;
@@ -1178,7 +1182,7 @@ function validateAnswer() {
 
     // toast success
     let congratulationsMessage =
-      user.combo + " PT" + (user.combo > 1 ? "S" : "");
+      "+" + user.combo + " pt" + (user.combo > 1 ? "s" : "");
     toast(congratulationsMessage, "var(--c-success)");
     //toast Combo:
     if (user.combo > 1)
@@ -1193,7 +1197,7 @@ function validateAnswer() {
     user.combo = 0;
     user.nbQuestionsFailed++;
     quiz.nbQuestionsFailed++;
-    toast("-1pt", "var(--c-danger)");
+    toast("-1 pt", "var(--c-danger)");
   }
   quiz.result += question.result;
   statsQuestions[question.num].penultimateResult =
@@ -1204,12 +1208,9 @@ function validateAnswer() {
   let maxAchievableResult = quiz.result + quiz.questions.length;
   let isGameover = maxAchievableResult < MIN_QUIZ_RESULT;
   if (isGameover) {
-    alert(`
-=========
-GAMEOVER
-=========
-
-Trop de questions ratées ou sautées`);
+    alert(
+      "=========\nGAMEOVER\n=========\n\nTrop de questions ratées ou sautées"
+    );
     user.nbQuizGameover++;
     abortQuiz();
     return;
@@ -1242,14 +1243,8 @@ Trop de questions ratées ou sautées`);
 }
 
 function showAbortQuizModal() {
-  let text = `
-=======================
-DEMANDE DE CONFIRMATION
-=======================
-
-Souhaites-tu vraiment quitter la partie en cours ?
-
-(Attention, les points de la partie en cours de seront pas sauvegardés.)`;
+  let text =
+    "=======================\nDEMANDE DE CONFIRMATION\n=======================\n\nSouhaites-tu vraiment quitter la partie en cours ?\n\n(Attention, les points de la partie en cours de seront pas sauvegardés.)";
   if (confirm(text) == true) {
     user.nbQuizAborted++;
     abortQuiz();

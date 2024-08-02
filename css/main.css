@@ -14,6 +14,7 @@ body {
 }
 
 .body-container {
+  background-color: var(--c-primary-20-desat);
   position: relative;
   overflow: hidden;
   margin: auto;
@@ -59,7 +60,6 @@ main {
 }
 
 section {
-  background-color: var(--c-bg-section);
   padding: var(--margin);
   width: 100%;
   max-width: var(--max-width);

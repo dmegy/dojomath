@@ -1,7 +1,7 @@
 <table width="100%">
   <tbody>
     <tr>
-      <td>🥇 H4 T2 &gt;&gt;&gt; [Club Paris]</td>
+      <td>🥇 H4 T2 &gt;&gt;&gt;</td>
       <td>(75)</td>
       <td align="right">87439 pts</td>
     </tr>
@@ -21,17 +21,17 @@
       <td align="right">56943 pts</td>
     </tr>
     <tr>
-      <td>Sacha L [Club Nancy]</td>
+      <td>Sacha L</td>
       <td>(54)</td>
       <td align="right">53509 pts</td>
     </tr>
     <tr>
-      <td>Hecto [Club Paris]</td>
+      <td>Hecto</td>
       <td>(75)</td>
       <td align="right">49704 pts</td>
     </tr>
     <tr>
-      <td>PCSI T2 [Club Paris]</td>
+      <td>PCSI T2</td>
       <td>(75)</td>
       <td align="right">45899 pts</td>
     </tr>
@@ -46,7 +46,7 @@
       <td align="right">37853 pts</td>
     </tr>
     <tr>
-      <td>Arnaud [Club Nancy]</td>
+      <td>Arnaud</td>
       <td>(54)</td>
       <td align="right">30554 pts</td>
     </tr>

@@ -1,7 +1,3 @@
-function htmlPoints(points) {
-  return points + " pt" + (points == 1 || points == -1 ? "" : "s");
-}
-
 // pour l'écran des thèmes et chapitres :
 
 function htmlChapters() {
@@ -102,5 +98,13 @@ function htmlCheckbox(bool) {
 function htmlNumAdj(n, adj) {
   // l'adjectif doit être déjà conjugué en genre
   // exemple : htmlNombreAdj(3,"vérolée") retourne "3 vérolées"
-  return n + " " + adj + (n == 1 ? "" : "s"); // pour zéro on met au plurieu ?
+  return n + " " + adj + (n == 1 || n == -1 ? "" : "s"); // pour zéro on met au plurieu ?
+}
+
+function htmlPoints(points) {
+  return points + " pt" + (points == 1 || points == -1 ? "" : "s");
+}
+
+function htmlGetUserLevel() {
+  return "Niv. " + level(user.points);
 }

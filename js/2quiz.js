@@ -88,7 +88,7 @@ function validateAnswer() {
     user.nbQuestionsSkipped += 1;
     quiz.nbQuestionsSkipped += 1;
     console.log("question sautée");
-    toast("+0pts", "var(--c-warning)");
+    toast("Question sautée", "var(--c-warning)");
   } else if (question.submittedAnswer === question.answer) {
     // SUCCESS
     question.result = 1;
@@ -105,7 +105,7 @@ function validateAnswer() {
 
     // toast success
     let congratulationsMessage =
-      user.combo + " PT" + (user.combo > 1 ? "S" : "");
+      "+" + user.combo + " pt" + (user.combo > 1 ? "s" : "");
     toast(congratulationsMessage, "var(--c-success)");
     //toast Combo:
     if (user.combo > 1)
@@ -120,7 +120,7 @@ function validateAnswer() {
     user.combo = 0;
     user.nbQuestionsFailed++;
     quiz.nbQuestionsFailed++;
-    toast("-1pt", "var(--c-danger)");
+    toast("-1 pt", "var(--c-danger)");
   }
   quiz.result += question.result;
   statsQuestions[question.num].penultimateResult =
