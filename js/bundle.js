@@ -7,7 +7,7 @@ const MAX_ERRORS_ALLOWED = 5; // inutilisé, on utilisé la constante précéden
 // (le but est d'empecher de cliquer sur 'passer' et que ça compte comme un quiz fini)
 const MAX_QUIZ_LENGTH = 10;
 const MAX_POINTS_QUESTION = 20; //maximum de pts que l'on peut gagner à chaque question
-const BOOST_PROBABILITY = 0.05;
+const BOOST_PROBABILITY = 0.2;
 
 let questionNumber; // int, question courante
 let question; // question courante : object
@@ -20,6 +20,7 @@ let user = {
   userId: toB64(t0),
   userName: toB64(t0),
   areaCode: "54" /* numéro de département */,
+  countryCode: "FR",
   combo: 0,
   longestCombo: 0,
   points: 0,
@@ -33,7 +34,7 @@ let user = {
   nbQuizAborted: 0,
   nbQuizFinished: 0,
   nbQuizPerfect: 0,
-  lastActive: "" /* date ou stringified date */,
+  lastActive: "" /* time in ms  */,
   lastStreak: 0,
   longestStreak: 0,
   lastBoostEnd: 0 /* date in millisec */,
@@ -1288,7 +1289,7 @@ function validateAnswer() {
   saveToLocalStorage();
 
   if (quiz.questions.length > 0) nextQuestion();
-  else showQuizResults();
+  else showQuizResults(); // quiz terminé !
 }
 
 function showAbortQuizModal() {
@@ -1307,6 +1308,8 @@ function abortQuiz() {
 
 function showQuizResults() {
   //appelée par validateResults() si la liste de questions est vide
+
+  user.lastActive = Date.now();
 
   // CALCUL NOTE
   quiz.finalGrade = grade20FromResult(
