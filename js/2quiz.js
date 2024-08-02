@@ -131,12 +131,9 @@ function validateAnswer() {
   let maxAchievableResult = quiz.result + quiz.questions.length;
   let isGameover = maxAchievableResult < MIN_QUIZ_RESULT;
   if (isGameover) {
-    alert(`
-=========
-GAMEOVER
-=========
-
-Trop de questions ratées ou sautées`);
+    alert(
+      "=========\nGAMEOVER\n=========\n\nTrop de questions ratées ou sautées"
+    );
     user.nbQuizGameover++;
     abortQuiz();
     return;
@@ -169,14 +166,8 @@ Trop de questions ratées ou sautées`);
 }
 
 function showAbortQuizModal() {
-  let text = `
-=======================
-DEMANDE DE CONFIRMATION
-=======================
-
-Souhaites-tu vraiment quitter la partie en cours ?
-
-(Attention, les points de la partie en cours de seront pas sauvegardés.)`;
+  let text =
+    "=======================\nDEMANDE DE CONFIRMATION\n=======================\n\nSouhaites-tu vraiment quitter la partie en cours ?\n\n(Attention, les points de la partie en cours de seront pas sauvegardés.)";
   if (confirm(text) == true) {
     user.nbQuizAborted++;
     abortQuiz();
