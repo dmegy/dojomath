@@ -137,7 +137,7 @@ function computeAllThemeStats() {
 
 function gotoTheme(id) {
   console.log("appel de gotoTheme avec id " + id);
-  state = "theme";
+  state = "Theme";
   theme = structuredClone(themes[id]);
   theme.id = id; // on rajoute l'id sinon il n'est plus là...
   // calculer theme.progress, theme.nbQuestionsSeens, nbQuestionsChecked, theme.nbQuestionsDbChecked
@@ -1274,7 +1274,7 @@ function unstack(targetName) {
   /* appelé lorsque le joueur sort de l'écran de fin : il faut afficher tous les messages empilés */
   /* provisoire */
   if (targetName == "Chapters") gotoChapters();
-  else gotoTheme(theme.id);
+  else if (targetName == "Quiz") startQuiz();
 }
 
 // - - - COMPOSANTS - - - --

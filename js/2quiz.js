@@ -203,7 +203,7 @@ function unstack(targetName) {
   /* appelé lorsque le joueur sort de l'écran de fin : il faut afficher tous les messages empilés */
   /* provisoire */
   if (targetName == "Chapters") gotoChapters();
-  else if (target == "Quiz") startQuiz();
+  else if (targetName == "Quiz") startQuiz();
 }
 
 // - - - COMPOSANTS - - - --

@@ -3,10 +3,7 @@
 - - - - - B O U T O N S - - - - - 
 - - - - - - - - - - - - - - - - */
 
-button {
-  font-family: inherit;
-}
-
+/* séparer en deux classes */
 .button {
   cursor: pointer;
   border-radius: 2rem;
@@ -53,8 +50,8 @@ button {
 .nav-button {
   cursor: pointer;
   --c-border: transparent;
-  height: 2.6rem;
-  margin-right: 0.5rem;
+  height: 3rem;
+  margin-right: 1rem;
   display: grid;
   place-items: center;
 }
@@ -70,15 +67,15 @@ button {
 }
 
 .fab {
+  position: absolute;
   cursor: pointer;
   box-shadow:
     0 0 10px black,
     0 0 40px black;
   /*filter: drop-shadow(0 0 20px yellow);*/
   font-size: 2.5rem;
-  position: absolute;
   bottom: 1rem;
-  margin: auto;
+  right: 1rem;
   background-color: var(--c-primary);
   border-radius: 50%;
   width: 5rem;
@@ -134,18 +131,16 @@ button {
 - - - - - C O N F I G - - - - - 
 - - - - - - - - - - - - - - - - */
 
-
 *,
 *::before,
 *::after {
   box-sizing: border-box;
 }
 
-
 :root {
   --header-height: 3.5rem;
   --max-width: 500px;
-  --footer-min-height: 10rem;
+  --footer-height: 5rem;
 
   --margin: 1rem; /* marge à gauche et à droite de l'écran*/
 
@@ -227,12 +222,13 @@ body {
 }
 
 .body-container {
+  position: relative;
   overflow: hidden;
   background-color: var(--c-primary-20-desat);
   margin: auto;
   box-shadow: 0 0 40px var(--c-primary-20-desat);
   max-width: var(--max-width);
-  min-height: 100vh;
+  min-height: 100dvh;
 }
 
 header {
@@ -247,19 +243,25 @@ header {
 }
 footer {
   width: 100%;
-  min-height: var(--footer-min-height);
+  height: var(--footer-height);
   background-color: var(--c-bg-header);
   /*min-height: var(--footer-min-height);*/
-  font-size: 0.8rem;
-  padding: 2rem 1rem;
-  color: oklch(70% 20% var(--hue-primary));
+  font-size: 1rem;
+  padding: 1rem;
+  display: flex;
+}
+
+.footer-content {
+  width: 100%;
+  display: flex;
+  gap: 1rem;
 }
 
 main {
   overflow: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
-  height: calc(100dvh - var(--header-height));
+  height: calc(100dvh - var(--header-height) - var(--footer-height));
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -409,8 +411,6 @@ summary {
 - - - - - - - Q U I Z - - - - - - 
 - - - - - - - - - - - - - - - - */
 
-
-
 .button-answer {
   cursor: pointer;
   padding: 0.8rem 0.8rem;
@@ -418,7 +418,6 @@ summary {
   color: #eeeeee;
   font-size: 1rem;
   text-align: center;
-  margin-top: 1rem;
   width: calc((100% - 2 * var(--margin)) / 3);
 }
 
@@ -443,6 +442,7 @@ summary {
 }
 
 .quiz-answer {
+  width: 100%;
   display: flex;
   justify-content: space-between;
 }

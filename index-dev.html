@@ -560,20 +560,6 @@
               </tr>
             </tfoot>
           </table>
-
-          <div
-            class="button button-primary margin-t-1"
-            onclick="unstack('Chapters')"
-          >
-            <i class="fa-solid fa-list-Ul"></i>
-            ❮❮ Retour aux chapitres
-          </div>
-          <div
-            class="button button-primary margin-t-1"
-            onclick="unstack('Quiz')"
-          >
-            Rejouer ❯❯
-          </div>
         </section>
       </main>
       <footer>
@@ -672,6 +658,22 @@
             style="width: calc(50% - 0.5rem)"
           >
             Jouer ❯❯
+          </div>
+        </div>
+        <div x-show="state=='End'" class="footer-content">
+          <div
+            class="button button-secondary"
+            onclick="unstack('Chapters')"
+            style="width: calc(50% - 0.5rem)"
+          >
+            ❮❮ Thèmes
+          </div>
+          <div
+            class="button button-primary"
+            onclick="unstack('Quiz')"
+            style="width: calc(50% - 0.5rem)"
+          >
+            Rejouer ❯❯
           </div>
         </div>
       </footer>
