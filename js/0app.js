@@ -6,6 +6,7 @@ const MAX_ERRORS_ALLOWED = 5; // inutilisé, on utilisé la constante précéden
 // (le but est d'empecher de cliquer sur 'passer' et que ça compte comme un quiz fini)
 const MAX_QUIZ_LENGTH = 10;
 const MAX_POINTS_QUESTION = 20; //maximum de pts que l'on peut gagner à chaque question
+const BOOST_PROBABILITY = 0.05;
 
 let questionNumber; // int, question courante
 let question; // question courante : object
@@ -34,6 +35,8 @@ let user = {
   lastActive: "" /* date ou stringified date */,
   lastStreak: 0,
   longestStreak: 0,
+  lastBoostEnd: 0 /* date in millisec */,
+  lastBoostMultiplier: 1,
 };
 if (window.localStorage.getItem("user") !== null) {
   console.log("user already exists in storage");

@@ -86,7 +86,7 @@
   transform: translateX(0.2rem);
 }
 
-.puls {
+.pulse {
   animation: pulse 1s ease-out infinite;
 }
 

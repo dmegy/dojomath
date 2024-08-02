@@ -45,52 +45,35 @@
   <body>
     <div class="body-container">
       <header class="glow">
-        <div>&nbsp;</div>
+        <div x-show="state!='Quiz'" x-html="htmlNumAdj(user.points,'pt')"></div>
         <div
-          x-show="(state!='Quiz') && (state!='End')"
-          style="position: relative"
+          x-show="state!='Quiz'"
+          x-html="htmlGetUserLevel()"
+          class="levelBadge"
         >
-          <span x-html="htmlNumAdj(user.points,'pt')"></span>
-          <span class="notif" x-html="htmlGetUserLevel()">Niv. 0</span>
+          Niv. 0
+        </div>
+        <div
+          x-show="state=='Quiz'"
+          style="cursor: pointer; background-color: var(--c-primary-10-desat)"
+          onClick="showAbortQuizModal()"
+        >
+          ✖
         </div>
 
         <div
-          id="quizHeader"
-          style="width: 100%; display: none"
-          x-show="(state=='Quiz')||(state=='End')"
-        >
-          <div style="display: flex; justify-content: space-between">
-            <!-- flex-container-->
-            <div
-              x-show="state=='Quiz'"
-              style="
-                cursor: pointer;
-                background-color: var(--c-primary-10-desat);
-              "
-              onClick="showAbortQuizModal()"
-            >
-              ✖
-            </div>
-            <div x-show="state=='End'">Partie terminée !</div>
-
-            <div>
-              <span
-                x-html="(quiz.points>=0 ? '+' : '')+htmlPoints(quiz.points)"
-              ></span>
-            </div>
-          </div>
-        </div>
+          x-show="state=='Quiz'"
+          x-html="(quiz.points>=0 ? '+' : '')+htmlPoints(quiz.points)"
+        ></div>
       </header>
       <main>
         <!-- - - - - - -H O M E - - - - --->
         <section id="section-home" x-show="(state=='Home')">
-          <h1 class="glow">Bienvenue sur<br />DojoMath.fr</h1>
+          <h1 class="glow">DojoMath.fr</h1>
+          <p>Consolide tes maths de manière ludique !</p>
           <p>
-            Cette web-application te permet de consolider ton niveau en maths de
-            manière ludique.
-            <br />
-            Elle propose des quiz de type "vrai / faux" sur de nombreux thèmes,
-            du collège jusqu'à l'enseignement supérieur.
+            Progresse avec des quiz sur de nombreux thèmes, du collège jusqu'à
+            l'enseignement supérieur.
           </p>
           <h3>Règles du jeu</h3>
           <p>
@@ -106,6 +89,15 @@
             Pour afficher la liste des thèmes disponibles et commencer une
             partie, clique sur le bouton rond en bas à droite de l'écran.
           </p>
+          <div style="padding-top: 1rem">
+            <p style="opacity: 70%">
+              - - - - - - - - -<br />
+              DojoMath est une création du
+              <a target="_blanck" href="https://dmegy.perso.math.cnrs/fr/club"
+                >Club Mathématique de Nancy</a
+              >.
+            </p>
+          </div>
         </section>
 
         <!-- - - - - - P R O F I L - - - - - -->
@@ -121,7 +113,7 @@
             Identifiant d'utilisateur (non modifiable):
             <span x-html="user.userId"></span>
           </div>-->
-          <p>Nom d'utilisateur (⩽10 caractères) :</p>
+          <p>Pseudonyme (⩽10 caractères) :</p>
           <p x-html="htmlInputUsername()">input username</p>
 
           <p>Département (si France) :</p>
@@ -540,10 +532,10 @@
                   <span x-html="htmlPoints(quiz.bonus)"></span>
                 </td>
               </tr>
-              <tr x-show="getBooster(new Date())>1">
-                <td>BOOSTER ACTIF:</td>
+              <tr x-show="getBoost()>1">
+                <td>BOOST ACTIF:</td>
                 <td style="text-align: right">
-                  x<span x-html="getBooster(new Date())"></span>
+                  x<span x-html="getBoost()"></span>
                 </td>
               </tr>
             </tbody>

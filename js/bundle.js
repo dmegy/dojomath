@@ -7,6 +7,7 @@ const MAX_ERRORS_ALLOWED = 5; // inutilisé, on utilisé la constante précéden
 // (le but est d'empecher de cliquer sur 'passer' et que ça compte comme un quiz fini)
 const MAX_QUIZ_LENGTH = 10;
 const MAX_POINTS_QUESTION = 20; //maximum de pts que l'on peut gagner à chaque question
+const BOOST_PROBABILITY = 0.05;
 
 let questionNumber; // int, question courante
 let question; // question courante : object
@@ -35,6 +36,8 @@ let user = {
   lastActive: "" /* date ou stringified date */,
   lastStreak: 0,
   longestStreak: 0,
+  lastBoostEnd: 0 /* date in millisec */,
+  lastBoostMultiplier: 1,
 };
 if (window.localStorage.getItem("user") !== null) {
   console.log("user already exists in storage");
@@ -1184,6 +1187,7 @@ function nextQuestion() {
   // attention on l'enlève d ela liste
   question = structuredClone(questions[questionNumber]);
   question.num = questionNumber; // on rajoute dans l'objet
+  question.points = 0;
   state = "Quiz";
   render();
   MathJax.typeset();
@@ -1203,6 +1207,7 @@ function validateAnswer() {
   if (question.submittedAnswer === undefined) {
     // SKIPPED
     question.result = 0;
+    question.points = 0;
     statsQuestions[question.num].skipped += 1;
     statsQuestions[question.num].successfulLastTime = false;
     statsQuestions[question.num].successfulLastTwoTimes = false;
@@ -1226,9 +1231,11 @@ function validateAnswer() {
     user.nbQuestionsSuccessful += 1;
     quiz.nbQuestionsSuccessful += 1;
 
+    question.points = Math.min(MAX_POINTS_QUESTION, user.combo);
+
     // toast success
     let congratulationsMessage =
-      "+" + user.combo + " pt" + (user.combo > 1 ? "s" : "");
+      "+" + question.points + " pt" + (question.points > 1 ? "s" : "");
     toast(congratulationsMessage, "var(--c-success)");
     //toast Combo:
     if (user.combo > 1)
@@ -1236,6 +1243,7 @@ function validateAnswer() {
   } else {
     // FAIL
     question.result = -1;
+    questions.points = -1;
     statsQuestions[question.num].failed++;
     statsQuestions[question.num].successfulLastTime = false;
     statsQuestions[question.num].successfulLastTwoTimes = false;
@@ -1261,11 +1269,6 @@ function validateAnswer() {
     abortQuiz();
     return;
   }
-
-  // ATTRIBUTION DES POINTS A LA QUESTION
-  // EN FONCTION DES RESULTATS :
-  if (question.result == -1) question.points = -1;
-  else question.points = Math.min(MAX_POINTS_QUESTION, user.combo);
 
   question.bonus = Math.max(question.points - 1, 0); // pts gagnés à cause d'un bonus
 
@@ -1303,32 +1306,74 @@ function abortQuiz() {
 }
 
 function showQuizResults() {
-  //appelée par validateResults()
-  /* calculer stats etc, récompenses, bonus */
-  /* empile les messages, les récompenses etc ?*/
+  //appelée par validateResults() si la liste de questions est vide
 
-  // gérer avec des toasts ?
-
+  // CALCUL NOTE
   quiz.finalGrade = grade20FromResult(
     quiz.nbQuestionsSuccessful,
     quiz.quizLength
   );
-  if (quiz.finalGrade == 20) user.nbQuizPerfect++;
+  // SI PERFECT :
+  if (quiz.finalGrade == 20) {
+    user.nbQuizPerfect++;
+    if (user.nbQuizPerfect % 10 == 0) {
+      toast(
+        `${user.nbQuizPerfect}ème perfect !`,
+        "oklch(70%,100% var(--c-accent)"
+      );
+    }
+  }
+
+  // BOOST
+  console.log("points avant booster : " + quiz.points);
+  quiz.points *= getBoost();
+  console.log("boost multiplier : " + getBoost());
+  console.log("points après booster : " + quiz.points);
+  // faire apparaître le boost pendant tout le quiz en haut ?
 
   // remplacer success par result pour tenir compte des erreurs
   user.points += quiz.points;
   statsThemes[theme.id].nbQuizFinished++;
   user.nbQuizFinished++;
-  finishedQuizHistory.push(quiz.history);
+  finishedQuizHistory.push({
+    date: new Date(),
+    details: quiz.history,
+    pointsEarned: quiz.points,
+  });
+  if (user.nbQuizFinished % 20 == 0) {
+    toast(
+      user.nbQuizFinished + " parties terminées, bravo !",
+      "oklch(70%,100% var(--c-accent)"
+    );
+  }
+
   saveToLocalStorage();
 
   state = "End";
   render();
+
+  // rajouter à la queue pour envoi au serveur
+  // gestion de la liste d'attente pour le serveur
 }
 
 function unstack(targetName) {
   /* appelé lorsque le joueur sort de l'écran de fin : il faut afficher tous les messages empilés */
   /* provisoire */
+  if (isHappyHour()) {
+    notification(
+      "HAPPY HOUR\nPoints doublés",
+      "oklch(70% 100% var(--hue-accent)"
+    );
+  } else if (Math.random < BOOST_PROBABILITY) {
+    // on octroie les boot avec proba 1/10:
+    user.lastBoostMultiplier = 2;
+    user.lastBoostEnd = Date.now() + 15 * 60 * 1000;
+    notification(
+      "BOOST\nPoints doublés pendant 15 minutes !",
+      "oklch(70% 100% var(--hue-accent)"
+    );
+  }
+
   if (targetName == "Chapters") gotoChapters();
   else if (targetName == "Quiz") startQuiz();
 }
@@ -1353,8 +1398,6 @@ function grade20FromResult(result, maxResult) {
   return roundedGrade;
 }
 
-function getBooster() {}
-
 function toast(message, color) {
   Toastify({
     text: message,
@@ -1372,6 +1415,39 @@ function toast(message, color) {
     },
     onClick: function () {}, // Callback after click
   }).showToast();
+}
+
+function notification(message, color) {
+  Toastify({
+    text: message,
+    duration: 5000,
+    destination: "",
+    newWindow: true,
+    close: true,
+    gravity: "top", // `top` or `bottom`
+    position: "center", // `left`, `center` or `right`
+    stopOnFocus: true, // Prevents dismissing of toast on hover
+    style: {
+      "border-radius": "2rem",
+      background: color,
+      "text-align": "center",
+    },
+    onClick: function () {}, // Callback after click
+  }).showToast();
+}
+
+function isHappyHour() {
+  let date = new Date();
+  let h = date.getHours();
+  if ((6 <= h && h < 8) || (12 <= h && h < 14) || (18 <= h && h < 21)) {
+    return true;
+  } else return false;
+}
+
+function getBoost() {
+  if (isHappyHour()) return 2;
+  else if (Date.now() < user.lastBoostEnd) return user.lastBoostMultiplier;
+  else return 1;
 }
 
 /**

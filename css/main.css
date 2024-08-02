@@ -129,6 +129,14 @@ summary {
   font-size: 0.6rem;
 }
 
+.levelBadge {
+  background-color: oklch(75% 100% var(--hue-accent));
+  color: white;
+  padding: 0.5rem;
+  font-size: 0.8rem;
+  border-radius: 1rem;
+}
+
 @keyframes rotating {
   from {
     transform: rotate(0deg);
