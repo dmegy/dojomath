@@ -3,13 +3,9 @@
 - - - - - - - - - - - - - - - - */
 
 /* séparer en deux classes */
-.button {
+.btn {
   cursor: pointer;
-  border-radius: 2rem;
   position: relative;
-  padding: 0.5rem 1rem;
-  font-size: 1.2rem; /* bouger ceci ? */
-
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
@@ -17,37 +13,38 @@
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+  text-align: center;
 }
 
-.button:focus {
+.btn-big {
+  border-radius: 2rem;
+  padding: 0.5rem 1rem;
+  font-size: 1.2rem;
+}
+
+.btn:focus {
   outline: none !important;
-  cursor: pointer;
 }
 
-.button-small {
+.btn-small {
   /* pour les boutons des thèmes */
-  cursor: pointer;
   overflow: hidden;
   display: inline-block;
   margin: 0.2rem;
   white-space: nowrap;
   border-radius: 0.8rem;
-  position: relative;
   padding: 0.2rem 0.5rem 0.2rem 0.5rem;
   font-size: 1rem;
 }
 
-.button-secondary {
+.btn-secondary {
   background-color: var(--c-secondary-40);
-  text-align: center;
 }
-.button-primary {
-  background-color: var(--c-primary);
-  text-align: center;
+.btn-primary {
+  background-color: var(--c-primary-40);
 }
 
-.nav-button {
-  cursor: pointer;
+.btn-nav {
   --c-border: transparent;
   height: 3rem;
   margin-right: 1rem;
@@ -59,7 +56,7 @@
   --c-border: var(--c-text);
 }
 
-.nav-button-icon {
+.btn-nav-icon {
   border: 3px solid var(--c-border);
   border-radius: 1rem;
   padding: 0.1rem;
@@ -67,7 +64,6 @@
 
 .fab {
   position: absolute;
-  cursor: pointer;
   box-shadow:
     0 0 10px black,
     0 0 40px black;
@@ -75,7 +71,7 @@
   font-size: 2.5rem;
   bottom: 1rem;
   right: 1rem;
-  background-color: var(--c-primary);
+  background-color: var(--c-secondary);
   border-radius: 50%;
   width: 5rem;
   height: 5rem;

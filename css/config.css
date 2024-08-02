@@ -20,8 +20,9 @@
   --hue-danger: 50;
 
   --hue-primary: 215;
-  --hue-accent: 200;
+  --hue-primary-accent: calc(--hue-primary - 15);
   --hue-secondary: 130;
+  --hue-accent: 100;
 
   --c-danger: oklch(70% 70% var(--hue-danger));
   --c-warning: oklch(70% 70% var(--hue-warning));
@@ -38,16 +39,28 @@
   --c-primary-70-desat: oklch(70% 25% var(--hue-primary));
   --c-primary-90-desat: oklch(90% 25% var(--hue-primary));
 
-  /* raccourcis */
-  --c-bg-body: var(--c-primary-20-desat);
-  --c-bg-header: var(--c-primary-10-desat);
-  --c-text: var(--c-primary-90-desat);
-
+  --c-secondary-10-desat: oklch(10% 25% var(--hue-secondary));
+  --c-secondary-20-desat: oklch(20% 25% var(--hue-secondary));
   --c-secondary-70: oklch(70% 90% var(--hue-secondary));
   --c-secondary-60: oklch(60% 90% var(--hue-secondary));
   --c-secondary-40: oklch(40% 90% var(--hue-secondary));
+  --c-secondary: var(--c-secondary-40); /* raccourci */
+
+  /* rendre dynamique en fonction de hue-current? non ? */
+  --c-text: var(--c-primary-90-desat);
+
+  /* modifié suivant la navigation */
+  --hue-current: var(--hue-primary);
+
+  /* en fonction de hue current */
+
+  --c-bg-body: oklch(20% 25% var(--hue-current));
+  --c-bg-section: oklch(20% 25% var(--hue-current));
+  --c-bg-header: oklch(10% 25% var(--hue-current));
 
   --c-accent: oklch(90% 100% var(--hue-accent));
+
+  /* pour infoTheme*/
   --c-seen: oklch(50% 90% var(--hue-secondary));
   --c-successful: oklch(70% 90% var(--hue-secondary));
   --c-double-successful: var(--c-text);

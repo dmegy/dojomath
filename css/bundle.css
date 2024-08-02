@@ -4,13 +4,9 @@
 - - - - - - - - - - - - - - - - */
 
 /* séparer en deux classes */
-.button {
+.btn {
   cursor: pointer;
-  border-radius: 2rem;
   position: relative;
-  padding: 0.5rem 1rem;
-  font-size: 1.2rem; /* bouger ceci ? */
-
   -webkit-tap-highlight-color: transparent;
   -webkit-touch-callout: none;
   -webkit-user-select: none;
@@ -18,37 +14,38 @@
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+  text-align: center;
 }
 
-.button:focus {
+.btn-big {
+  border-radius: 2rem;
+  padding: 0.5rem 1rem;
+  font-size: 1.2rem;
+}
+
+.btn:focus {
   outline: none !important;
-  cursor: pointer;
 }
 
-.button-small {
+.btn-small {
   /* pour les boutons des thèmes */
-  cursor: pointer;
   overflow: hidden;
   display: inline-block;
   margin: 0.2rem;
   white-space: nowrap;
   border-radius: 0.8rem;
-  position: relative;
   padding: 0.2rem 0.5rem 0.2rem 0.5rem;
   font-size: 1rem;
 }
 
-.button-secondary {
+.btn-secondary {
   background-color: var(--c-secondary-40);
-  text-align: center;
 }
-.button-primary {
-  background-color: var(--c-primary);
-  text-align: center;
+.btn-primary {
+  background-color: var(--c-primary-40);
 }
 
-.nav-button {
-  cursor: pointer;
+.btn-nav {
   --c-border: transparent;
   height: 3rem;
   margin-right: 1rem;
@@ -60,7 +57,7 @@
   --c-border: var(--c-text);
 }
 
-.nav-button-icon {
+.btn-nav-icon {
   border: 3px solid var(--c-border);
   border-radius: 1rem;
   padding: 0.1rem;
@@ -68,7 +65,6 @@
 
 .fab {
   position: absolute;
-  cursor: pointer;
   box-shadow:
     0 0 10px black,
     0 0 40px black;
@@ -76,7 +72,7 @@
   font-size: 2.5rem;
   bottom: 1rem;
   right: 1rem;
-  background-color: var(--c-primary);
+  background-color: var(--c-secondary);
   border-radius: 50%;
   width: 5rem;
   height: 5rem;
@@ -149,8 +145,9 @@
   --hue-danger: 50;
 
   --hue-primary: 215;
-  --hue-accent: 200;
+  --hue-primary-accent: calc(--hue-primary - 15);
   --hue-secondary: 130;
+  --hue-accent: 100;
 
   --c-danger: oklch(70% 70% var(--hue-danger));
   --c-warning: oklch(70% 70% var(--hue-warning));
@@ -167,16 +164,28 @@
   --c-primary-70-desat: oklch(70% 25% var(--hue-primary));
   --c-primary-90-desat: oklch(90% 25% var(--hue-primary));
 
-  /* raccourcis */
-  --c-bg-body: var(--c-primary-20-desat);
-  --c-bg-header: var(--c-primary-10-desat);
-  --c-text: var(--c-primary-90-desat);
-
+  --c-secondary-10-desat: oklch(10% 25% var(--hue-secondary));
+  --c-secondary-20-desat: oklch(20% 25% var(--hue-secondary));
   --c-secondary-70: oklch(70% 90% var(--hue-secondary));
   --c-secondary-60: oklch(60% 90% var(--hue-secondary));
   --c-secondary-40: oklch(40% 90% var(--hue-secondary));
+  --c-secondary: var(--c-secondary-40); /* raccourci */
+
+  /* rendre dynamique en fonction de hue-current? non ? */
+  --c-text: var(--c-primary-90-desat);
+
+  /* modifié suivant la navigation */
+  --hue-current: var(--hue-primary);
+
+  /* en fonction de hue current */
+
+  --c-bg-body: oklch(20% 25% var(--hue-current));
+  --c-bg-section: oklch(20% 25% var(--hue-current));
+  --c-bg-header: oklch(10% 25% var(--hue-current));
 
   --c-accent: oklch(90% 100% var(--hue-accent));
+
+  /* pour infoTheme*/
   --c-seen: oklch(50% 90% var(--hue-secondary));
   --c-successful: oklch(70% 90% var(--hue-secondary));
   --c-double-successful: var(--c-text);
@@ -224,7 +233,6 @@ body {
 .body-container {
   position: relative;
   overflow: hidden;
-  background-color: var(--c-primary-20-desat);
   margin: auto;
   box-shadow: 0 0 40px var(--c-primary-20-desat);
   max-width: var(--max-width);
@@ -268,6 +276,7 @@ main {
 }
 
 section {
+  background-color: var(--c-bg-section);
   padding: var(--margin);
   width: 100%;
   max-width: var(--max-width);
@@ -317,7 +326,7 @@ a:after {
 }
 
 .glow {
-  text-shadow: 0 0 0.5em var(--c-accent);
+  text-shadow: 0 0 0.5em var(--c-text);
 }
 summary {
   cursor: pointer;
@@ -411,7 +420,7 @@ summary {
 - - - - - - - Q U I Z - - - - - - 
 - - - - - - - - - - - - - - - - */
 
-.button-answer {
+.btn-answer {
   cursor: pointer;
   padding: 0.8rem 0.8rem;
   border-radius: 3rem;
@@ -421,18 +430,18 @@ summary {
   width: calc((100% - 2 * var(--margin)) / 3);
 }
 
-.button-answer:active {
+.btn-answer:active {
   transform: scale(1.15);
 }
 
-.button-answer-true {
+.btn-answer-true {
   background-color: oklch(50% 50% var(--hue-success));
 }
 
-.button-answer-undefined {
+.btn-answer-undefined {
   background-color: oklch(50% 50% var(--hue-warning));
 }
-.button-answer-false {
+.btn-answer-false {
   background-color: oklch(50% 50% var(--hue-danger));
 }
 

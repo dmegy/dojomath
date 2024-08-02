@@ -367,8 +367,8 @@
 
         <section
           id="section-chapters"
+          style="--hue-current: var(--hue-secondary); display: none"
           x-show="(state=='Chapters')"
-          style="display: none"
         >
           <div x-html="htmlChapters()"></div>
         </section>
@@ -471,10 +471,9 @@
             <span x-html="glyphResult(quiz.finalGrade)"> </span>
           </h1>
 
-          <p style="color: var(--c-texte-inactif)">
-            ⓘ La note est calculée sans tenir compte des pénalités dues aux
-            erreurs ni des bonus de bonnes réponses successives. Les points
-            gagnés, eux, tiennent compte des bonus et malus.
+          <p style="color: var(--c-text-inactive)">
+            ⓘ La <b>note</b> est calculée sans tenir compte des pénalités dues
+            aux erreurs ni des bonus de bonnes réponses successives.
           </p>
 
           <table width="100%" style="border-collapse: collapse">
@@ -488,7 +487,7 @@
                     border-bottom: 1px var(--c-text) solid;
                   "
                 >
-                  Détails
+                  Détail des points
                 </th>
                 <th
                   style="
@@ -553,7 +552,7 @@
                   border-top: 1px var(--c-text) solid;
                 "
               >
-                <td style="text-align: left">TOTAL :</td>
+                <td style="text-align: left">TOTAL DES POINTS :</td>
                 <td style="text-align: right">
                   + <span x-html="htmlPoints(quiz.points)"></span>
                 </td>
@@ -568,34 +567,34 @@
           class="footer-content"
         >
           <nav>
-            <div class="nav-button" onClick="goto('Home')">
+            <div class="btn btn-nav" onClick="goto('Home')">
               <svg
                 id="navButtonHome"
-                class="svg-icon-nav nav-button-icon circled"
+                class="svg-icon-nav btn-nav-icon circled"
                 viewBox="0 0 576 512"
                 x-html="svgPathFasHouse"
               ></svg>
             </div>
-            <div class="nav-button" onClick="goto('Profile')">
+            <div class="btn btn-nav" onClick="goto('Profile')">
               <svg
                 id="navButtonProfile"
-                class="svg-icon-nav nav-button-icon"
+                class="svg-icon-nav btn-nav-icon"
                 viewBox="0 0 576 512"
                 x-html="svgPathFasUserLarge"
               ></svg>
             </div>
-            <div class="nav-button" onClick="goto('Statistics')">
+            <div class="btn btn-nav" onClick="goto('Statistics')">
               <svg
                 id="navButtonStatistics"
-                class="svg-icon-nav nav-button-icon"
+                class="svg-icon-nav btn-nav-icon"
                 viewBox="0 0 640 512"
                 x-html="svgPathFasDumbbell"
               ></svg>
             </div>
-            <div class="nav-button" onClick="goto('Highscores')">
+            <div class="btn btn-nav" onClick="goto('Highscores')">
               <svg
                 id="navButtonHighscores"
-                class="svg-icon-nav nav-button-icon"
+                class="svg-icon-nav btn-nav-icon"
                 viewBox="0 0 640 512"
                 x-html="svgPathFasRankingStar"
                 style="transform: scale(1.1)"
@@ -606,7 +605,7 @@
           <div
             style="display: none"
             id="fab"
-            class="fab pulse"
+            class="btn fab pulse"
             onClick="gotoChapters()"
             x-show="(state=='Home')||(state=='Profile')||(state=='Statistics')||(state=='Highscores')"
           >
@@ -622,19 +621,19 @@
         </div>
         <div class="quiz-answer" x-show="state=='Quiz'" style="display: none">
           <div
-            class="button-answer button-answer-false"
+            class="btn btn-big btn-answer btn-answer-false"
             onclick="submitAnswer(false)"
           >
             FAUX
           </div>
           <div
-            class="button-answer button-answer-undefined"
+            class="btn btn-big btn-answer btn-answer-undefined"
             onclick="submitAnswer(undefined)"
           >
             PASSER
           </div>
           <div
-            class="button-answer button-answer-true"
+            class="btn btn-big btn-answer btn-answer-true"
             onclick="submitAnswer(true)"
           >
             VRAI
@@ -646,14 +645,14 @@
           style="display: none; width: 100%"
         >
           <div
-            class="button button-secondary"
+            class="btn btn-big btn-secondary"
             onclick="gotoChapters()"
             style="width: calc(50% - 0.5rem)"
           >
             ❮❮ Thèmes
           </div>
           <div
-            class="button button-primary"
+            class="btn btn-big btn-primary"
             onclick="startQuiz()"
             style="width: calc(50% - 0.5rem)"
           >
@@ -662,14 +661,14 @@
         </div>
         <div x-show="state=='End'" class="footer-content">
           <div
-            class="button button-secondary"
+            class="btn btn-big btn-secondary"
             onclick="unstack('Chapters')"
             style="width: calc(50% - 0.5rem)"
           >
             ❮❮ Thèmes
           </div>
           <div
-            class="button button-primary"
+            class="btn btn-big btn-primary"
             onclick="unstack('Quiz')"
             style="width: calc(50% - 0.5rem)"
           >

@@ -2,7 +2,7 @@
 - - - - - - - Q U I Z - - - - - - 
 - - - - - - - - - - - - - - - - */
 
-.button-answer {
+.btn-answer {
   cursor: pointer;
   padding: 0.8rem 0.8rem;
   border-radius: 3rem;
@@ -12,18 +12,18 @@
   width: calc((100% - 2 * var(--margin)) / 3);
 }
 
-.button-answer:active {
+.btn-answer:active {
   transform: scale(1.15);
 }
 
-.button-answer-true {
+.btn-answer-true {
   background-color: oklch(50% 50% var(--hue-success));
 }
 
-.button-answer-undefined {
+.btn-answer-undefined {
   background-color: oklch(50% 50% var(--hue-warning));
 }
-.button-answer-false {
+.btn-answer-false {
   background-color: oklch(50% 50% var(--hue-danger));
 }
 

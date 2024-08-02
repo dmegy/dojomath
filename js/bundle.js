@@ -2,9 +2,11 @@
 let t0 = performance.timeOrigin + performance.now();
 console.log("Bienvenue ! ");
 
-const QUIZ_MIN_RESULT = 2; // attention certains quiz peuvent faire moins de 2 questions ?
-const QUIZ_MAX_LENGTH = 10;
-const QUESTION_MAX_POINTS = 20; //maximum de pts que l'on peut gagner à chaque question
+const MIN_QUIZ_RESULT = 1; // attention certains quiz peuvent faire moins de 2 questions ?
+const MAX_ERRORS_ALLOWED = 5; // inutilisé, on utilisé la constante précédente
+// (le but est d'empecher de cliquer sur 'passer' et que ça compte comme un quiz fini)
+const MAX_QUIZ_LENGTH = 10;
+const MAX_POINTS_QUESTION = 20; //maximum de pts que l'on peut gagner à chaque question
 
 let questionNumber; // int, question courante
 let question; // question courante : object
@@ -347,7 +349,7 @@ function htmlButtonTheme(i, j) {
                 --progression:0;
                 background-color: var(--c-secondary-40);
                 text-align: center;" 
-			class="button-small" 
+			class="btn btn-small" 
 			id="boutonTheme_${i}_${j}" 
 			onclick="gotoTheme('${id}')">
 			<div style="
@@ -1096,13 +1098,13 @@ function shuffleArray(array) {
 
 function startQuiz() {
   console.log("startQuiz() sur le thème " + theme.id);
+
+  // construction du quiz
+  // Éventuellement, changer méthode pour garantir au moins un V et un F.
   quiz = structuredClone(theme);
-  // ATTENTION ICI BUG BIZARRE ?
-
   shuffleArray(quiz.questions);
-
   // on vide la fin pour ne garder au plus que QUIZ_LENGTH questions
-  while (quiz.questions.length > QUIZ_MAX_LENGTH) quiz.questions.shift();
+  while (quiz.questions.length > MAX_QUIZ_LENGTH) quiz.questions.shift();
   console.log("questions qui vont tomber : " + quiz.questions);
 
   quiz.quizLength = quiz.questions.length;
@@ -1176,7 +1178,7 @@ function validateAnswer() {
 
     // toast success
     let congratulationsMessage =
-      "BRAVO !\n+" + user.combo + " PT" + (user.combo > 1 ? "S" : "");
+      user.combo + " PT" + (user.combo > 1 ? "S" : "");
     toast(congratulationsMessage, "var(--c-success)");
     //toast Combo:
     if (user.combo > 1)
@@ -1200,9 +1202,14 @@ function validateAnswer() {
 
   // CHECK GAMEOVER ??
   let maxAchievableResult = quiz.result + quiz.questions.length;
-  let isGameover = maxAchievableResult < QUIZ_MIN_RESULT;
+  let isGameover = maxAchievableResult < MIN_QUIZ_RESULT;
   if (isGameover) {
-    alert("GAMEOVER :\nTrop de questions ratées ou sautées");
+    alert(`
+=========
+GAMEOVER
+=========
+
+Trop de questions ratées ou sautées`);
     user.nbQuizGameover++;
     abortQuiz();
     return;
@@ -1211,7 +1218,7 @@ function validateAnswer() {
   // ATTRIBUTION DES POINTS A LA QUESTION
   // EN FONCTION DES RESULTATS :
   if (question.result == -1) question.points = -1;
-  else question.points = Math.min(QUESTION_MAX_POINTS, user.combo);
+  else question.points = Math.min(MAX_POINTS_QUESTION, user.combo);
 
   question.bonus = Math.max(question.points - 1, 0); // pts gagnés à cause d'un bonus
 
@@ -1235,8 +1242,14 @@ function validateAnswer() {
 }
 
 function showAbortQuizModal() {
-  let text =
-    "DEMANDE DE CONFIRMATION :\n\nSouhaites-tu vraiment interrompre le Quiz ?\n\n(Attention, aucun point ne sera sauvegardé.)";
+  let text = `
+=======================
+DEMANDE DE CONFIRMATION
+=======================
+
+Souhaites-tu vraiment quitter la partie en cours ?
+
+(Attention, les points de la partie en cours de seront pas sauvegardés.)`;
   if (confirm(text) == true) {
     user.nbQuizAborted++;
     abortQuiz();
@@ -1265,7 +1278,9 @@ function showQuizResults() {
   user.points += quiz.points;
   statsThemes[theme.id].nbQuizFinished++;
   user.nbQuizFinished++;
+  finishedQuizHistory.push(quiz.history);
   saveToLocalStorage();
+
   state = "End";
   render();
 }
@@ -1283,8 +1298,9 @@ function glyphResult(note) {
   // écran de fin de quiz
   let glyph = "";
   if (note == 20) glyph = "🏆";
-  else if (note >= 15) glyph = "🎉";
+  else if (note >= 16) glyph = "🎉";
   else if (note >= 10) glyph = "👍";
+  else if (note >= 8) glyph = "😅";
   else glyph = "😅";
   return glyph;
 }

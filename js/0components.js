@@ -25,7 +25,7 @@ function htmlButtonTheme(i, j) {
                 --progression:0;
                 background-color: var(--c-secondary-40);
                 text-align: center;" 
-			class="button-small" 
+			class="btn btn-small" 
 			id="boutonTheme_${i}_${j}" 
 			onclick="gotoTheme('${id}')">
 			<div style="

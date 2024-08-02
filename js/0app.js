@@ -1,9 +1,11 @@
 let t0 = performance.timeOrigin + performance.now();
 console.log("Bienvenue ! ");
 
-const QUIZ_MIN_RESULT = 2; // attention certains quiz peuvent faire moins de 2 questions ?
-const QUIZ_MAX_LENGTH = 10;
-const QUESTION_MAX_POINTS = 20; //maximum de pts que l'on peut gagner à chaque question
+const MIN_QUIZ_RESULT = 1; // attention certains quiz peuvent faire moins de 2 questions ?
+const MAX_ERRORS_ALLOWED = 5; // inutilisé, on utilisé la constante précédente
+// (le but est d'empecher de cliquer sur 'passer' et que ça compte comme un quiz fini)
+const MAX_QUIZ_LENGTH = 10;
+const MAX_POINTS_QUESTION = 20; //maximum de pts que l'on peut gagner à chaque question
 
 let questionNumber; // int, question courante
 let question; // question courante : object
