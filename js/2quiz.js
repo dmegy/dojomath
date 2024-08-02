@@ -227,8 +227,8 @@ function glyphResult(note) {
   if (note == 20) glyph = "🏆";
   else if (note >= 16) glyph = "🎉";
   else if (note >= 10) glyph = "👍";
-  else if (note >= 8) glyph = "😅";
-  else glyph = "😅";
+  else if (note >= 8) glyph = "😓";
+  else glyph = "😣";
   return glyph;
 }
 function grade20FromResult(result, maxResult) {
