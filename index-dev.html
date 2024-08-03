@@ -171,7 +171,7 @@
           </div>
 
           <div
-            x-html="htmlMultipleProgress([user.nbQuizGameover, user.nbQuizAborted, user.nbQuizFinished, user.nbQuizPerfect],['--c-danger','--c-warning','--c-success','--c-success-accent'])"
+            x-html="htmlMultipleProgress([user.nbQuizGameover, user.nbQuizAborted, user.nbQuizFinished-user.nbQuizPerfect, user.nbQuizPerfect],['--c-danger','--c-warning','--c-success','--c-success-accent'])"
             style="height: 0.5rem; margin: 1rem 0"
           ></div>
           <div>

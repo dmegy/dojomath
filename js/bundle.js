@@ -34,7 +34,7 @@ let user = {
   nbQuizAborted: 0,
   nbQuizFinished: 0,
   nbQuizPerfect: 0,
-  lastActive: "" /* time in ms  */,
+  lastActive: 0 /* time in ms  */,
   lastStreak: 0,
   longestStreak: 0,
   lastBoostEnd: 0 /* date in millisec */,
@@ -76,17 +76,39 @@ function saveToLocalStorage() {
 }
 
 function getUserStreak() {
-  if (user.lastActive == "") return 0;
+  if (isStreakAlive) {
+    return user.lastStreak;
+  } else return 0;
+}
+
+function isStreakAlive() {
   let today = Math.floor(new Date().getTime() / (24 * 3600));
   let lastActiveDay = Math.floor(
     new Date(user.lastActive).getTime() / (24 * 3600)
   );
-  if (today - lastActiveDay <= 1) return lastStreak;
-  else return 0;
+  if (today - lastActiveDay <= 1) return true;
+  else return false;
 }
 
-function updateUserStreak() {
-  /* attention */
+function updateUserStreakAndLastActive() {
+  /* appelée lorsqu'un quiz est fini */
+  // ceci doit être fait avant d'updater user.lastActive bien sûr
+  let today = Math.floor(new Date().getTime() / (24 * 3600));
+  let lastActiveDay = Math.floor(
+    new Date(user.lastActive).getTime() / (24 * 3600)
+  );
+  let delta = today - lastActiveDay;
+  if (delta == 1 || user.lastStreak == 0) {
+    user.lastStreak++;
+    notification(
+      "🔥STREAK🔥\n Un jour d'affilée de plus !",
+      "oklch(70% 90% var(--hue-accent))"
+    );
+  } else if (delta > 1) {
+    user.lastStreak = 1;
+  }
+  user.lastActive = Date.now();
+  user.longestStreak = Math.max(user.longestStreak, user.lastStreak);
 }
 
 function removeCircles() {
@@ -1309,7 +1331,7 @@ function abortQuiz() {
 function showQuizResults() {
   //appelée par validateResults() si la liste de questions est vide
 
-  user.lastActive = Date.now();
+  updateUserStreakAndLastActive();
 
   // CALCUL NOTE
   quiz.finalGrade = grade20FromResult(

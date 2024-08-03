@@ -182,7 +182,7 @@ function abortQuiz() {
 function showQuizResults() {
   //appelée par validateResults() si la liste de questions est vide
 
-  user.lastActive = Date.now();
+  updateUserStreakAndLastActive();
 
   // CALCUL NOTE
   quiz.finalGrade = grade20FromResult(
