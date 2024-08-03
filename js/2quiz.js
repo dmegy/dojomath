@@ -167,7 +167,7 @@ function validateAnswer() {
 
 function showAbortQuizModal() {
   let text =
-    "=======================\nDEMANDE DE CONFIRMATION\n=======================\n\nSouhaites-tu vraiment quitter la partie en cours ?\n\n(Attention, les points de la partie en cours de seront pas sauvegardés.)";
+    "=======================\nDEMANDE DE CONFIRMATION\n=======================\n\nSouhaites-tu vraiment quitter la partie en cours ?\n\n(Attention, les points de la partie en cours ne seront pas sauvegardés.)";
   if (confirm(text) == true) {
     user.nbQuizAborted++;
     abortQuiz();
@@ -181,8 +181,25 @@ function abortQuiz() {
 
 function showQuizResults() {
   //appelée par validateResults() si la liste de questions est vide
+  if (daysSinceLastActive() > 0) {
+    //reset daily stats
+    user.pointsToday = 0;
+    user.nbQuizFinishedToday = 0;
+    user.nbQuizPerfectToday = 0;
+  }
+  // update streak and longestStreak
+  // !! AVANT modif lastActiveTime
 
-  updateUserStreakAndLastActive();
+  if (daysSinceLastActive() == 1 || user.lastStreak == 0) {
+    user.lastStreak++;
+    notification(
+      "🔥STREAK🔥\n Un jour d'affilée de plus !",
+      "oklch(70% 90% var(--hue-accent))"
+    );
+  } else if (daysSinceLastActive() > 1) {
+    user.lastStreak = 1;
+  }
+  user.longestStreak = Math.max(user.longestStreak, user.lastStreak);
 
   // CALCUL NOTE
   quiz.finalGrade = grade20FromResult(
@@ -192,6 +209,8 @@ function showQuizResults() {
   // SI PERFECT :
   if (quiz.finalGrade == 20) {
     user.nbQuizPerfect++;
+    user.nbQuizPerfectToday++;
+    // félicitation tous les 10 perfects :
     if (user.nbQuizPerfect % 10 == 0) {
       toast(
         `${user.nbQuizPerfect}ème perfect !`,
@@ -207,21 +226,29 @@ function showQuizResults() {
   console.log("points après booster : " + quiz.points);
   // faire apparaître le boost pendant tout le quiz en haut ?
 
-  // remplacer success par result pour tenir compte des erreurs
   user.points += quiz.points;
-  statsThemes[theme.id].nbQuizFinished++;
+  user.pointsToday += quiz.points;
   user.nbQuizFinished++;
+  user.nbQuizFinishedToday++;
+
+  statsThemes[theme.id].nbQuizFinished++;
+
   finishedQuizHistory.push({
     date: new Date(),
     details: quiz.history,
     pointsEarned: quiz.points,
   });
-  if (user.nbQuizFinished % 20 == 0) {
+
+  // message de félicitations tous les 10 quiz terminés
+  if (user.nbQuizFinished % 10 == 0) {
     toast(
       user.nbQuizFinished + " parties terminées, bravo !",
       "oklch(70%,100% var(--c-accent)"
     );
   }
+
+  // - - - - update lastActive - - - -
+  user.lastActiveTime = Date.now();
 
   saveToLocalStorage();
 
@@ -274,6 +301,22 @@ function grade20FromResult(result, maxResult) {
   return roundedGrade;
 }
 
+function isHappyHour() {
+  let date = new Date();
+  let h = date.getHours();
+  if ((6 <= h && h < 8) || (12 <= h && h < 14) || (18 <= h && h < 21)) {
+    return true;
+  } else return false;
+}
+
+function getBoost() {
+  if (isHappyHour()) return 2;
+  else if (Date.now() < user.lastBoostEnd) return user.lastBoostMultiplier;
+  else return 1;
+}
+
+// - - - - - - - - - N O T I F S  /  T O A S T
+
 function toast(message, color) {
   Toastify({
     text: message,
@@ -299,7 +342,7 @@ function notification(message, color) {
     duration: 5000,
     destination: "",
     newWindow: true,
-    close: true,
+    close: false,
     gravity: "top", // `top` or `bottom`
     position: "center", // `left`, `center` or `right`
     stopOnFocus: true, // Prevents dismissing of toast on hover
@@ -310,18 +353,4 @@ function notification(message, color) {
     },
     onClick: function () {}, // Callback after click
   }).showToast();
-}
-
-function isHappyHour() {
-  let date = new Date();
-  let h = date.getHours();
-  if ((6 <= h && h < 8) || (12 <= h && h < 14) || (18 <= h && h < 21)) {
-    return true;
-  } else return false;
-}
-
-function getBoost() {
-  if (isHappyHour()) return 2;
-  else if (Date.now() < user.lastBoostEnd) return user.lastBoostMultiplier;
-  else return 1;
 }

@@ -1,5 +1,4 @@
 let t0 = performance.timeOrigin + performance.now();
-console.log("Bienvenue ! ");
 
 const MIN_QUIZ_RESULT = 1; // attention certains quiz peuvent faire moins de 2 questions ?
 const MAX_ERRORS_ALLOWED = 5; // inutilisé, on utilisé la constante précédente
@@ -15,7 +14,7 @@ let theme = {}; // thème courant, celui affiché lorsqu'on clique sur un thème
 let quiz = {}; // quiz courant
 
 let user = {
-  firstConnection: t0,
+  firstConnectionTime: t0 /* time in ms */,
   userId: toB64(t0),
   userName: toB64(t0),
   areaCode: "54" /* numéro de département */,
@@ -23,7 +22,7 @@ let user = {
   combo: 0,
   longestCombo: 0,
   points: 0,
-  pointsToday: 0,
+  pointsToday: 0 /* peut-être pas à jour, accéder via getter */,
   nbQuestionsViewed: 0,
   nbQuestionsFailed: 0,
   nbQuestionsSkipped: 0,
@@ -33,10 +32,12 @@ let user = {
   nbQuizAborted: 0,
   nbQuizFinished: 0,
   nbQuizPerfect: 0,
-  lastActive: 0 /* time in ms  */,
+  nbQuizFinishedToday: 0,
+  nbQuizPerfectToday: 0,
+  lastActiveTime: 0 /* time in ms  */,
   lastStreak: 0,
   longestStreak: 0,
-  lastBoostEnd: 0 /* date in millisec */,
+  lastBoostEndTime: 0 /* time in millisec */,
   lastBoostMultiplier: 1,
 };
 if (window.localStorage.getItem("user") !== null) {
@@ -81,33 +82,28 @@ function getUserStreak() {
 }
 
 function isStreakAlive() {
-  let today = Math.floor(new Date().getTime() / (24 * 3600));
-  let lastActiveDay = Math.floor(
-    new Date(user.lastActive).getTime() / (24 * 3600)
-  );
+  let today = Math.floor(Date.now() / (24 * 3600 * 1000));
+  let lastActiveDay = Math.floor(user.lastActiveTime / (24 * 3600 * 1000));
   if (today - lastActiveDay <= 1) return true;
   else return false;
 }
 
-function updateUserStreakAndLastActive() {
-  /* appelée lorsqu'un quiz est fini */
-  // ceci doit être fait avant d'updater user.lastActive bien sûr
-  let today = Math.floor(new Date().getTime() / (24 * 3600));
-  let lastActiveDay = Math.floor(
-    new Date(user.lastActive).getTime() / (24 * 3600)
-  );
-  let delta = today - lastActiveDay;
-  if (delta == 1 || user.lastStreak == 0) {
-    user.lastStreak++;
-    notification(
-      "🔥STREAK🔥\n Un jour d'affilée de plus !",
-      "oklch(70% 90% var(--hue-accent))"
-    );
-  } else if (delta > 1) {
-    user.lastStreak = 1;
-  }
-  user.lastActive = Date.now();
-  user.longestStreak = Math.max(user.longestStreak, user.lastStreak);
+function daysSinceLastActive() {
+  let today = Math.floor(Date.now() / (24 * 3600 * 1000));
+  let lastActiveDay = Math.floor(user.lastActiveTime / (24 * 3600 * 1000));
+  return today - lastActiveDay;
+}
+
+function getPointsToday() {
+  return daysSinceLastActive() == 0 ? user.pointsToday : 0;
+}
+
+function getPerfectsToday() {
+  return daysSinceLastActive() == 0 ? user.nbQuizPerfectToday : 0;
+}
+
+function getNbFinishedQuizToday() {
+  return daysSinceLastActive() == 0 ? user.nbQuizFinishedToday : 0;
 }
 
 function removeCircles() {

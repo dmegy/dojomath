@@ -232,53 +232,53 @@
             <div style="display: flex; gap: 0.5rem; align-items: center">
               <div
                 style="width: 1rem; flex-shrink: 0; text-align: center"
-                x-html="htmlCheckbox(true)"
+                x-html="htmlCheckbox(getPointsToday()>=100)"
               ></div>
               <div style="flex-shrink: 0">Gagner 100 points :</div>
               <div
                 style="height: 0.5rem; flex-grow: 1"
-                x-html="htmlProgress(user.points,100)"
+                x-html="htmlProgress(getPointsToday(),100)"
               ></div>
             </div>
 
             <div style="display: flex; gap: 0.5rem; align-items: center">
               <div
                 style="width: 1rem; flex-shrink: 0; text-align: center"
-                x-html="htmlCheckbox(true)"
+                x-html="htmlCheckbox(getNbFinishedQuizToday()>=5)"
               ></div>
               <div style="flex-shrink: 0">Valider 5 quiz :</div>
-              <div style="height: 0.5rem; flex-grow: 1" x-html=""></div>
+              <div
+                style="height: 0.5rem; flex-grow: 1"
+                x-html="htmlProgress(getNbFinishedQuizToday(),5)"
+              ></div>
             </div>
 
             <div style="display: flex; gap: 0.5rem; align-items: center">
               <div
                 style="width: 1rem; flex-shrink: 0; text-align: center"
-                x-html="htmlCheckbox(true)"
+                x-html="htmlCheckbox(getPerfectsToday()>0)"
               ></div>
               <div>Valider un quiz avec 20/20</div>
             </div>
 
             <div style="display: flex; gap: 0.5rem; align-items: center">
-              <div
-                style="width: 1rem; flex-shrink: 0; text-align: center"
-                x-html="htmlCheckbox(true)"
-              ></div>
+              <div style="width: 1rem; flex-shrink: 0; text-align: center">
+                •
+              </div>
               <div>Valider un quiz entre 6h et 8h</div>
             </div>
 
             <div style="display: flex; gap: 0.5rem; align-items: center">
-              <div
-                style="width: 1rem; flex-shrink: 0; text-align: center"
-                x-html="htmlCheckbox(true)"
-              ></div>
+              <div style="width: 1rem; flex-shrink: 0; text-align: center">
+                •
+              </div>
               <div>Valider un quiz entre midi et 14h</div>
             </div>
 
             <div style="display: flex; gap: 0.5rem; align-items: center">
-              <div
-                style="width: 1rem; flex-shrink: 0; text-align: center"
-                x-html="htmlCheckbox(true)"
-              ></div>
+              <div style="width: 1rem; flex-shrink: 0; text-align: center">
+                •
+              </div>
               <div>Valider un quiz entre 18h et 20h</div>
             </div>
           </div>

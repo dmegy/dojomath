@@ -1,6 +1,5 @@
  
 let t0 = performance.timeOrigin + performance.now();
-console.log("Bienvenue ! ");
 
 const MIN_QUIZ_RESULT = 1; // attention certains quiz peuvent faire moins de 2 questions ?
 const MAX_ERRORS_ALLOWED = 5; // inutilisé, on utilisé la constante précédente
@@ -16,7 +15,7 @@ let theme = {}; // thème courant, celui affiché lorsqu'on clique sur un thème
 let quiz = {}; // quiz courant
 
 let user = {
-  firstConnection: t0,
+  firstConnectionTime: t0 /* time in ms */,
   userId: toB64(t0),
   userName: toB64(t0),
   areaCode: "54" /* numéro de département */,
@@ -24,7 +23,7 @@ let user = {
   combo: 0,
   longestCombo: 0,
   points: 0,
-  pointsToday: 0,
+  pointsToday: 0 /* peut-être pas à jour, accéder via getter */,
   nbQuestionsViewed: 0,
   nbQuestionsFailed: 0,
   nbQuestionsSkipped: 0,
@@ -34,10 +33,12 @@ let user = {
   nbQuizAborted: 0,
   nbQuizFinished: 0,
   nbQuizPerfect: 0,
-  lastActive: 0 /* time in ms  */,
+  nbQuizFinishedToday: 0,
+  nbQuizPerfectToday: 0,
+  lastActiveTime: 0 /* time in ms  */,
   lastStreak: 0,
   longestStreak: 0,
-  lastBoostEnd: 0 /* date in millisec */,
+  lastBoostEndTime: 0 /* time in millisec */,
   lastBoostMultiplier: 1,
 };
 if (window.localStorage.getItem("user") !== null) {
@@ -82,33 +83,28 @@ function getUserStreak() {
 }
 
 function isStreakAlive() {
-  let today = Math.floor(new Date().getTime() / (24 * 3600));
-  let lastActiveDay = Math.floor(
-    new Date(user.lastActive).getTime() / (24 * 3600)
-  );
+  let today = Math.floor(Date.now() / (24 * 3600 * 1000));
+  let lastActiveDay = Math.floor(user.lastActiveTime / (24 * 3600 * 1000));
   if (today - lastActiveDay <= 1) return true;
   else return false;
 }
 
-function updateUserStreakAndLastActive() {
-  /* appelée lorsqu'un quiz est fini */
-  // ceci doit être fait avant d'updater user.lastActive bien sûr
-  let today = Math.floor(new Date().getTime() / (24 * 3600));
-  let lastActiveDay = Math.floor(
-    new Date(user.lastActive).getTime() / (24 * 3600)
-  );
-  let delta = today - lastActiveDay;
-  if (delta == 1 || user.lastStreak == 0) {
-    user.lastStreak++;
-    notification(
-      "🔥STREAK🔥\n Un jour d'affilée de plus !",
-      "oklch(70% 90% var(--hue-accent))"
-    );
-  } else if (delta > 1) {
-    user.lastStreak = 1;
-  }
-  user.lastActive = Date.now();
-  user.longestStreak = Math.max(user.longestStreak, user.lastStreak);
+function daysSinceLastActive() {
+  let today = Math.floor(Date.now() / (24 * 3600 * 1000));
+  let lastActiveDay = Math.floor(user.lastActiveTime / (24 * 3600 * 1000));
+  return today - lastActiveDay;
+}
+
+function getPointsToday() {
+  return daysSinceLastActive() == 0 ? user.pointsToday : 0;
+}
+
+function getPerfectsToday() {
+  return daysSinceLastActive() == 0 ? user.nbQuizPerfectToday : 0;
+}
+
+function getNbFinishedQuizToday() {
+  return daysSinceLastActive() == 0 ? user.nbQuizFinishedToday : 0;
 }
 
 function removeCircles() {
@@ -1316,7 +1312,7 @@ function validateAnswer() {
 
 function showAbortQuizModal() {
   let text =
-    "=======================\nDEMANDE DE CONFIRMATION\n=======================\n\nSouhaites-tu vraiment quitter la partie en cours ?\n\n(Attention, les points de la partie en cours de seront pas sauvegardés.)";
+    "=======================\nDEMANDE DE CONFIRMATION\n=======================\n\nSouhaites-tu vraiment quitter la partie en cours ?\n\n(Attention, les points de la partie en cours ne seront pas sauvegardés.)";
   if (confirm(text) == true) {
     user.nbQuizAborted++;
     abortQuiz();
@@ -1330,8 +1326,25 @@ function abortQuiz() {
 
 function showQuizResults() {
   //appelée par validateResults() si la liste de questions est vide
+  if (daysSinceLastActive() > 0) {
+    //reset daily stats
+    user.pointsToday = 0;
+    user.nbQuizFinishedToday = 0;
+    user.nbQuizPerfectToday = 0;
+  }
+  // update streak and longestStreak
+  // !! AVANT modif lastActiveTime
 
-  updateUserStreakAndLastActive();
+  if (daysSinceLastActive() == 1 || user.lastStreak == 0) {
+    user.lastStreak++;
+    notification(
+      "🔥STREAK🔥\n Un jour d'affilée de plus !",
+      "oklch(70% 90% var(--hue-accent))"
+    );
+  } else if (daysSinceLastActive() > 1) {
+    user.lastStreak = 1;
+  }
+  user.longestStreak = Math.max(user.longestStreak, user.lastStreak);
 
   // CALCUL NOTE
   quiz.finalGrade = grade20FromResult(
@@ -1341,6 +1354,8 @@ function showQuizResults() {
   // SI PERFECT :
   if (quiz.finalGrade == 20) {
     user.nbQuizPerfect++;
+    user.nbQuizPerfectToday++;
+    // félicitation tous les 10 perfects :
     if (user.nbQuizPerfect % 10 == 0) {
       toast(
         `${user.nbQuizPerfect}ème perfect !`,
@@ -1356,21 +1371,29 @@ function showQuizResults() {
   console.log("points après booster : " + quiz.points);
   // faire apparaître le boost pendant tout le quiz en haut ?
 
-  // remplacer success par result pour tenir compte des erreurs
   user.points += quiz.points;
-  statsThemes[theme.id].nbQuizFinished++;
+  user.pointsToday += quiz.points;
   user.nbQuizFinished++;
+  user.nbQuizFinishedToday++;
+
+  statsThemes[theme.id].nbQuizFinished++;
+
   finishedQuizHistory.push({
     date: new Date(),
     details: quiz.history,
     pointsEarned: quiz.points,
   });
-  if (user.nbQuizFinished % 20 == 0) {
+
+  // message de félicitations tous les 10 quiz terminés
+  if (user.nbQuizFinished % 10 == 0) {
     toast(
       user.nbQuizFinished + " parties terminées, bravo !",
       "oklch(70%,100% var(--c-accent)"
     );
   }
+
+  // - - - - update lastActive - - - -
+  user.lastActiveTime = Date.now();
 
   saveToLocalStorage();
 
@@ -1423,6 +1446,22 @@ function grade20FromResult(result, maxResult) {
   return roundedGrade;
 }
 
+function isHappyHour() {
+  let date = new Date();
+  let h = date.getHours();
+  if ((6 <= h && h < 8) || (12 <= h && h < 14) || (18 <= h && h < 21)) {
+    return true;
+  } else return false;
+}
+
+function getBoost() {
+  if (isHappyHour()) return 2;
+  else if (Date.now() < user.lastBoostEnd) return user.lastBoostMultiplier;
+  else return 1;
+}
+
+// - - - - - - - - - N O T I F S  /  T O A S T
+
 function toast(message, color) {
   Toastify({
     text: message,
@@ -1448,7 +1487,7 @@ function notification(message, color) {
     duration: 5000,
     destination: "",
     newWindow: true,
-    close: true,
+    close: false,
     gravity: "top", // `top` or `bottom`
     position: "center", // `left`, `center` or `right`
     stopOnFocus: true, // Prevents dismissing of toast on hover
@@ -1459,20 +1498,6 @@ function notification(message, color) {
     },
     onClick: function () {}, // Callback after click
   }).showToast();
-}
-
-function isHappyHour() {
-  let date = new Date();
-  let h = date.getHours();
-  if ((6 <= h && h < 8) || (12 <= h && h < 14) || (18 <= h && h < 21)) {
-    return true;
-  } else return false;
-}
-
-function getBoost() {
-  if (isHappyHour()) return 2;
-  else if (Date.now() < user.lastBoostEnd) return user.lastBoostMultiplier;
-  else return 1;
 }
 
 /**
