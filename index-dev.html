@@ -45,18 +45,18 @@
   <body>
     <div class="body-container">
       <header class="glow">
-        <div x-show="state!='Quiz'" x-html="htmlNumAdj(user.points,'pt')"></div>
-        <div
-          x-show="state!='Quiz'"
-          x-html="htmlGetUserLevel()"
-          class="levelBadge"
-        >
-          Niv. 0
+        <div x-show="state!='Quiz'" x-html="sectionLabels[state]">
+          DojoMath.fr
         </div>
+
         <div
           x-show="state=='Quiz'"
-          style="cursor: pointer; background-color: var(--c-primary-10-desat)"
-          onClick="showAbortQuizModal()"
+          style="
+            display: none;
+            cursor: pointer;
+            background-color: var(--c-primary-10-desat);
+          "
+          onClick="confirmQuit()"
         >
           ✖
         </div>
@@ -65,11 +65,16 @@
           x-show="state=='Quiz'"
           x-html="(quiz.points>=0 ? '+' : '')+htmlPoints(quiz.points)"
         ></div>
+        <div style="position: relative" x-show="state!='Quiz'">
+          <div x-html="htmlNumAdj(user.points,'pt')">0 pts</div>
+          <div x-html="htmlGetUserLevel()" class="notif">Niv. 0</div>
+        </div>
       </header>
+      <!-- - - - - - - M A I N  - - - - - - - - - - -->
       <main>
         <!-- - - - - - -H O M E - - - - --->
         <section id="section-home" x-show="(state=='Home')">
-          <h1 class="glow">DojoMath.fr</h1>
+          <h1 class="glow">Bienvenue !</h1>
           <p>Consolide tes maths de manière ludique !</p>
           <p>
             Progresse avec des quiz sur de nombreux thèmes, du collège jusqu'à
@@ -107,8 +112,6 @@
           x-show="(state=='Profile')"
           style="display: none"
         >
-          <h1 class="glow">Préférences</h1>
-
           <!--<div>
             Identifiant d'utilisateur (non modifiable):
             <span x-html="user.userId"></span>
@@ -141,7 +144,6 @@
           x-show="state=='Statistics'"
           style="display: none"
         >
-          <h1 class="glow">Statistiques</h1>
           <!-- - - - S T A T S > > > BILAN- - - -->
           <!--<h3>Bilan</h3>-->
           <div>
@@ -166,7 +168,7 @@
             dont
             <span
               style="color: var(--c-success-accent)"
-              x-html="htmlNumAdj(user.nbQuizPerfect,'réussie')+' avec un score parfait 🏆'"
+              x-html="htmlNumAdj(user.nbQuizPerfect,'réussie')+' avec 20/20 🏆'"
             ></span>
           </div>
 
@@ -246,7 +248,7 @@
                 style="width: 1rem; flex-shrink: 0; text-align: center"
                 x-html="htmlCheckbox(getNbFinishedQuizToday()>=5)"
               ></div>
-              <div style="flex-shrink: 0">Valider 5 quiz :</div>
+              <div style="flex-shrink: 0">Finir 5 parties :</div>
               <div
                 style="height: 0.5rem; flex-grow: 1"
                 x-html="htmlProgress(getNbFinishedQuizToday(),5)"
@@ -256,31 +258,36 @@
             <div style="display: flex; gap: 0.5rem; align-items: center">
               <div
                 style="width: 1rem; flex-shrink: 0; text-align: center"
-                x-html="htmlCheckbox(getPerfectsToday()>0)"
+                x-html="htmlCheckbox(getPerfectsToday()>=5)"
               ></div>
-              <div>Valider un quiz avec 20/20</div>
+              <div style="flex-shrink: 0">&nbsp;&nbsp;...avec 20/20 :</div>
+              <div
+                style="height: 0.5rem; flex-grow: 1"
+                x-html="htmlProgress(getPerfectsToday(),5)"
+              ></div>
+            </div>
+
+            <!--
+            <div style="display: flex; gap: 0.5rem; align-items: center">
+              <div style="width: 1rem; flex-shrink: 0; text-align: center">
+                •
+              </div>
+              <div>Finir une partie entre 6h et 8h</div>
             </div>
 
             <div style="display: flex; gap: 0.5rem; align-items: center">
               <div style="width: 1rem; flex-shrink: 0; text-align: center">
                 •
               </div>
-              <div>Valider un quiz entre 6h et 8h</div>
+              <div>Finir une partie entre midi et 14h</div>
             </div>
 
             <div style="display: flex; gap: 0.5rem; align-items: center">
               <div style="width: 1rem; flex-shrink: 0; text-align: center">
                 •
               </div>
-              <div>Valider un quiz entre midi et 14h</div>
-            </div>
-
-            <div style="display: flex; gap: 0.5rem; align-items: center">
-              <div style="width: 1rem; flex-shrink: 0; text-align: center">
-                •
-              </div>
-              <div>Valider un quiz entre 18h et 20h</div>
-            </div>
+              <div>Finir une partie entre 18h et 20h</div>
+            </div>-->
           </div>
           <!-- - - - S T A T S > > > P R O C H A I N E S   E T A P E S - - - -->
           <h3>
@@ -339,21 +346,18 @@
           x-show="(state=='Highscores')"
           style="display: none"
         >
-          <h1 class="glow">
-            Highscores
-            <span
-              onclick="getHighscores()"
-              id="refreshHighscoresButton"
-              style="cursor: pointer"
-            >
-              <svg
-                style="width: 1.5rem; height: 1.5rem"
-                class="svg-icon"
-                viewBox="0 0 516 512"
-                x-html="svgPathFasArrowRotateRight"
-              ></svg>
-            </span>
-          </h1>
+          <span
+            onclick="getHighscores()"
+            id="refreshHighscoresButton"
+            style="cursor: pointer"
+          >
+            <svg
+              style="width: 1.5rem; height: 1.5rem"
+              class="svg-icon"
+              viewBox="0 0 516 512"
+              x-html="svgPathFasArrowRotateRight"
+            ></svg>
+          </span>
 
           <p>Tous les temps / Plus récents / Meilleurs Streaks</p>
           <div id="highscores">- - - Chargement des scores - - -</div>
@@ -375,7 +379,7 @@
           x-show="(state=='Theme')"
           style="display: none"
         >
-          <h3 x-html="theme.title"></h3>
+          <h1 class="glow" x-html="theme.title"></h1>
           <p x-html="theme.info"></p>
           <div class="stats-theme">
             <div
@@ -461,7 +465,7 @@
 
         <!-- - - - - - E N D  / Q U I Z  T E R M I N É  - - - - - -->
         <section id="section-end" x-show="(state=='End')" style="display: none">
-          <h1 style="text-align: center">
+          <h1 class="glow" style="text-align: center">
             <span x-html="quiz.finalGrade"></span>/20
             <!-- icône suivant le résultat-->
             <span x-html="glyphResult(quiz.finalGrade)"> </span>
@@ -557,6 +561,7 @@
           </table>
         </section>
       </main>
+      <!-- - - - - - -  F O O T E R  - - - - - - - - - -->
       <footer>
         <div
           x-show="(state!='Quiz') && (state!='End') && (state!='Theme')"
@@ -583,17 +588,16 @@
               <svg
                 id="navButtonStatistics"
                 class="svg-icon-nav btn-nav-icon"
-                viewBox="0 0 640 512"
-                x-html="svgPathFasDumbbell"
+                viewBox="0 0 512 512"
+                x-html="window[getUserSvgPath(user.points)]"
               ></svg>
             </div>
             <div class="btn btn-nav" onClick="goto('Highscores')">
               <svg
                 id="navButtonHighscores"
                 class="svg-icon-nav btn-nav-icon"
-                viewBox="0 0 640 512"
-                x-html="svgPathFasRankingStar"
-                style="transform: scale(1.1)"
+                viewBox="0 0 600 512"
+                x-html="svgPathFasTrophy"
               ></svg>
             </div>
           </nav>
@@ -635,6 +639,7 @@
             VRAI
           </div>
         </div>
+        <!-- - - - - - F O O T E R    T H E M E - - - - --->
         <div
           class="footer-content"
           x-show="state=='Theme'"
@@ -655,6 +660,7 @@
             Jouer ❯❯
           </div>
         </div>
+        <!-- - - - - - F O O T E R    E N D - - - - --->
         <div style="display: none" x-show="state=='End'" class="footer-content">
           <div
             class="btn btn-big btn-secondary"

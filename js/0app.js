@@ -6,10 +6,31 @@ const MAX_ERRORS_ALLOWED = 5; // inutilisé, on utilisé la constante précéden
 const MAX_QUIZ_LENGTH = 10;
 const MAX_POINTS_QUESTION = 20; //maximum de pts que l'on peut gagner à chaque question
 const BOOST_PROBABILITY = 0.2;
+const BOOST_DURATION = 15 * 60 * 1000; // 15 minutes
+
+let happyHourList = [
+  [6, 8],
+  [12, 14],
+  [18, 20],
+];
+
+let questions = []; // Pour json. Commenter si questions loadées depuis js.
 
 let questionNumber; // int, question courante
 let question; // question courante : object
 let state = "Loading";
+// les states ont "Loading", "Home", "Settings", "Statistics", "Chapters", "Theme", "Quiz" et "End"
+let sectionLabels = {
+  Loading: "DojoMath.fr",
+  Home: "DojoMath.fr",
+  Profile: "Préférences",
+  Statistics: "Progression",
+  Highscores: "Highscores",
+  Chapters: "Liste des thèmes",
+  Theme: "Thème choisi",
+  Quiz: "",
+  End: "Partie terminée!",
+};
 let theme = {}; // thème courant, celui affiché lorsqu'on clique sur un thème dans la page des chapitres.
 let quiz = {}; // quiz courant
 
@@ -183,6 +204,15 @@ function nextLevelThreshold(points) {
   return 10 * 2 ** (level(points) + 1);
 }
 
+function getUserSvgPath(pts) {
+  if (user.points > 20000) return "svgPathFasRobot";
+  if (user.points > 10000) return "svgPathFasUserAstronaut";
+  if (user.points > 5000) return "svgPathFasUserNinja";
+  if (user.points > 1000) return "svgPathFasUserGraduate";
+  if (user.points > 100) return "svgPathFasBookOpenReader";
+  return "svgPathFasUserLarge";
+}
+
 function getHighscores() {
   document.getElementById("highscores").innerHTML = "Chargement...";
   document.getElementById("refreshHighscoresButton").classList.add("rotating");
@@ -304,16 +334,29 @@ window.addEventListener("load", () => {
   }
   // passage du state de Loading à Home
   state = "Home";
-  getScript("js/-initMathJax.js", () => {
-    console.log("Callback de getScript -initMathjax.js");
-  });
+
+  /*
   getScript("js/-questions.js", () => {
-    console.log("callback de getScript -questions.js");
+    console.log("Callback de getScript -questions.js");
     questionsLoaded = true;
     afterQuestionsLoaded();
-  });
+  });*/
+
+  fetch("questions.json?again=" + Math.random())
+    .then((response) => response.json())
+    .then((json) => {
+      questions = json;
+      console.log("Questions loaded from json");
+      questionsLoaded = true;
+      afterQuestionsLoaded();
+    });
+
   render(); //rendu des points ? Mais il sont pas encore récupérés du storage
-});
+
+  getScript("js/-async-initMathJax.js", () => {
+    console.log("Callback de getScript MathJax");
+  });
+}); // fin du listener sur onLoad
 
 function afterQuestionsLoaded() {
   console.log("Nb de questions téléchargées : " + questions.length);
@@ -347,12 +390,3 @@ function afterQuestionsLoaded() {
     }
   }
 }
-
-/*
-fetch("questions.json?again=" + Math.random())
-  .then((response) => response.json())
-  .then((json) => {
-    questions = json;
-    console.log(questions[3]);
-  });
-*/

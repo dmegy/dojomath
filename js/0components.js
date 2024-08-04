@@ -89,7 +89,8 @@ function htmlMultipleProgress(numbers, colorsCSSvarnames) {
 
 function htmlCheckbox(bool) {
   if (bool) {
-    return `<svg class="svg-icon" viewBox="0 0 512 512">${svgPathFasCheck}</svg>`;
+    return "✔";
+    //return `<svg class="svg-icon" viewBox="0 0 512 512">${svgPathFasCheck}</svg>`;
   } else {
     return `•`;
   }

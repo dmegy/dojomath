@@ -454,6 +454,7 @@ summary {
 }
 
 .quiz-statement {
+  padding-top: 1rem;
   overflow: auto;
   scrollbar-width: none; /*  autoriser une scrollbar visible ici ?*/
 }

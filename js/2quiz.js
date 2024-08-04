@@ -136,13 +136,18 @@ function validateAnswer() {
   let maxAchievableResult = quiz.result + quiz.questions.length;
   let isGameover = maxAchievableResult < MIN_QUIZ_RESULT;
   if (isGameover) {
-    alert(
-      "=========\nGAMEOVER\n=========\n\nTrop de questions ratées ou sautées"
-    );
+    //alert(
+    //  "=========\nGAMEOVER\n=========\n\nTrop de questions ratées ou sautées"
+    //);
+
+    alertGameover();
+
     user.nbQuizGameover++;
-    abortQuiz();
+    gotoTheme(theme.id);
     return;
   }
+
+  // BONUS COMBO
 
   question.bonus = Math.max(question.points - 1, 0); // pts gagnés à cause d'un bonus
 
@@ -165,18 +170,15 @@ function validateAnswer() {
   else showQuizResults(); // quiz terminé !
 }
 
-function showAbortQuizModal() {
+function confirmQuit() {
+  //apelée par bouton "quitter"
   let text =
     "=======================\nDEMANDE DE CONFIRMATION\n=======================\n\nSouhaites-tu vraiment quitter la partie en cours ?\n\n(Attention, les points de la partie en cours ne seront pas sauvegardés.)";
   if (confirm(text) == true) {
     user.nbQuizAborted++;
-    abortQuiz();
+
+    gotoTheme(theme.id); // ou alors faire une fonction abortQuiz ?
   }
-}
-function abortQuiz() {
-  // appelé lorsque l'utilisateur confirme la fermeture, ou en cas de gameover ?
-  // éventuel appel serveur, gestion des stats ? ajout quiz interrompu ?
-  gotoTheme(theme.id);
 }
 
 function showQuizResults() {
@@ -259,26 +261,54 @@ function showQuizResults() {
   // gestion de la liste d'attente pour le serveur
 }
 
-function unstack(targetName) {
-  /* appelé lorsque le joueur sort de l'écran de fin : il faut afficher tous les messages empilés */
-  /* provisoire */
-  if (isHappyHour()) {
-    notification(
-      "HAPPY HOUR\nPoints doublés",
-      "oklch(70% 100% var(--hue-accent)"
-    );
-  } else if (Math.random < BOOST_PROBABILITY) {
-    // on octroie les boot avec proba 1/10:
+function giveBoost() {
+  if (getBoost() > 1) return; // on ne donne pas de boost s'il y en a déjà un actif
+
+  let thisDate = new Date();
+  let thisHour = thisDate.getHours();
+
+  for (let i = 0; i < happyHourList.length; i++) {
+    if (happyHourList[i][0] <= thisHour && thisHour < happyHourList[i][1]) {
+      user.lastBoostMultiplier = 2;
+      user.lastBoostEnd = new Date(
+        thisDate.getFullYear(),
+        thisDate.getMonth(),
+        thisDate.getDate(),
+        happyHourList[i][1]
+      ).getTime();
+      notification(
+        "HAPPY HOUR:\nPoints doublés jusqu'à " + happyHourList[i][1] + "h",
+        "oklch(70% 100% var(--hue-accent)"
+      );
+      return;
+    }
+  }
+
+  if (Math.random() < BOOST_PROBABILITY) {
     user.lastBoostMultiplier = 2;
-    user.lastBoostEnd = Date.now() + 15 * 60 * 1000;
+    user.lastBoostEnd = Date.now() + BOOST_DURATION;
     notification(
-      "BOOST\nPoints doublés pendant 15 minutes !",
+      "BOOST\nPoints doublés pendant " +
+        BOOST_DURATION / (60 * 1000) +
+        " minutes !",
       "oklch(70% 100% var(--hue-accent)"
     );
   }
+}
+
+function unstack(targetName) {
+  /* appelé lorsque le joueur sort de l'écran de fin : il faut afficher tous les messages empilés */
+  /* provisoire */
+
+  giveBoost();
 
   if (targetName == "Chapters") gotoChapters();
   else if (targetName == "Quiz") startQuiz();
+}
+
+function getBoost() {
+  if (Date.now() < user.lastBoostEnd) return user.lastBoostMultiplier;
+  else return 1;
 }
 
 // - - - COMPOSANTS - - - --
@@ -299,20 +329,6 @@ function grade20FromResult(result, maxResult) {
   let grade = (MAX_GRADE * posResult) / maxResult;
   let roundedGrade = Math.floor(grade);
   return roundedGrade;
-}
-
-function isHappyHour() {
-  let date = new Date();
-  let h = date.getHours();
-  if ((6 <= h && h < 8) || (12 <= h && h < 14) || (18 <= h && h < 21)) {
-    return true;
-  } else return false;
-}
-
-function getBoost() {
-  if (isHappyHour()) return 2;
-  else if (Date.now() < user.lastBoostEnd) return user.lastBoostMultiplier;
-  else return 1;
 }
 
 // - - - - - - - - - N O T I F S  /  T O A S T
@@ -349,6 +365,25 @@ function notification(message, color) {
     style: {
       "border-radius": "2rem",
       background: color,
+      "text-align": "center",
+    },
+    onClick: function () {}, // Callback after click
+  }).showToast();
+}
+
+function alertGameover() {
+  Toastify({
+    text: "GAMEOVER\n\n Trop de questions sautées ou ratées !",
+    duration: 5000,
+    destination: "",
+    newWindow: true,
+    close: false,
+    gravity: "top", // `top` or `bottom`
+    position: "center", // `left`, `center` or `right`
+    stopOnFocus: true, // Prevents dismissing of toast on hover
+    style: {
+      "border-radius": "2rem",
+      background: "var(--c-danger)",
       "text-align": "center",
     },
     onClick: function () {}, // Callback after click
