@@ -1455,8 +1455,7 @@ function showQuizResults() {
   state = "End";
   render();
 
-  // rajouter à la queue pour envoi au serveur
-  // gestion de la liste d'attente pour le serveur
+  sendStatistics();
 }
 
 function giveBoost() {
