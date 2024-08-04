@@ -1539,6 +1539,7 @@ function grade20FromResult(result, maxResult) {
 }
 
 function htmlQuizProgress() {
+  if (state != "Quiz" && state != "End") return "";
   let s = "";
   let color = "";
   for (let i = 0; i < quiz.history.length; i++) {

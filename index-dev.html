@@ -73,13 +73,14 @@
         </div>
       </header>
       <!-- - - - - - -  P R O G R E S S   Q U I Z-->
-      <div style="width: 100%" x-show="state=='Quiz' || state=='End'">
+      <div style="width: 100%">
         <div
           style="
             width: 100%;
             height: 0.1rem;
             display: flex;
             justify-items: space-between;
+            background-color: var(--c-primary-40-desat);
           "
           class="quiz-progress"
           x-html="htmlQuizProgress()"
