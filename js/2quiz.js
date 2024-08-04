@@ -65,7 +65,7 @@ function nextQuestion() {
   state = "Quiz";
   render();
   MathJax.typeset();
-  statsQuestions[question.num].views += 1;
+  statsQuestions[question.num].viewed += 1;
   statsThemes[theme.id].nbQuestionsViewed += 1;
   user.nbQuestionsViewed += 1;
 }

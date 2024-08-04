@@ -395,9 +395,12 @@
                   style="margin-right: 0.7rem; width: 1rem; height: 1rem"
                   x-html="svgPathFarEye"
                 ></svg>
-                <span x-html="theme.nbQuestionsSeen || '0' ">?</span>
+                <span
+                  x-html="statsThemes[theme.id].questionsAlreadySeen || '0' "
+                  >?</span
+                >
                 déjà affichées (<span
-                  x-html="theme.nbQuestionsSeen/theme.length || '0' "
+                  x-html="percentage(statsThemes[theme.id].questionsAlreadySeen/theme.questions.length) || '0' "
                   >?</span
                 >%)
               </span>
@@ -409,10 +412,13 @@
                   style="margin-right: 0.7rem; width: 1rem; height: 1rem"
                   x-html="svgPathFasCheck"
                 ></svg>
-                <span x-html="theme.nbQuestionsChecked || '0' ">?</span>
-                réussies (<span
-                  x-html="theme.nbQuestionsSuccessful/theme.length || '0' "
+                <span
+                  x-html="statsThemes[theme.id].questionsSuccessfulLastTime || '0' "
                   >?</span
+                >
+                réussies (<span
+                  x-html="percentage(statsThemes[theme.id].questionsSuccessfulLastTime/theme.questions.length) || '0' "
+                ></span
                 >%)</span
               >
 
@@ -424,9 +430,12 @@
                   style="margin-right: 0.7rem; width: 1rem; height: 1rem"
                   x-html="svgPathFasCheckDouble"
                 ></svg>
-                <span x-html="theme.nbQuestionsDbChecked || '0' ">?</span>
+                <span
+                  x-html="statsThemes[theme.id].questionsSuccessfulLastTwoTimes || '0' "
+                  >?</span
+                >
                 consolidées (<span
-                  x-html="theme.nbQuestionsDbSuccessful/theme.length || '0' "
+                  x-html="percentage(statsThemes[theme.id].questionsSuccessfulLastTwoTimes/theme.questions.length) || '0' "
                   >?</span
                 >%)
               </span>

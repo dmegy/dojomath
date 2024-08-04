@@ -170,16 +170,20 @@ function computeThemeStats(themeId) {
     questionsSuccessfulLastTime;
   statsThemes[themeId].questionsSuccessfulLastTwoTimes =
     questionsSuccessfulLastTwoTimes;
+
+  console.log("thème " + themeId + " : stats calculées");
 }
 
 function computeAllThemeStats() {
   for (let themeId in statsThemes) {
+    console.log("calcul des stats du thèm : " + themeId);
     computeThemeStats(themeId);
   }
 }
 
 function gotoTheme(id) {
   console.log("appel de gotoTheme avec id " + id);
+  computeThemeStats(id);
   state = "Theme";
   theme = structuredClone(themes[id]);
   theme.id = id; // on rajoute l'id sinon il n'est plus là...
@@ -390,6 +394,10 @@ function afterQuestionsLoaded() {
       statsQuestions[i] = loadedStatsQuestions[i]; // on écrase quand il existe une valeur loadée
     }
   }
+}
+
+function percentage(t) {
+  return Math.floor(100 * t);
 }
 
 // pour l'écran des thèmes et chapitres :
@@ -1254,7 +1262,7 @@ function nextQuestion() {
   state = "Quiz";
   render();
   MathJax.typeset();
-  statsQuestions[question.num].views += 1;
+  statsQuestions[question.num].viewed += 1;
   statsThemes[theme.id].nbQuestionsViewed += 1;
   user.nbQuestionsViewed += 1;
 }
