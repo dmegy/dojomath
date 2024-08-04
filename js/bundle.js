@@ -1,7 +1,7 @@
  
 let t0 = performance.timeOrigin + performance.now();
 
-const MIN_QUIZ_RESULT = 1; // attention certains quiz peuvent faire moins de 2 questions ?
+const MIN_QUIZ_RESULT = 2; // attention certains quiz peuvent faire moins de 2 questions ?
 const MAX_ERRORS_ALLOWED = 5; // inutilisé, on utilisé la constante précédente
 // (le but est d'empecher de cliquer sur 'passer' et que ça compte comme un quiz fini)
 const MAX_QUIZ_LENGTH = 10;
@@ -19,6 +19,7 @@ let questions = []; // Pour json. Commenter si questions loadées depuis js.
 
 let questionNumber; // int, question courante
 let question; // question courante : object
+let oldState = undefined;
 let state = "Loading";
 // les states ont "Loading", "Home", "Settings", "Statistics", "Chapters", "Theme", "Quiz" et "End"
 let sectionLabels = {
@@ -134,9 +135,14 @@ function removeCircles() {
     .forEach((el) => el.classList.remove("circled"));
 }
 
-function goto(newState) {
+function setState(s) {
   oldState = state;
-  state = newState;
+  state = s;
+  window.localStorage.setItem("state", state);
+}
+
+function goto(newState) {
+  setState(newState);
 
   removeCircles();
   document.getElementById("navButton" + newState).classList.add("circled");
@@ -144,7 +150,7 @@ function goto(newState) {
 }
 
 function gotoChapters() {
-  state = "Chapters";
+  setState("Chapters");
   removeCircles();
   render();
 }
@@ -184,7 +190,7 @@ function computeAllThemeStats() {
 function gotoTheme(id) {
   console.log("appel de gotoTheme avec id " + id);
   computeThemeStats(id);
-  state = "Theme";
+  setState("Theme");
   theme = structuredClone(themes[id]);
   theme.id = id; // on rajoute l'id sinon il n'est plus là...
   // calculer theme.progress, theme.nbQuestionsSeens, nbQuestionsChecked, theme.nbQuestionsDbChecked
@@ -193,7 +199,7 @@ function gotoTheme(id) {
 
 function startQuiz() {
   /* ou gotoQuiz ?*/
-  state = "Quiz";
+  setState("Quiz");
   render();
 }
 
@@ -337,8 +343,11 @@ window.addEventListener("load", () => {
 
     console.log("statsThemes updated");
   }
-  // passage du state de Loading à Home
-  state = "Home";
+
+  // passage du state de Loading à Home :
+  // mais en fait il faudrait détecter le state sauvegardé dans le storage et loader ce state-là, sauf si c'est Quiz ou End ?
+  // Ou même theme, car theme va être undefined, ou alors il faut aussi le sauvegarder
+  setState("Home");
 
   /*
   getScript("js/-questions.js", () => {
@@ -1195,6 +1204,23 @@ let themes = {
   },
 };
 
+// ceci doit tourner après que les thèmes soient loadés
+// c'est le cas uniquement car le script est inliné après themes.js, à cause de son nom.
+
+for (let themeId in themes) {
+  //initialisation
+  statsThemes[themeId] ??= {
+    nbQuestionsViewed: 0,
+    nbQuestionsSuccessful: 0,
+    nbQuestionsFailed: 0,
+    nbQuestionsSkipped: 0,
+    nbQuizFinished: 0,
+    questionsAlreadySeen: 0,
+    questionsSuccessfulLastTime: 0,
+    questionsSuccessfulLastTwoTimes: 0,
+  };
+}
+
 // ceci doit tourner après que les questions soient loadées !
 // à part la boucle  suivante, ce script comporte uniquement des fonctions.
 
@@ -1259,7 +1285,7 @@ function nextQuestion() {
   question = structuredClone(questions[questionNumber]);
   question.num = questionNumber; // on rajoute dans l'objet
   question.points = 0;
-  state = "Quiz";
+  setState("Quiz");
   render();
   MathJax.typeset();
   statsQuestions[question.num].viewed += 1;
@@ -1305,12 +1331,13 @@ function validateAnswer() {
     question.points = Math.min(MAX_POINTS_QUESTION, user.combo);
 
     // toast success
-    let congratulationsMessage =
+    let congratulationsMessage = "";
+    if (user.combo > 1) congratulationsMessage += user.combo + " D'AFFILÉE !\n";
+
+    congratulationsMessage +=
       "+" + question.points + " pt" + (question.points > 1 ? "s" : "");
     toast(congratulationsMessage, "var(--c-success)");
     //toast Combo:
-    if (user.combo > 1)
-      toast(user.combo + " D'AFFILÉE !\n", "var(--c-success)");
   } else {
     // FAIL
     question.result = -1;
@@ -1451,7 +1478,7 @@ function showQuizResults() {
 
   saveToLocalStorage();
 
-  state = "End";
+  setState("End");
   render();
 
   sendStatistics();

@@ -62,7 +62,7 @@ function nextQuestion() {
   question = structuredClone(questions[questionNumber]);
   question.num = questionNumber; // on rajoute dans l'objet
   question.points = 0;
-  state = "Quiz";
+  setState("Quiz");
   render();
   MathJax.typeset();
   statsQuestions[question.num].viewed += 1;
@@ -108,12 +108,13 @@ function validateAnswer() {
     question.points = Math.min(MAX_POINTS_QUESTION, user.combo);
 
     // toast success
-    let congratulationsMessage =
+    let congratulationsMessage = "";
+    if (user.combo > 1) congratulationsMessage += user.combo + " D'AFFILÉE !\n";
+
+    congratulationsMessage +=
       "+" + question.points + " pt" + (question.points > 1 ? "s" : "");
     toast(congratulationsMessage, "var(--c-success)");
     //toast Combo:
-    if (user.combo > 1)
-      toast(user.combo + " D'AFFILÉE !\n", "var(--c-success)");
   } else {
     // FAIL
     question.result = -1;
@@ -254,7 +255,7 @@ function showQuizResults() {
 
   saveToLocalStorage();
 
-  state = "End";
+  setState("End");
   render();
 
   sendStatistics();

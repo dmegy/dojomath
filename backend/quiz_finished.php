@@ -15,11 +15,11 @@ $dateTime = round(microtime(true) * 1000);
 
 // récupération de l'adresse IP du client (on cherche d'abord à savoir si il est derrière un proxy)
 if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-    $userIp = $_SERVER['HTTP_X_FORWARDED_FOR'];
+    $userIP = $_SERVER['HTTP_X_FORWARDED_FOR'];
 } elseif (isset($_SERVER['HTTP_CLIENT_IP'])) {
-    $userIp = $_SERVER['HTTP_CLIENT_IP'];
+    $userIP = $_SERVER['HTTP_CLIENT_IP'];
 } else {
-    $userIp = $_SERVER['REMOTE_ADDR'];
+    $userIP = $_SERVER['REMOTE_ADDR'];
 }
 
 // Récupérer les données brutes de la requête
@@ -76,13 +76,18 @@ if ( !$bon_referer )
   exit;
 
 
+// IP récupérée plus haut
 $userId = $user['userId'];
 $userName = $user['userName'];
-$areaCode=$user['areaCode'];
+$userAreaCode = $user['areaCode'];
+$userStreak = $user['lastStreak'];
 
+$pointsEarned = $quiz['points']; // attention confusion possible
 $quizThemeId = $quiz['id'];
 $grade = $quiz['finalGrade'];
 $userPoints = $user['points'];
+
+$userCombo = $user['combo'];
 
 // - - - insertion dans base de données
 
@@ -93,16 +98,20 @@ try {
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     
     // Prépare une requête d'insertion
-    $stmt = $pdo->prepare("INSERT INTO FinishedQuizzes (DateTime, UserIP, UserId, UserName, QuizThemeId, Grade, UserPoints) VALUES (:dateTime, :userIP, :userId, :userName, :quizThemeId, :grade, :userPoints)");
+    $stmt = $pdo->prepare("INSERT INTO FinishedQuizzes (DateTime, UserIP, UserId, UserName, UserAreaCode, QuizThemeId, Grade, PointsEarned, UserPoints, UserStreak, UserCombo) VALUES (:dateTime, :userIP, :userId, :userName, :userAreaCode, :quizThemeId, :grade, :pointsEarned, :userPoints, :userStreak, :userCombo)");
     
     // Liaison des paramètres
     $stmt->bindParam(':dateTime', $dateTime, PDO::PARAM_INT);
     $stmt->bindParam(':userIP', $userIP, PDO::PARAM_STR);
     $stmt->bindParam(':userId', $userId, PDO::PARAM_STR);
     $stmt->bindParam(':userName', $userName, PDO::PARAM_STR);
+    $stmt->bindParam(':userAreaCode', $userAreaCode, PDO::PARAM_STR); 
     $stmt->bindParam(':quizThemeId', $quizThemeId, PDO::PARAM_STR);
-    $stmt->bindParam(':grade', $grade, PDO::PARAM_INT); // Use PARAM_STR for REAL values
+    $stmt->bindParam(':grade', $grade, PDO::PARAM_INT);
+    $stmt->bindParam(':pointsEarned', $pointsEarned, PDO::PARAM_INT);
     $stmt->bindParam(':userPoints', $userPoints, PDO::PARAM_INT);
+    $stmt->bindParam(':userStreak', $userStreak, PDO::PARAM_INT);
+    $stmt->bindParam(':userCombo', $userCombo, PDO::PARAM_INT);
     
     // Exécute la requête
     $stmt->execute();
