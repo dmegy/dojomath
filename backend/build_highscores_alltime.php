@@ -53,8 +53,8 @@ try {
         else if($i===3) $medal="🥉";
         else $medal= "";
 
-        if($row['UserAreaCode']==="AUTRE") $dep="";
-        else $dep = $row['UserAreaCode'];
+        if($row['UserAreaCode']==="AUTRE" || trim($row['UserAreaCode'])==="") $dep="";
+        else $dep = "(".$row['UserAreaCode'].")";
 
         if(trim($row['UserName']) === "") $userName = "(" . $row['UserId'] . ")";
         else $userName = $row['UserName'];
@@ -63,11 +63,12 @@ try {
 
         //echo $row['UserName'] . "<br>" ; 
 
-        $text .= "<tr><td>".$medal."</td><td>".$userName."</td><td>".$dep."</td><td>".$row['UserPoints']."</td></tr>\n";
+        $text .= "<tr><td align='right'>".$medal."</td><td>".$userName."</td><td>".$dep."</td><td align='right'>".$row['UserPoints']." pts</td></tr>\n";
         $i++;
     }
         $text .= "</tbody></table>";
-        file_put_contents("highscores_alltime.html.txt",$text)
+        echo $text;
+        file_put_contents("highscores_alltime.html.txt",$text);
 
 } catch (PDOException $e) {
     echo "Erreur : " . $e->getMessage();

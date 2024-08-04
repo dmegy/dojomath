@@ -1,4 +1,4 @@
-const URL_QUIZ_FINISHED = "backend/quiz_finished";
+const URL_QUIZ_FINISHED = "backend/quiz_finished.php";
 
 function sendStatistics() {
   let requestBody = {
