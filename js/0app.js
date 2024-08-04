@@ -7,7 +7,6 @@ const MAX_QUIZ_LENGTH = 10;
 const MAX_POINTS_QUESTION = 20; //maximum de pts que l'on peut gagner à chaque question
 const BOOST_PROBABILITY = 0.2;
 const BOOST_DURATION = 15 * 60 * 1000; // 15 minutes
-const URL_QUIZ_FINISHED = "backend/test.php";
 
 let happyHourList = [
   [6, 8],

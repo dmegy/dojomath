@@ -85,11 +85,9 @@ $userPoints = $user['points'];
 
 $ligne = $date_courante.";".$ip.";".$userId.";".$userName.";".$themeId.";".$quizFinalGrade.";".$userPoints."\n";
 
-$file = 'database/test_logs.txt'
+$data = $ligne.file_get_contents('data/test_logs.txt');
 
-$data = $ligne.file_get_contents($file);
-
-file_put_contents($file, $data);
+file_put_contents('data/test_logs.txt', $data);
 
 
 // Traitement des données (par exemple, enregistrer dans la base de données)

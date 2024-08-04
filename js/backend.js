@@ -1,7 +1,6 @@
-function sendStatistics() {
-  // else :
-  // vérification _très_ sommaire, apparemment inutile, les points ont déjà été recorrigés ?
+const URL_QUIZ_FINISHED = "backend/quiz_finished";
 
+function sendStatistics() {
   let requestBody = {
     user: JSON.stringify(user),
     quiz: JSON.stringify(quiz),
