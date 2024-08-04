@@ -1,20 +1,3 @@
-// ceci doit tourner après que les questions soient loadées !
-// à part la boucle  suivante, ce script comporte uniquement des fonctions.
-
-for (let themeId in themes) {
-  //initialisation
-  statsThemes[themeId] ??= {
-    nbQuestionsViewed: 0,
-    nbQuestionsSuccessful: 0,
-    nbQuestionsFailed: 0,
-    nbQuestionsSkipped: 0,
-    nbQuizFinished: 0,
-    questionsAlreadySeen: 0,
-    questionsSuccessfulLastTime: 0,
-    questionsSuccessfulLastTwoTimes: 0,
-  };
-}
-
 function shuffleArray(array) {
   // attention !  le tableau est muté sur place
   for (let i = array.length - 1; i > 0; i--) {
@@ -43,6 +26,7 @@ function startQuiz() {
   quiz.points = 0;
   quiz.bonus = 0;
   quiz.finalGrade = 0;
+
   user.nbQuizStarted += 1;
   nextQuestion();
 }
@@ -329,6 +313,24 @@ function grade20FromResult(result, maxResult) {
   let grade = (MAX_GRADE * posResult) / maxResult;
   let roundedGrade = Math.floor(grade);
   return roundedGrade;
+}
+
+function htmlQuizProgress() {
+  let s = "";
+  let color = "";
+  for (let i = 0; i < quiz.history.length; i++) {
+    if (quiz.history[i].result == 1) color = "var(--c-success)";
+    if (quiz.history[i].result == 0) color = "var(--c-warning)";
+    if (quiz.history[i].result == -1) color = "var(--c-danger)";
+    s += `<div style='flex-grow:1; background-color:${color}'>&nbsp;</div>`;
+  }
+  let nbRemainingAnswers =
+    state == "Quiz" ? quiz.questions.length + 1 : quiz.questions.length;
+  for (let i = 0; i < nbRemainingAnswers; i++) {
+    //rendu après que la question ait été supprimée!
+    s += `<div style='flex-grow:1;background-color:var(--c-primary-40-desat)'>&nbsp;</div>`;
+  }
+  return s;
 }
 
 // - - - - - - - - - N O T I F S  /  T O A S T
