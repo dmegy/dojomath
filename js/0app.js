@@ -7,6 +7,7 @@ const MAX_QUIZ_LENGTH = 10;
 const MAX_POINTS_QUESTION = 20; //maximum de pts que l'on peut gagner à chaque question
 const BOOST_PROBABILITY = 0.2;
 const BOOST_DURATION = 15 * 60 * 1000; // 15 minutes
+const PATH_HIGHSCORES_ALLTIME = "backend/highscores_alltime.html.txt";
 
 let happyHourList = [
   [6, 8],
@@ -39,7 +40,7 @@ let user = {
   firstConnectionTime: t0 /* time in ms */,
   userId: toB64(t0),
   userName: toB64(t0),
-  areaCode: "54" /* numéro de département */,
+  areaCode: "" /* numéro de département, STRING car "AEFE" etc" */,
   countryCode: "FR",
   combo: 0,
   longestCombo: 0,
@@ -226,7 +227,7 @@ function getUserSvgPath(pts) {
 function getHighscores() {
   document.getElementById("highscores").innerHTML = "Chargement...";
   document.getElementById("refreshHighscoresButton").classList.add("rotating");
-  fetch("static/highscores.html.txt?again=" + Math.random())
+  fetch(PATH_HIGHSCORES_ALLTIME + "?unique=" + Math.random())
     .then((response) => response.text())
     .then((data) => {
       document.getElementById("highscores").innerHTML = data;
