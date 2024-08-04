@@ -1,5 +1,7 @@
 <?php
 
+include 'database/db_config.php';
+
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
@@ -8,15 +10,16 @@ error_reporting(E_ALL);
 header("Content-Type: application/json");
 
 // récupération de l'heure courante
-$date_courante = date("Y-m-d H:i:s");
+//$dateTime = date("Y-m-d H:i:s");
+$dateTime = round(microtime(true) * 1000);
 
 // récupération de l'adresse IP du client (on cherche d'abord à savoir si il est derrière un proxy)
 if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-    $ip = $_SERVER['HTTP_X_FORWARDED_FOR'];
+    $userIp = $_SERVER['HTTP_X_FORWARDED_FOR'];
 } elseif (isset($_SERVER['HTTP_CLIENT_IP'])) {
-    $ip = $_SERVER['HTTP_CLIENT_IP'];
+    $userIp = $_SERVER['HTTP_CLIENT_IP'];
 } else {
-    $ip = $_SERVER['REMOTE_ADDR'];
+    $userIp = $_SERVER['REMOTE_ADDR'];
 }
 
 // Récupérer les données brutes de la requête
@@ -77,24 +80,45 @@ $userId = $user['userId'];
 $userName = $user['userName'];
 $areaCode=$user['areaCode'];
 
-$themeId = $quiz['id'];
-$quizFinalGrade = $quiz['finalGrade'];
+$quizThemeId = $quiz['id'];
+$grade = $quiz['finalGrade'];
 $userPoints = $user['points'];
 
+// - - - insertion dans base de données
 
 
-$ligne = $date_courante.";".$ip.";".$userId.";".$userName.";".$themeId.";".$quizFinalGrade.";".$userPoints."\n";
+try {
+    // Crée une nouvelle instance de PDO avec les informations de connexion
+    $pdo = new PDO(DB_DSN);
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    
+    // Prépare une requête d'insertion
+    $stmt = $pdo->prepare("INSERT INTO FinishedQuizzes (DateTime, UserIP, UserId, UserName, QuizThemeId, Grade, UserPoints) VALUES (:dateTime, :userIP, :userId, :userName, :quizThemeId, :grade, :userPoints)");
+    
+    // Liaison des paramètres
+    $stmt->bindParam(':dateTime', $dateTime, PDO::PARAM_INT);
+    $stmt->bindParam(':userIP', $userIP, PDO::PARAM_STR);
+    $stmt->bindParam(':userId', $userId, PDO::PARAM_STR);
+    $stmt->bindParam(':userName', $userName, PDO::PARAM_STR);
+    $stmt->bindParam(':quizThemeId', $quizThemeId, PDO::PARAM_STR);
+    $stmt->bindParam(':grade', $grade, PDO::PARAM_INT); // Use PARAM_STR for REAL values
+    $stmt->bindParam(':userPoints', $userPoints, PDO::PARAM_INT);
+    
+    // Exécute la requête
+    $stmt->execute();
 
-$data = $ligne.file_get_contents('data/test_logs.txt');
+    $response = [
+        'status' => 'success',
+        'message' => 'Data received successfully'
+    ];
+    
+} catch (PDOException $e) {
+    $response = [
+        'status' => 'Error',
+        'message' => $e->getMessage()
+    ];
+}
 
-file_put_contents('data/test_logs.txt', $data);
-
-
-// Traitement des données (par exemple, enregistrer dans la base de données)
-$response = [
-    'status' => 'success',
-    'message' => 'Data received successfully'
-];
 
 // Envoyer la réponse JSON
 echo json_encode($response);
