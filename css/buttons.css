@@ -62,6 +62,13 @@
   padding: 0.1rem;
 }
 
+.btn-refresh-scores {
+  border-radius: 50%;
+  background-color: black;
+  padding: 0 0.3rem;
+  border: 2px solid var(--c-secondary-60);
+}
+
 .fab {
   position: absolute;
   box-shadow:

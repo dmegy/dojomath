@@ -366,17 +366,35 @@
             onclick="getHighscores()"
             id="refreshHighscoresButton"
             style="cursor: pointer"
-          >-->
+          >
             <svg
               style="width: 1.5rem; height: 1.5rem"
               class="svg-icon"
               viewBox="0 0 516 512"
               x-html="svgPathFasArrowRotateRight"
             ></svg>
-          </span>
+          </span>-->
 
-          <!--<p>Tous les temps / Plus récents / Meilleurs Streaks</p>-->
-          <div id="highscores">- - - Chargement des scores - - -</div>
+          <h3>
+            Meilleurs scores :
+            <span
+              id="loadingHighscoresAlltime"
+              class="btn btn-refresh-scores"
+              onclick="getHighscoresAlltime()"
+              >↻</span
+            >
+          </h3>
+          <div id="highscoresAlltime">- - - Chargement des scores - - -</div>
+          <h3>
+            Les plus récents :
+            <span
+              id="loadingHighscoresRecent"
+              class="btn btn-refresh-scores"
+              onclick="getHighscoresRecent()"
+              >↻</span
+            >
+          </h3>
+          <div id="highscoresRecent">- - - Chargement des scores - - -</div>
         </section>
 
         <!-- - - - - - C H A P I T R E S - - - - - -->

@@ -243,6 +243,7 @@ function showQuizResults() {
   render();
 
   sendStatistics();
+  getHighscores();
 }
 
 function giveBoost() {

@@ -7,7 +7,6 @@ const MAX_QUIZ_LENGTH = 10;
 const MAX_POINTS_QUESTION = 20; //maximum de pts que l'on peut gagner à chaque question
 const BOOST_PROBABILITY = 0.2;
 const BOOST_DURATION = 15 * 60 * 1000; // 15 minutes
-const PATH_HIGHSCORES_ALLTIME = "backend/highscores_alltime.html.txt";
 
 let happyHourList = [
   [6, 8],
@@ -224,18 +223,6 @@ function getUserSvgPath(pts) {
   return "svgPathFasUserLarge";
 }
 
-function getHighscores() {
-  document.getElementById("highscores").innerHTML = "Chargement...";
-  document.getElementById("refreshHighscoresButton").classList.add("rotating");
-  fetch(PATH_HIGHSCORES_ALLTIME + "?unique=" + Math.random())
-    .then((response) => response.text())
-    .then((data) => {
-      document.getElementById("highscores").innerHTML = data;
-      document
-        .getElementById("refreshHighscoresButton")
-        .classList.remove("rotating");
-    });
-}
 // transformation nombres en b64
 
 function toB64(x) {
@@ -317,10 +304,6 @@ function getScript(scriptUrl, callback) {
   script.onload = callback;
   document.body.appendChild(script);
 }
-
-window.addEventListener("DOMContentLoaded", () => {
-  getHighscores(); // fetch un fichier texte et inneHTML dans le div, qui doit donc exister
-});
 
 // - - - - - - - - - - - - - - - - - - -
 // - - - - - - O N L O A D   - - - - - -

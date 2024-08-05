@@ -1,7 +1,7 @@
 <?php
 
 
-include 'database/db_config.php';
+include_once 'database/db_config.php';
 
 try {
     // Connexion à la base de données SQLite
@@ -67,10 +67,13 @@ try {
         $i++;
     }
         $text .= "</tbody></table>";
-        echo $text;
+        //echo $text;
         file_put_contents("highscores_alltime.html.txt",$text);
+        file_put_contents("build_highscores.log.txt", date("Y-m-d H:i:s") . " : Alltime Highscores built\n",FILE_APPEND);
+
 
 } catch (PDOException $e) {
-    echo "Erreur : " . $e->getMessage();
+    file_put_contents("build_highscores.log.txt", date("Y-m-d H:i:s") . " : ERROR building Alltime Highscores : " . $e->getMessage()."\n",FILE_APPEND);
+
 }
 ?>

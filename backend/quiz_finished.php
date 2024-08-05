@@ -1,10 +1,10 @@
 <?php
 
-include 'database/db_config.php';
+include_once 'database/db_config.php';
 
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+//ini_set('display_errors', 1);
+//ini_set('display_startup_errors', 1);
+//error_reporting(E_ALL);
 
 // Définir le header pour la réponse JSON
 header("Content-Type: application/json");
@@ -118,7 +118,7 @@ try {
 
     $response = [
         'status' => 'success',
-        'message' => 'Data received successfully'
+        'message' => 'Data received and saved successfully'
     ];
     
 } catch (PDOException $e) {
@@ -127,6 +127,11 @@ try {
         'message' => $e->getMessage()
     ];
 }
+
+include('build_highscores_alltime.php');
+
+include('build_highscores_recent.php');
+
 
 
 // Envoyer la réponse JSON
