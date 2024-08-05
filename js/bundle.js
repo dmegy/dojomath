@@ -7,7 +7,7 @@ const MAX_ERRORS_ALLOWED = 5; // inutilisé, on utilisé la constante précéden
 const MAX_QUIZ_LENGTH = 10;
 const MAX_POINTS_PER_QUESTION = 20; //maximum de pts que l'on peut gagner à chaque question
 const BOOST_PROBABILITY = 0.2;
-const BOOST_DURATION = 15 * 60 * 1000; // 15 minutes
+const BOOST_DURATION = 10 * 60 * 1000; // 10 minutes
 
 let happyHourList = [
   [6, 8],
@@ -1335,6 +1335,14 @@ function validateAnswer() {
     quiz.nbQuestionsFailed++;
     toast("-1 pt", "var(--c-danger)");
   }
+
+  console.log("Q" + question.num + ": " + questions[question.num].statement);
+  console.log(
+    "Submitted answer : " +
+      question.submittedAnswer +
+      ", Result : " +
+      question.result
+  );
   quiz.result += question.result;
   statsQuestions[question.num].penultimateResult =
     statsQuestions[question.num].lastResult;

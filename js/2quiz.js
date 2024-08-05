@@ -114,6 +114,14 @@ function validateAnswer() {
     quiz.nbQuestionsFailed++;
     toast("-1 pt", "var(--c-danger)");
   }
+
+  console.log("Q" + question.num + ": " + questions[question.num].statement);
+  console.log(
+    "Submitted answer : " +
+      question.submittedAnswer +
+      ", Result : " +
+      question.result
+  );
   quiz.result += question.result;
   statsQuestions[question.num].penultimateResult =
     statsQuestions[question.num].lastResult;
