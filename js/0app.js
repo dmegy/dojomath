@@ -148,6 +148,7 @@ function goto(newState) {
   render();
 }
 
+//depracated : vérifier si c'est toujours appelé
 function gotoChapters() {
   setState("Chapters");
   removeCircles();
@@ -187,6 +188,7 @@ function computeAllThemeStats() {
 }
 
 function gotoTheme(id) {
+  removeCircles();
   console.log("appel de gotoTheme avec id " + id);
   computeThemeStats(id);
   setState("Theme");
@@ -219,7 +221,6 @@ function getUserSvgPath(pts) {
   if (user.points > 10000) return "svgPathFasUserAstronaut";
   if (user.points > 5000) return "svgPathFasUserNinja";
   if (user.points > 1000) return "svgPathFasUserGraduate";
-  if (user.points > 100) return "svgPathFasBookOpenReader";
   return "svgPathFasUserLarge";
 }
 

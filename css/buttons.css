@@ -47,7 +47,6 @@
 .btn-nav {
   --c-border: transparent;
   height: 3rem;
-  margin-right: min(1.5rem, 4vw);
   display: grid;
   place-items: center;
 }

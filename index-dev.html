@@ -413,79 +413,101 @@
           x-show="(state=='Theme')"
           style="display: none"
         >
-          <h1 class="glow" x-html="theme.title"></h1>
-          <p x-html="theme.info"></p>
-          <p x-show="theme.maxPointsPerQuestion">
-            (Bonus : jusqu'à
-            <span x-html="theme.maxPointsPerQuestion"></span> points par
-            question.)
-          </p>
-          <div class="stats-theme">
-            <div
-              style="flex-grow: 1; min-height: 5rem"
-              class="stats-theme-infos"
-            >
-              <span x-html="theme.questions.length">?</span> questions dont :
-              <div style="width: 100%; height: 0.4rem"></div>
-              <span style="display: inline; color: var(--c-seen)">
-                <svg
-                  class="svg-icon"
-                  viewBox="0 0 580 512"
-                  style="margin-right: 0.7rem; width: 1rem; height: 1rem"
-                  x-html="svgPathFarEye"
-                ></svg>
-                <span
-                  x-html="statsThemes[theme.id].questionsAlreadySeen || '0' "
-                  >?</span
+          <div
+            class="section-flex-container"
+            style="
+              height: 100%;
+              display: flex;
+              flex-direction: column;
+              justify-content: space-between;
+            "
+          >
+            <div>
+              <h1 class="glow" x-html="theme.title"></h1>
+              <p x-html="theme.info"></p>
+              <p x-show="theme.maxPointsPerQuestion">
+                (Bonus : jusqu'à
+                <span x-html="theme.maxPointsPerQuestion"></span> points par
+                question.)
+              </p>
+              <div class="stats-theme">
+                <div
+                  style="flex-grow: 1; min-height: 5rem"
+                  class="stats-theme-infos"
                 >
-                déjà affichées (<span
-                  x-html="percentage(statsThemes[theme.id].questionsAlreadySeen/theme.questions.length) || '0' "
-                  >?</span
-                >%)
-              </span>
-              <br />
-              <span style="display: inline; color: var(--c-successful)">
-                <svg
-                  class="svg-icon"
-                  viewBox="0 0 512 512"
-                  style="margin-right: 0.7rem; width: 1rem; height: 1rem"
-                  x-html="svgPathFasCheck"
-                ></svg>
-                <span
-                  x-html="statsThemes[theme.id].questionsSuccessfulLastTime || '0' "
-                  >?</span
-                >
-                réussies (<span
-                  x-html="percentage(statsThemes[theme.id].questionsSuccessfulLastTime/theme.questions.length) || '0' "
-                ></span
-                >%)</span
-              >
+                  <span x-html="theme.questions.length">?</span> questions dont
+                  :
+                  <div style="width: 100%; height: 0.4rem"></div>
+                  <span style="display: inline; color: var(--c-seen)">
+                    <svg
+                      class="svg-icon"
+                      viewBox="0 0 580 512"
+                      style="margin-right: 0.7rem; width: 1rem; height: 1rem"
+                      x-html="svgPathFarEye"
+                    ></svg>
+                    <span
+                      x-html="statsThemes[theme.id].questionsAlreadySeen || '0' "
+                      >?</span
+                    >
+                    déjà affichées (<span
+                      x-html="percentage(statsThemes[theme.id].questionsAlreadySeen/theme.questions.length) || '0' "
+                      >?</span
+                    >%)
+                  </span>
+                  <br />
+                  <span style="display: inline; color: var(--c-successful)">
+                    <svg
+                      class="svg-icon"
+                      viewBox="0 0 512 512"
+                      style="margin-right: 0.7rem; width: 1rem; height: 1rem"
+                      x-html="svgPathFasCheck"
+                    ></svg>
+                    <span
+                      x-html="statsThemes[theme.id].questionsSuccessfulLastTime || '0' "
+                      >?</span
+                    >
+                    réussies (<span
+                      x-html="percentage(statsThemes[theme.id].questionsSuccessfulLastTime/theme.questions.length) || '0' "
+                    ></span
+                    >%)</span
+                  >
 
-              <br />
-              <span style="display: inline; color: var(--c-double-successful)">
-                <svg
-                  class="svg-icon"
-                  viewBox="0 0 512 512"
-                  style="margin-right: 0.7rem; width: 1rem; height: 1rem"
-                  x-html="svgPathFasCheckDouble"
-                ></svg>
-                <span
-                  x-html="statsThemes[theme.id].questionsSuccessfulLastTwoTimes || '0' "
-                  >?</span
-                >
-                consolidées (<span
-                  x-html="percentage(statsThemes[theme.id].questionsSuccessfulLastTwoTimes/theme.questions.length) || '0' "
-                  >?</span
-                >%)
-              </span>
+                  <br />
+                  <span
+                    style="display: inline; color: var(--c-double-successful)"
+                  >
+                    <svg
+                      class="svg-icon"
+                      viewBox="0 0 512 512"
+                      style="margin-right: 0.7rem; width: 1rem; height: 1rem"
+                      x-html="svgPathFasCheckDouble"
+                    ></svg>
+                    <span
+                      x-html="statsThemes[theme.id].questionsSuccessfulLastTwoTimes || '0' "
+                      >?</span
+                    >
+                    consolidées (<span
+                      x-html="percentage(statsThemes[theme.id].questionsSuccessfulLastTwoTimes/theme.questions.length) || '0' "
+                      >?</span
+                    >%)
+                  </span>
+                </div>
+              </div>
+
+              <!-- composant car boucle for... il faudrait un x-for-->
+              <div
+                x-html="htmlThemeReferences()"
+                style="opacity: 70%; margin-top: 1rem"
+              ></div>
+            </div>
+            <div
+              class="btn btn-big btn-primary"
+              onclick="startQuiz()"
+              style="width: 100%; box-shadow: 0 0 10px black,margin-bottom:1rem"
+            >
+              Démarrer une partie ❯❯
             </div>
           </div>
-
-          <!-- composant car boucle for... il faudrait un x-for-->
-          <div
-            x-html="htmlThemeReferences()"
-            style="opacity: 70%; margin-top: 1rem"
-          ></div>
         </section>
 
         <!-- - - - - -  / ! \  - - Q U I Z - - / ! \ - - - - - -->
@@ -611,10 +633,7 @@
       </main>
       <!-- - - - - - -  F O O T E R  - - - - - - - - - -->
       <footer>
-        <div
-          x-show="(state!='Quiz') && (state!='End') && (state!='Theme')"
-          class="footer-content"
-        >
+        <div x-show="(state!='Quiz') && (state!='End')" class="footer-content">
           <nav>
             <div class="btn btn-nav" onClick="goto('Home')">
               <svg
@@ -648,24 +667,15 @@
                 x-html="svgPathFasTrophy"
               ></svg>
             </div>
-          </nav>
-          <!-- - - - - - F A B (Floating Action Button ) - - - - - -->
-          <div
-            style="display: none"
-            id="fab"
-            class="btn fab pulse"
-            onClick="gotoChapters()"
-            x-show="(state=='Home')||(state=='Profile')||(state=='Statistics')||(state=='Highscores')"
-          >
-            <div class="fab-triangle">
+            <div class="btn btn-nav" onClick="goto('Chapters')">
               <svg
-                class="svg-icon-nav"
-                viewBox="0 0 576 512"
-                x-html="svgPathFasPlay"
-                style="transform: translateX(0.35rem)"
+                id="navButtonChapters"
+                class="svg-icon-nav btn-nav-icon"
+                viewBox="0 0 600 512"
+                x-html="svgPathFasMagnifyingGlass"
               ></svg>
             </div>
-          </div>
+          </nav>
         </div>
         <div class="quiz-answer" x-show="state=='Quiz'" style="display: none">
           <div
@@ -687,27 +697,7 @@
             VRAI
           </div>
         </div>
-        <!-- - - - - - F O O T E R    T H E M E - - - - --->
-        <div
-          class="footer-content"
-          x-show="state=='Theme'"
-          style="display: none; width: 100%"
-        >
-          <div
-            class="btn btn-big btn-secondary"
-            onclick="gotoChapters()"
-            style="width: calc(50% - 0.5rem)"
-          >
-            ❮❮ Thèmes
-          </div>
-          <div
-            class="btn btn-big btn-primary"
-            onclick="startQuiz()"
-            style="width: calc(50% - 0.5rem)"
-          >
-            Jouer ❯❯
-          </div>
-        </div>
+
         <!-- - - - - - F O O T E R    E N D - - - - --->
         <div style="display: none" x-show="state=='End'" class="footer-content">
           <div
