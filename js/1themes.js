@@ -154,8 +154,8 @@ let themes = {
     ],
   },
   symetries: {
-    title: "Symétries",
-    info: "Axes et centres de symétrie des polygones du plan.",
+    title: "Symétries des polygones",
+    info: "Axes et centres de symétrie des polygones du plan. Attention aux cas particuliers. Par exemple, un carré est un cas particulier de rectangle (ou de losange).",
     questions: [...range(1274, 1304)],
   },
   fonctions_affines: {

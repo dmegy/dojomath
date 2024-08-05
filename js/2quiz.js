@@ -240,7 +240,7 @@ function showQuizResults() {
   if (user.nbQuizFinished % 10 == 0) {
     toast(
       user.nbQuizFinished + " parties terminées, bravo !",
-      "oklch(70%,100% var(--c-accent)"
+      "oklch(70% 100% var(--c-accent)"
     );
   }
 
@@ -271,7 +271,7 @@ function giveBoost() {
         happyHourList[i][1]
       ).getTime();
       notification(
-        "HAPPY HOUR:\nPoints doublés jusqu'à " + happyHourList[i][1] + "h",
+        "HAPPY HOUR :\nPoints doublés jusqu'à " + happyHourList[i][1] + "h",
         "oklch(70% 100% var(--hue-accent)"
       );
       return;
@@ -282,7 +282,7 @@ function giveBoost() {
     user.lastBoostMultiplier = 2;
     user.lastBoostEnd = Date.now() + BOOST_DURATION;
     notification(
-      "BOOST\nPoints doublés pendant " +
+      "! BOOST !\nPoints doublés pendant " +
         BOOST_DURATION / (60 * 1000) +
         " minutes !",
       "oklch(70% 100% var(--hue-accent)"
