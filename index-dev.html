@@ -127,7 +127,7 @@
         <section
           id="section-profile"
           x-show="(state=='Profile')"
-          style="display: none"
+          style="display: none; text-align: center; padding-top: 3rem"
         >
           <p>Pseudonyme (⩽10 caractères) :</p>
           <p x-html="htmlInputUsername()">input username</p>
@@ -500,7 +500,11 @@
             <div
               class="btn btn-big btn-primary"
               onclick="startQuiz()"
-              style="width: 100%; box-shadow: 0 0 10px black,margin-bottom:1rem"
+              style="
+                width: 100%;
+                box-shadow: 0 0 10px black;
+                margin-bottom: 1rem;
+              "
             >
               Démarrer une partie ❯❯
             </div>

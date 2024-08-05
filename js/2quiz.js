@@ -240,7 +240,7 @@ function showQuizResults() {
   if (user.nbQuizFinished % 10 == 0) {
     toast(
       user.nbQuizFinished + " parties terminées, bravo !",
-      "oklch(70% 100% var(--c-accent))"
+      "oklch(70% 100% var(--hue-accent))"
     );
   }
 
