@@ -63,7 +63,7 @@ try {
 
         //echo $row['UserName'] . "<br>" ; 
 
-        $text .= "<tr><td align='right'>".$medal."</td><td>".$userName."</td><td>".$dep."</td><td align='right'>".$row['UserPoints']." pts</td></tr>\n";
+        $text .= "<tr><td align='right' style='width:2ch'>".$medal."</td><td>".$userName."</td><td>".$dep."</td><td align='right'>".$row['UserPoints']." pts</td></tr>\n";
         $i++;
     }
         $text .= "</tbody></table>";

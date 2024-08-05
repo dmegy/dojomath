@@ -5,7 +5,7 @@ const MIN_QUIZ_RESULT = 2; // attention certains quiz peuvent faire moins de 2 q
 const MAX_ERRORS_ALLOWED = 5; // inutilisé, on utilisé la constante précédente
 // (le but est d'empecher de cliquer sur 'passer' et que ça compte comme un quiz fini)
 const MAX_QUIZ_LENGTH = 10;
-const MAX_POINTS_QUESTION = 20; //maximum de pts que l'on peut gagner à chaque question
+const MAX_POINTS_PER_QUESTION = 20; //maximum de pts que l'on peut gagner à chaque question
 const BOOST_PROBABILITY = 0.2;
 const BOOST_DURATION = 15 * 60 * 1000; // 15 minutes
 
@@ -572,9 +572,12 @@ let chapters = [
   {
     name: "Calcul mental",
     themes: [
-      { label: "Priorités", id: "tables_parentheses1" },
+      { label: "Additions", id: "additions_2chiffres" },
+      { label: "Tables", id: "tables1" },
+      { label: "Multiplications d'additions", id: "tables_parentheses1" },
+      { label: "Additions de multiplications", id: "additions_tables" },
       { label: "Mult. à 2 chiffres", id: "multiplication1" },
-      { label: "Calcul et logique", id: "tables_logique1" },
+      { label: "Tables et logique", id: "tables_logique1" },
     ],
   },
   {
@@ -761,6 +764,23 @@ const range = (start, stop) =>
   Array.from({ length: stop - start + 1 }, (_, i) => start + i);
 
 let themes = {
+  additions_2chiffres: {
+    title: "Additions à deux chiffres",
+    info: "Calculs du type 19+57.",
+    questions: range(2418, 2457),
+    maxPointsPerQuestion: 5,
+  },
+  tables1: {
+    title: "Tables de multiplications à un chiffre",
+    info: "Parfait pour réviser ses tables !",
+    questions: range(2354, 2383),
+    maxPointsPerQuestion: 5,
+  },
+  additions_tables: {
+    title: "Additions de multiplications",
+    info: "Calculs du type 9x7+8x6.",
+    questions: range(2384, 2417),
+  },
   valeurs_cosinus: {
     title: "Cosinus d'un angle aigu",
     info: "Définitions, valeurs classiques, calculs de valeurs de cosinus. Les angles sont aigus et donnés en degrés.",
@@ -1233,6 +1253,8 @@ function startQuiz() {
   quiz.points = 0;
   quiz.bonus = 0;
   quiz.finalGrade = 0;
+  if (!quiz.maxPointsPerQuestion)
+    quiz.maxPointsPerQuestion = MAX_POINTS_PER_QUESTION;
 
   user.nbQuizStarted += 1;
   nextQuestion();
@@ -1296,7 +1318,7 @@ function validateAnswer() {
     user.nbQuestionsSuccessful += 1;
     quiz.nbQuestionsSuccessful += 1;
 
-    question.points = Math.min(MAX_POINTS_QUESTION, user.combo);
+    question.points = Math.min(quiz.maxPointsPerQuestion, user.combo);
 
     // toast success
     let congratulationsMessage = "";
@@ -1450,7 +1472,6 @@ function showQuizResults() {
   render();
 
   sendStatistics();
-  getHighscores();
 }
 
 function giveBoost() {
@@ -1489,6 +1510,7 @@ function giveBoost() {
 }
 
 function unstack(targetName) {
+  getHighscores(); // pour que les scores s'actualisent
   /* appelé lorsque le joueur sort de l'écran de fin : il faut afficher tous les messages empilés */
   /* provisoire */
 

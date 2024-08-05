@@ -55,7 +55,7 @@ try {
         if(trim($row['UserName']) === "") $userName = "(" . $row['UserId'] . ")";
         else $userName = $row['UserName'];
 
-        $text .= "<tr><td align='right'>".$medal."</td><td>".$userName."</td><td>".$dep."</td><td align='right'>".$row['UserPoints']." pts</td></tr>\n";
+        $text .= "<tr><td style='width:2ch'></td><td>".$userName."</td><td>".$dep."</td><td align='right'>".$row['UserPoints']." pts</td></tr>\n";
 
     }
     $text .= "</tbody></table>";

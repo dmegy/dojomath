@@ -8,9 +8,12 @@ let chapters = [
   {
     name: "Calcul mental",
     themes: [
-      { label: "Priorités", id: "tables_parentheses1" },
+      { label: "Additions", id: "additions_2chiffres" },
+      { label: "Tables", id: "tables1" },
+      { label: "Multiplications d'additions", id: "tables_parentheses1" },
+      { label: "Additions de multiplications", id: "additions_tables" },
       { label: "Mult. à 2 chiffres", id: "multiplication1" },
-      { label: "Calcul et logique", id: "tables_logique1" },
+      { label: "Tables et logique", id: "tables_logique1" },
     ],
   },
   {

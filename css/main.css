@@ -37,6 +37,7 @@ footer {
   width: 100%;
   height: var(--footer-height);
   background-color: var(--c-bg-header);
+  border-top: 2px solid var(--c-primary-40-desat);
   /*min-height: var(--footer-min-height);*/
   font-size: 1rem;
   padding: 1rem;

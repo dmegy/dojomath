@@ -6,6 +6,23 @@ const range = (start, stop) =>
   Array.from({ length: stop - start + 1 }, (_, i) => start + i);
 
 let themes = {
+  additions_2chiffres: {
+    title: "Additions à deux chiffres",
+    info: "Calculs du type 19+57.",
+    questions: range(2418, 2457),
+    maxPointsPerQuestion: 5,
+  },
+  tables1: {
+    title: "Tables de multiplications à un chiffre",
+    info: "Parfait pour réviser ses tables !",
+    questions: range(2354, 2383),
+    maxPointsPerQuestion: 5,
+  },
+  additions_tables: {
+    title: "Additions de multiplications",
+    info: "Calculs du type 9x7+8x6.",
+    questions: range(2384, 2417),
+  },
   valeurs_cosinus: {
     title: "Cosinus d'un angle aigu",
     info: "Définitions, valeurs classiques, calculs de valeurs de cosinus. Les angles sont aigus et donnés en degrés.",

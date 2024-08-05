@@ -26,6 +26,8 @@ function startQuiz() {
   quiz.points = 0;
   quiz.bonus = 0;
   quiz.finalGrade = 0;
+  if (!quiz.maxPointsPerQuestion)
+    quiz.maxPointsPerQuestion = MAX_POINTS_PER_QUESTION;
 
   user.nbQuizStarted += 1;
   nextQuestion();
@@ -89,7 +91,7 @@ function validateAnswer() {
     user.nbQuestionsSuccessful += 1;
     quiz.nbQuestionsSuccessful += 1;
 
-    question.points = Math.min(MAX_POINTS_QUESTION, user.combo);
+    question.points = Math.min(quiz.maxPointsPerQuestion, user.combo);
 
     // toast success
     let congratulationsMessage = "";
@@ -243,7 +245,6 @@ function showQuizResults() {
   render();
 
   sendStatistics();
-  getHighscores();
 }
 
 function giveBoost() {
@@ -282,6 +283,7 @@ function giveBoost() {
 }
 
 function unstack(targetName) {
+  getHighscores(); // pour que les scores s'actualisent
   /* appelé lorsque le joueur sort de l'écran de fin : il faut afficher tous les messages empilés */
   /* provisoire */
 

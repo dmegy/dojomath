@@ -114,7 +114,7 @@
             <p style="opacity: 70%">
               - - - - - - - - -<br />
               DojoMath est une création du
-              <a target="_blanck" href="https://dmegy.perso.math.cnrs/fr/club"
+              <a target="_blanck" href="https://dmegy.perso.math.cnrs.fr/club"
                 >Club Mathématique de Nancy</a
               >.
             </p>
@@ -415,6 +415,11 @@
         >
           <h1 class="glow" x-html="theme.title"></h1>
           <p x-html="theme.info"></p>
+          <p x-show="theme.maxPointsPerQuestion">
+            (Bonus : jusqu'à
+            <span x-html="theme.maxPointsPerQuestion"></span> points par
+            question.)
+          </p>
           <div class="stats-theme">
             <div
               style="flex-grow: 1; min-height: 5rem"
