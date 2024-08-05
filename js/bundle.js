@@ -149,13 +149,6 @@ function goto(newState) {
   render();
 }
 
-//depracated : vérifier si c'est toujours appelé
-function gotoChapters() {
-  setState("Chapters");
-  removeCircles();
-  render();
-}
-
 function computeThemeStats(themeId) {
   // bug sur alreadyseen ?
   // écrit dans statsThemes, à partir des données de statsQuestions
@@ -1517,7 +1510,7 @@ function unstack(targetName) {
 
   giveBoost();
 
-  if (targetName == "Chapters") gotoChapters();
+  if (targetName == "Chapters") goto("Chapters");
   else if (targetName == "Quiz") startQuiz();
 }
 

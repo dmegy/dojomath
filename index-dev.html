@@ -107,8 +107,9 @@
           </p>
           <h3>Démarrage</h3>
           <p>
-            Pour afficher la liste des thèmes disponibles et commencer une
-            partie, clique sur le bouton rond en bas à droite de l'écran.
+            Choisis un thème en cliquant sur l'<b
+              >icône de loupe 🔍 en bas à droite de l'écran</b
+            >. Tu pourras ensuite commencer une partie.
           </p>
           <div style="padding-top: 1rem">
             <p style="opacity: 70%">
@@ -128,10 +129,6 @@
           x-show="(state=='Profile')"
           style="display: none"
         >
-          <!--<div>
-            Identifiant d'utilisateur (non modifiable):
-            <span x-html="user.userId"></span>
-          </div>-->
           <p>Pseudonyme (⩽10 caractères) :</p>
           <p x-html="htmlInputUsername()">input username</p>
 
@@ -144,7 +141,7 @@
             <p>Tu n'est pas loggué(e)</p>
             <p>Boutons se loguer (pour loader un utilisateur déjà existant)</p>
             <p>
-              (Apparaît lorsqu'on dépasse 100 pts) Félicitations tu as plus de
+              Félicitations tu as plus de
               100 pts, tu as le droit de créer un compte sur le serveur. Tes
               points sont de toute façon sauvegardés sur ton nagifateur, mais un
               compte sur le serveur permettra de récupérer tes points si tu
@@ -670,13 +667,14 @@
             <div class="btn btn-nav" onClick="goto('Chapters')">
               <svg
                 id="navButtonChapters"
-                class="svg-icon-nav btn-nav-icon"
+                class="svg-icon-nav btn-nav-icon glow-more"
                 viewBox="0 0 600 512"
                 x-html="svgPathFasMagnifyingGlass"
               ></svg>
             </div>
           </nav>
         </div>
+        <!-- - - - - -  F O O T E R    Q U I Z  - - - - - - - --->
         <div class="quiz-answer" x-show="state=='Quiz'" style="display: none">
           <div
             class="btn btn-big btn-answer btn-answer-false"

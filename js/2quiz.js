@@ -289,7 +289,7 @@ function unstack(targetName) {
 
   giveBoost();
 
-  if (targetName == "Chapters") gotoChapters();
+  if (targetName == "Chapters") goto("Chapters");
   else if (targetName == "Quiz") startQuiz();
 }
 
