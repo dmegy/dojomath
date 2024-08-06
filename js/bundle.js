@@ -288,270 +288,77 @@ function render() {
     });
 }
 
-// - - - - - - - - - - - - - - -
-// - - - - ON LOAD and getScript, Mathjax etc
-// - - - - - - - - - - - - - - -
 
-function getScript(scriptUrl, callback) {
-  const script = document.createElement("script");
-  script.src = scriptUrl + "?unique=" + Math.random();
-  script.defer = true;
-  script.onload = callback;
-  document.body.appendChild(script);
-}
-
-// - - - - - - - - - - - - - - - - - - -
-// - - - - - - O N L O A D   - - - - - -
-// - - - - - - - - - - - - - - - - - - -
-
-window.addEventListener("load", () => {
-  // l'appli, les thèmes et chapitres sont loadés.
-  // On peut initialiser les stats des thèmes
-  // puis synchroniser avec  le storage
-  if (window.localStorage.getItem("statsThemes") !== null) {
-    loadedStatsThemes = JSON.parse(window.localStorage.getItem("statsThemes"));
-    console.log("statsThemes : data exists in storage. Loaded.");
-
-    for (themeId in themes) {
-      statsThemes[themeId] = {};
-      if (themeId in loadedStatsThemes) {
-        statsThemes[themeId] = loadedStatsThemes[themeId];
-      }
-    }
-
-    console.log("statsThemes updated");
-  }
-
-  // passage du state de Loading à Home :
-  // mais en fait il faudrait détecter le state sauvegardé dans le storage et loader ce state-là, sauf si c'est Quiz ou End ?
-  // Ou même theme, car theme va être undefined, ou alors il faut aussi le sauvegarder
-  setState("Home");
-
-  /*
-  getScript("js/-questions.js", () => {
-    console.log("Callback de getScript -questions.js");
-    questionsLoaded = true;
-    afterQuestionsLoaded();
-  });*/
-
-  fetch("questions.json?again=" + Math.random())
-    .then((response) => response.json())
-    .then((json) => {
-      questions = json;
-      console.log("Questions loaded from json");
-      questionsLoaded = true;
-      afterQuestionsLoaded();
-    });
-
-  render(); //rendu des points ? Mais il sont pas encore récupérés du storage
-
-  getScript("js/-async-initMathJax.js", () => {
-    console.log("Callback de getScript MathJax");
-  });
-}); // fin du listener sur onLoad
-
-function afterQuestionsLoaded() {
-  console.log("Nb de questions téléchargées : " + questions.length);
-  // initialisation de statsQuestions par des stats vides
-  // pour chaque question officielle venant d'être chargée
-  for (let i = 0; i < questions.length; i++) {
-    statsQuestions[i] ??= {
-      viewed: 0,
-      failed: 0,
-      skipped: 0,
-      successful: 0,
-      lastResult: 0,
-      penultimateResult: 0,
-      successfulLastTime: false,
-      successfulLastTwoTimes: false,
-    };
-  }
-
-  if (window.localStorage.getItem("statsQuestions") !== null) {
-    let loadedStatsQuestions = JSON.parse(
-      window.localStorage.getItem("statsQuestions")
-    );
-    console.log(
-      "Questions possédant des données dans le storage : " +
-        loadedStatsQuestions.length
-    );
-    // ceci contient des valeurs non nulles,
-    //mais peut-être moins de clés que statsQuestions si des questions ont été traitées entre-temps.
-    for (let i = 0; i < loadedStatsQuestions.length; i++) {
-      statsQuestions[i] = loadedStatsQuestions[i]; // on écrase quand il existe une valeur loadée
-    }
-  }
-}
-
-function percentage(t) {
+function percentage(t) {// input : 1<= t <=1, output : integer 0<=p<=100
+  if(t<0 || t>1) throw new Error();
   return Math.floor(100 * t);
 }
 
-// pour l'écran des thèmes et chapitres :
+const URL_QUIZ_FINISHED = "backend/quiz_finished.php";
+const PATH_HIGHSCORES_ALLTIME = "backend/highscores_alltime.html.txt";
+const PATH_HIGHSCORES_RECENT = "backend/highscores_recent.html.txt";
 
-function htmlChapters() {
-  let s = "";
-  for (let i = 0; i < chapters.length; i++) {
-    s += `<details open>
-			<summary>${chapters[i].name}</summary>
-			<div id='chapter_${i}'>`;
-    for (let j = 0; j < chapters[i].themes.length; j++) {
-      s += htmlButtonTheme(i, j);
-    }
-    s += `</div></details>`;
-  }
-  return s;
-}
-function htmlButtonTheme(i, j) {
-  let label = chapters[i]["themes"][j].label;
-  let id = chapters[i]["themes"][j].id;
-  return `
-		<div style="
-                --progression:0;
-                background-color: var(--c-secondary-40);
-                text-align: center;" 
-			class="btn btn-small" 
-			id="boutonTheme_${i}_${j}" 
-			onclick="gotoTheme('${id}')">
-			<div style="
-                opacity:50%;
-		        background:var(--c-secondary-70);
-		        position:absolute;
-		        top:0;
-		        left:0;
-		        height:100%;
-		        width: calc( var(--progression,0) * 1%);">
-            </div>
-			<div style="position:relative;">${label}</div>
-		</div>
-	`;
+function sendStatistics() {
+  let requestBody = {
+    user: JSON.stringify(user),
+    quiz: JSON.stringify(quiz),
+  };
+
+  fetch(URL_QUIZ_FINISHED, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(requestBody),
+  });
+
+  console.log("Points envoyés");
 }
 
-function htmlThemeReferences() {
-  // composant car boucle for dedans...
-  let s = "";
-  let list = theme.links; // le thème courant : passer en paramètre ?
-  if (list == undefined) return s;
-  s += "Si besoin, ressources externes:<ul>";
-  for (let i = 0; i < list.length; i++) {
-    s += `<li><a target="_blank" href="${list[i].URL}">${list[i].title}</a></li>`;
-  }
-  s += "</ul>(Les liens s'ouvrent dans une nouvelle fenêtre.)";
-  return s;
+window.addEventListener("DOMContentLoaded", () => {
+  getHighscores(); // fetch un fichier texte et inneHTML dans le div, qui doit donc exister
+});
+
+function getHighscores() {
+  getHighscoresAlltime();
+  getHighscoresRecent();
 }
 
-// pour l'écran des stats utilisateur : barres de progression etc
+function getHighscoresAlltime() {
+  console.log("Downloading Highscores (alltime)");
+  document.getElementById("loadingHighscoresAlltime").classList.add("rotating");
+  document.getElementById("loadingHighscoresAlltime").style.opacity = "50%";
+  fetch(PATH_HIGHSCORES_ALLTIME + "?unique=" + Math.random())
+    .then((response) => response.text())
+    .then((data) => {
+      document.getElementById("highscoresAlltime").innerHTML = data;
+      document.getElementById("loadingHighscoresAlltime").style.opacity =
+        "100%";
+      document
+        .getElementById("loadingHighscoresAlltime")
+        .classList.remove("rotating");
 
-function htmlProfile() {
-  return "";
-}
-
-function htmlProgress(a, b) {
-  // retourne un div html avec une barre de progression
-  if (a > b) a = b; // on tronque
-  let p = 0;
-  if (b != 0) p = a / b;
-  return `<div class='progress-bar-container'>
-				<div style='width:${100 * p}% ;' class='progress-bar'></div>
-			</div>`;
-}
-
-function htmlMultipleProgress(numbers, colorsCSSvarnames) {
-  // input : deux tableaux de même taille
-  //retourne une barre de stats de type cumulative avec les valeurs et couleurs fournies
-  if (numbers.length != colorsCSSvarnames.length) throw Error;
-  let sum = numbers.reduce((partialSum, k) => partialSum + k, 0);
-  let percentages = numbers.map((x) => {
-    return 0;
-  }); // initialisation d'un tableau de même longueur et rempli de zéros.
-  if (sum != 0)
-    percentages = numbers.map((x) => {
-      return (100 * x) / sum;
+      console.log("Alltime scores : ok");
     });
-  let s = "<div class='progress-bar-container'>";
-  for (let i = 0; i < numbers.length; i++) {
-    s += `<div style='width:${percentages[i]}%;background-color:var(${colorsCSSvarnames[i]})'></div>`;
-  }
-  s += "</div>";
-  return s;
 }
 
-function htmlCheckbox(bool) {
-  if (bool) {
-    return "✔";
-    //return `<svg class="svg-icon" viewBox="0 0 512 512">${svgPathFasCheck}</svg>`;
-  } else {
-    return `•`;
-  }
+function getHighscoresRecent() {
+  console.log("Downloading Highscores (recent)");
+  document.getElementById("loadingHighscoresRecent").classList.add("rotating");
+  document.getElementById("loadingHighscoresRecent").style.opacity = "50%";
+  fetch(PATH_HIGHSCORES_RECENT + "?unique=" + Math.random())
+    .then((response) => response.text())
+    .then((data) => {
+      document.getElementById("highscoresRecent").innerHTML = data;
+      document.getElementById("loadingHighscoresRecent").style.opacity = "100%";
+      document
+        .getElementById("loadingHighscoresRecent")
+        .classList.remove("rotating");
+
+      console.log("Recent score : ok");
+    });
 }
-
-function htmlNumAdj(n, adj) {
-  // l'adjectif doit être déjà conjugué en genre
-  // exemple : htmlNombreAdj(3,"vérolée") retourne "3 vérolées"
-  return n + " " + adj + (n == 1 || n == -1 ? "" : "s"); // pour zéro on met au plurieu ?
-}
-
-function htmlPoints(points) {
-  return points + " pt" + (points == 1 || points == -1 ? "" : "s");
-}
-
-function htmlGetUserLevel() {
-  return "Niv. " + level(user.points);
-}
-
-function htmlInputUsername() {
-  let s = `
-      <input 
-        style="display:inline"
-        type="text"
-        id="userNameInputId"
-        name="userNameInputName"
-        size="10"
-        maxlength="10"
-        value="${user.userName}" />`;
-
-  return s;
-}
-
-function htmlSelectAreaCode() {
-  let s = `<select name="userAreaCodeSelectName" id="userAreaCodeSelectId">`;
-  let choices = []; // construction du tableau contenant tous les choix
-  choices.push("Aucun");
-  for (let i = 1; i <= 95; i++) choices.push(("0" + i).slice(-2));
-  for (let i = 971; i <= 978; i++) choices.push(i);
-  for (let i = 986; i <= 988; i++) choices.push(i);
-  choices.push("AEFE");
-  choices.push("Autre");
-  // construction du SELECT
-  for (let i = 0; i < choices.length; i++) {
-    s += `		<option value="${choices[i]}" ${user.areaCode == choices[i] ? "selected" : ""}>${choices[i]}</option>`;
-  }
-  s += "</select>";
-  return s;
-}
-
-// ATTENTION? UTILISER 'VAR' ET NON 'LET'
-// de sorte à pouvoir récupérer par window[pathname]
-
-// icones menu : inliner, peut-être ? Pour éviter le glitch au load ?
-var svgPathFasTrophy = `<path d="M400 0H176c-26.5 0-48.1 21.8-47.1 48.2c.2 5.3 .4 10.6 .7 15.8H24C10.7 64 0 74.7 0 88c0 92.6 33.5 157 78.5 200.7c44.3 43.1 98.3 64.8 138.1 75.8c23.4 6.5 39.4 26 39.4 45.6c0 20.9-17 37.9-37.9 37.9H192c-17.7 0-32 14.3-32 32s14.3 32 32 32H384c17.7 0 32-14.3 32-32s-14.3-32-32-32H357.9C337 448 320 431 320 410.1c0-19.6 15.9-39.2 39.4-45.6c39.9-11 93.9-32.7 138.2-75.8C542.5 245 576 180.6 576 88c0-13.3-10.7-24-24-24H446.4c.3-5.2 .5-10.4 .7-15.8C448.1 21.8 426.5 0 400 0zM48.9 112h84.4c9.1 90.1 29.2 150.3 51.9 190.6c-24.9-11-50.8-26.5-73.2-48.3c-32-31.1-58-76-63-142.3zM464.1 254.3c-22.4 21.8-48.3 37.3-73.2 48.3c22.7-40.3 42.8-100.5 51.9-190.6h84.4c-5.1 66.3-31.1 111.2-63 142.3z"/>`;
-var svgPathFasMagnifyingGlass = `<path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"/>`;
-
-// icones utilisées dans les sections ? : dégraisser ici avec emojis ?
-var svgPathFasCheckDouble = `<path d="M374.6 86.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 178.7l-57.4-57.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l80 80c12.5 12.5 32.8 12.5 45.3 0l160-160zm96 128c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 402.7 86.6 297.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l128 128c12.5 12.5 32.8 12.5 45.3 0l256-256z"/>`;
-var svgPathFasCheck = `<path d="M470.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L192 338.7 425.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/>`;
-var svgPathFarEye = `<path d="M288 80c-65.2 0-118.8 29.6-159.9 67.7C89.6 183.5 63 226 49.4 256c13.6 30 40.2 72.5 78.6 108.3C169.2 402.4 222.8 432 288 432s118.8-29.6 159.9-67.7C486.4 328.5 513 286 526.6 256c-13.6-30-40.2-72.5-78.6-108.3C406.8 109.6 353.2 80 288 80zM95.4 112.6C142.5 68.8 207.2 32 288 32s145.5 36.8 192.6 80.6c46.8 43.5 78.1 95.4 93 131.1c3.3 7.9 3.3 16.7 0 24.6c-14.9 35.7-46.2 87.7-93 131.1C433.5 443.2 368.8 480 288 480s-145.5-36.8-192.6-80.6C48.6 356 17.3 304 2.5 268.3c-3.3-7.9-3.3-16.7 0-24.6C17.3 208 48.6 156 95.4 112.6zM288 336c44.2 0 80-35.8 80-80s-35.8-80-80-80c-.7 0-1.3 0-2 0c1.3 5.1 2 10.5 2 16c0 35.3-28.7 64-64 64c-5.5 0-10.9-.7-16-2c0 .7 0 1.3 0 2c0 44.2 35.8 80 80 80zm0-208a128 128 0 1 1 0 256 128 128 0 1 1 0-256z"/>`;
-var svgPathFasDumbbell = `<path d="M112 96c0-17.7 14.3-32 32-32h16c17.7 0 32 14.3 32 32V224v64V416c0 17.7-14.3 32-32 32H144c-17.7 0-32-14.3-32-32V384H64c-17.7 0-32-14.3-32-32V288c-17.7 0-32-14.3-32-32s14.3-32 32-32V160c0-17.7 14.3-32 32-32h48V96zm416 0v32h48c17.7 0 32 14.3 32 32v64c17.7 0 32 14.3 32 32s-14.3 32-32 32v64c0 17.7-14.3 32-32 32H528v32c0 17.7-14.3 32-32 32H480c-17.7 0-32-14.3-32-32V288 224 96c0-17.7 14.3-32 32-32h16c17.7 0 32 14.3 32 32zM416 224v64H224V224H416z"/>`;
-var svgPathFasListCheck = `<path d="M152.1 38.2c9.9 8.9 10.7 24 1.8 33.9l-72 80c-4.4 4.9-10.6 7.8-17.2 7.9s-12.9-2.4-17.6-7L7 113C-2.3 103.6-2.3 88.4 7 79s24.6-9.4 33.9 0l22.1 22.1 55.1-61.2c8.9-9.9 24-10.7 33.9-1.8zm0 160c9.9 8.9 10.7 24 1.8 33.9l-72 80c-4.4 4.9-10.6 7.8-17.2 7.9s-12.9-2.4-17.6-7L7 273c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l22.1 22.1 55.1-61.2c8.9-9.9 24-10.7 33.9-1.8zM224 96c0-17.7 14.3-32 32-32l224 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-224 0c-17.7 0-32-14.3-32-32zm0 160c0-17.7 14.3-32 32-32l224 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-224 0c-17.7 0-32-14.3-32-32zM160 416c0-17.7 14.3-32 32-32l288 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-288 0c-17.7 0-32-14.3-32-32zM48 368a48 48 0 1 1 0 96 48 48 0 1 1 0-96z"/>`;
-// enlever celui-ci ? Inutile ?
-var svgPathFasArrowRotateRight = `<path d="M386.3 160L336 160c-17.7 0-32 14.3-32 32s14.3 32 32 32l128 0c17.7 0 32-14.3 32-32l0-128c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 51.2L414.4 97.6c-87.5-87.5-229.3-87.5-316.8 0s-87.5 229.3 0 316.8s229.3 87.5 316.8 0c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0c-62.5 62.5-163.8 62.5-226.3 0s-62.5-163.8 0-226.3s163.8-62.5 226.3 0L386.3 160z"/>`;
-
-// icones user : ça prend de la place mais ça ajoute un côté sympa
-var svgPathFasUserLarge = `<path d="M256 288c79.5 0 144-64.5 144-144S335.5 0 256 0S112 64.5 112 144s64.5 144 144 144zm-94.7 32C72.2 320 0 392.2 0 481.3c0 17 13.8 30.7 30.7 30.7H481.3c17 0 30.7-13.8 30.7-30.7C512 392.2 439.8 320 350.7 320H161.3z"/>`;
-var svgPathFasUserGraduate = `<path d="M219.3 .5c3.1-.6 6.3-.6 9.4 0l200 40C439.9 42.7 448 52.6 448 64s-8.1 21.3-19.3 23.5L352 102.9V160c0 70.7-57.3 128-128 128s-128-57.3-128-128V102.9L48 93.3v65.1l15.7 78.4c.9 4.7-.3 9.6-3.3 13.3s-7.6 5.9-12.4 5.9H16c-4.8 0-9.3-2.1-12.4-5.9s-4.3-8.6-3.3-13.3L16 158.4V86.6C6.5 83.3 0 74.3 0 64C0 52.6 8.1 42.7 19.3 40.5l200-40zM129.1 323.2l83.2 88.4c6.3 6.7 17 6.7 23.3 0l83.2-88.4c73.7 14.9 129.1 80 129.1 158.1c0 17-13.8 30.7-30.7 30.7H30.7C13.8 512 0 498.2 0 481.3c0-78.1 55.5-143.2 129.1-158.1z"/>`;
-var svgPathFasUserNinja = `<path d="M224 256c-57.2 0-105.6-37.5-122-89.3c-1.1 1.3-2.2 2.6-3.5 3.8c-15.8 15.8-38.8 20.7-53.6 22.1c-8.1 .8-14.6-5.7-13.8-13.8c1.4-14.7 6.3-37.8 22.1-53.6c5.8-5.8 12.6-10.1 19.6-13.4c-7-3.2-13.8-7.6-19.6-13.4C37.4 82.7 32.6 59.7 31.1 44.9c-.8-8.1 5.7-14.6 13.8-13.8c14.7 1.4 37.8 6.3 53.6 22.1c4.8 4.8 8.7 10.4 11.7 16.1C131.4 28.2 174.4 0 224 0c70.7 0 128 57.3 128 128s-57.3 128-128 128zM0 482.3C0 396 61.3 324.1 142.7 307.6l68.5 91.4c6.4 8.5 19.2 8.5 25.6 0l68.5-91.4C386.7 324.1 448 396 448 482.3c0 16.4-13.3 29.7-29.7 29.7H29.7C13.3 512 0 498.7 0 482.3zM160 96c-8.8 0-16 7.2-16 16s7.2 16 16 16H288c8.8 0 16-7.2 16-16s-7.2-16-16-16H160z"/>`;
-var svgPathFasUserAstronaut = `<path d="M370.7 96.1C346.1 39.5 289.7 0 224 0S101.9 39.5 77.3 96.1C60.9 97.5 48 111.2 48 128v64c0 16.8 12.9 30.5 29.3 31.9C101.9 280.5 158.3 320 224 320s122.1-39.5 146.7-96.1c16.4-1.4 29.3-15.1 29.3-31.9V128c0-16.8-12.9-30.5-29.3-31.9zM336 144v16c0 53-43 96-96 96H208c-53 0-96-43-96-96V144c0-26.5 21.5-48 48-48H288c26.5 0 48 21.5 48 48zM189.3 162.7l-6-21.2c-.9-3.3-3.9-5.5-7.3-5.5s-6.4 2.2-7.3 5.5l-6 21.2-21.2 6c-3.3 .9-5.5 3.9-5.5 7.3s2.2 6.4 5.5 7.3l21.2 6 6 21.2c.9 3.3 3.9 5.5 7.3 5.5s6.4-2.2 7.3-5.5l6-21.2 21.2-6c3.3-.9 5.5-3.9 5.5-7.3s-2.2-6.4-5.5-7.3l-21.2-6zM112.7 316.5C46.7 342.6 0 407 0 482.3C0 498.7 13.3 512 29.7 512H128V448c0-17.7 14.3-32 32-32H288c17.7 0 32 14.3 32 32v64l98.3 0c16.4 0 29.7-13.3 29.7-29.7c0-75.3-46.7-139.7-112.7-165.8C303.9 338.8 265.5 352 224 352s-79.9-13.2-111.3-35.5zM176 448c-8.8 0-16 7.2-16 16v48h32V464c0-8.8-7.2-16-16-16zm96 32c8.8 0 16-7.2 16-16s-7.2-16-16-16s-16 7.2-16 16s7.2 16 16 16z"/>`;
-var svgPathFasRobot = `<path d="M320 0c17.7 0 32 14.3 32 32V96H480c35.3 0 64 28.7 64 64V448c0 35.3-28.7 64-64 64H160c-35.3 0-64-28.7-64-64V160c0-35.3 28.7-64 64-64H288V32c0-17.7 14.3-32 32-32zM208 384c-8.8 0-16 7.2-16 16s7.2 16 16 16h32c8.8 0 16-7.2 16-16s-7.2-16-16-16H208zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16h32c8.8 0 16-7.2 16-16s-7.2-16-16-16H304zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16h32c8.8 0 16-7.2 16-16s-7.2-16-16-16H400zM264 256c0-22.1-17.9-40-40-40s-40 17.9-40 40s17.9 40 40 40s40-17.9 40-40zm152 40c22.1 0 40-17.9 40-40s-17.9-40-40-40s-40 17.9-40 40s17.9 40 40 40zM48 224H64V416H48c-26.5 0-48-21.5-48-48V272c0-26.5 21.5-48 48-48zm544 0c26.5 0 48 21.5 48 48v96c0 26.5-21.5 48-48 48H576V224h16z"/>`;
 
 // - - - - - - - - - - - - - - - - - - - - -
 // - - - - - - - - - - - - - - - - - - - - -
@@ -746,6 +553,690 @@ let chapters = [
     ],
   },
 ];
+
+// pour l'écran des thèmes et chapitres :
+
+function htmlChapters() {
+  let s = "";
+  for (let i = 0; i < chapters.length; i++) {
+    s += `<details open>
+			<summary>${chapters[i].name}</summary>
+			<div id='chapter_${i}'>`;
+    for (let j = 0; j < chapters[i].themes.length; j++) {
+      s += htmlButtonTheme(i, j);
+    }
+    s += `</div></details>`;
+  }
+  return s;
+}
+function htmlButtonTheme(i, j) {
+  let label = chapters[i]["themes"][j].label;
+  let id = chapters[i]["themes"][j].id;
+  return `
+		<div style="
+                --progression:0;
+                background-color: var(--c-secondary-40);
+                text-align: center;" 
+			class="btn btn-small" 
+			id="boutonTheme_${i}_${j}" 
+			onclick="gotoTheme('${id}')">
+			<div style="
+                opacity:50%;
+		        background:var(--c-secondary-70);
+		        position:absolute;
+		        top:0;
+		        left:0;
+		        height:100%;
+		        width: calc( var(--progression,0) * 1%);">
+            </div>
+			<div style="position:relative;">${label}</div>
+		</div>
+	`;
+}
+
+function htmlThemeReferences() {
+  // composant car boucle for dedans...
+  let s = "";
+  let list = theme.links; // le thème courant : passer en paramètre ?
+  if (list == undefined) return s;
+  s += "Si besoin, ressources externes:<ul>";
+  for (let i = 0; i < list.length; i++) {
+    s += `<li><a target="_blank" href="${list[i].URL}">${list[i].title}</a></li>`;
+  }
+  s += "</ul>(Les liens s'ouvrent dans une nouvelle fenêtre.)";
+  return s;
+}
+
+// pour l'écran des stats utilisateur : barres de progression etc
+
+function htmlProfile() {
+  return "";
+}
+
+function htmlProgress(a, b) {
+  // retourne un div html avec une barre de progression
+  if (a > b) a = b; // on tronque
+  let p = 0;
+  if (b != 0) p = a / b;
+  return `<div class='progress-bar-container'>
+				<div style='width:${100 * p}% ;' class='progress-bar'></div>
+			</div>`;
+}
+
+function htmlMultipleProgress(numbers, colorsCSSvarnames) {
+  // input : deux tableaux de même taille
+  //retourne une barre de stats de type cumulative avec les valeurs et couleurs fournies
+  if (numbers.length != colorsCSSvarnames.length) throw Error;
+  let sum = numbers.reduce((partialSum, k) => partialSum + k, 0);
+  let percentages = numbers.map((x) => {
+    return 0;
+  }); // initialisation d'un tableau de même longueur et rempli de zéros.
+  if (sum != 0)
+    percentages = numbers.map((x) => {
+      return (100 * x) / sum;
+    });
+  let s = "<div class='progress-bar-container'>";
+  for (let i = 0; i < numbers.length; i++) {
+    s += `<div style='width:${percentages[i]}%;background-color:var(${colorsCSSvarnames[i]})'></div>`;
+  }
+  s += "</div>";
+  return s;
+}
+
+function htmlCheckbox(bool) {
+  if (bool) {
+    return "✔";
+    //return `<svg class="svg-icon" viewBox="0 0 512 512">${svgPathFasCheck}</svg>`;
+  } else {
+    return `•`;
+  }
+}
+
+function htmlNumAdj(n, adj) {
+  // l'adjectif doit être déjà conjugué en genre
+  // exemple : htmlNombreAdj(3,"vérolée") retourne "3 vérolées"
+  return n + " " + adj + (n == 1 || n == -1 ? "" : "s"); // pour zéro on met au plurieu ?
+}
+
+function htmlPoints(points) {
+  return points + " pt" + (points == 1 || points == -1 ? "" : "s");
+}
+
+function htmlGetUserLevel() {
+  return "Niv. " + level(user.points);
+}
+
+function htmlInputUsername() {
+  let s = `
+      <input 
+        style="display:inline"
+        type="text"
+        id="userNameInputId"
+        name="userNameInputName"
+        size="10"
+        maxlength="10"
+        value="${user.userName}" />`;
+
+  return s;
+}
+
+function htmlSelectAreaCode() {
+  let s = `<select name="userAreaCodeSelectName" id="userAreaCodeSelectId">`;
+  let choices = []; // construction du tableau contenant tous les choix
+  choices.push("Aucun");
+  for (let i = 1; i <= 95; i++) choices.push(("0" + i).slice(-2));
+  for (let i = 971; i <= 978; i++) choices.push(i);
+  for (let i = 986; i <= 988; i++) choices.push(i);
+  choices.push("AEFE");
+  choices.push("Autre");
+  // construction du SELECT
+  for (let i = 0; i < choices.length; i++) {
+    s += `		<option value="${choices[i]}" ${user.areaCode == choices[i] ? "selected" : ""}>${choices[i]}</option>`;
+  }
+  s += "</select>";
+  return s;
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - 
+// - - - - LISTENER ONLOAD and getScript, Mathjax etc
+// - - - - - - - - - - - - - - - - - - - - - - -
+
+
+
+
+window.addEventListener("load", () => {
+  // ATTENTION les thèmes+chapitres sont loadés, les questions non.
+  // 1. initialisation statsThemes en fonction du ombre de thèmes présents
+  // 2. update de statsThèmes avec le localstorage
+  // 3. fetch des questions avec callback
+  // 4. getScript Mathjax
+
+
+  // 1. initialisation statsThemes (doit tourner après chargement thèmes)
+  for (let themeId in themes) {
+    //initialisation
+    statsThemes[themeId] ??= {
+      nbQuestionsViewed: 0,
+      nbQuestionsSuccessful: 0,
+      nbQuestionsFailed: 0,
+      nbQuestionsSkipped: 0,
+      nbQuizFinished: 0,
+      questionsAlreadySeen: 0,
+      questionsSuccessfulLastTime: 0,
+      questionsSuccessfulLastTwoTimes: 0,
+    };
+  }
+
+  // 2. synchro statsThemes avec storage
+  if (window.localStorage.getItem("statsThemes") !== null) {
+    loadedStatsThemes = JSON.parse(window.localStorage.getItem("statsThemes"));
+    console.log("statsThemes : data exists in storage. Loaded.");
+
+    for (themeId in themes) {
+      statsThemes[themeId] = {};
+      if (themeId in loadedStatsThemes) {
+        statsThemes[themeId] = loadedStatsThemes[themeId];
+      }
+    }
+
+    console.log("statsThemes updated");
+  }
+
+  // passage du state de Loading à Home :
+  // mais en fait il faudrait détecter le state sauvegardé dans le storage et loader ce state-là, sauf si c'est Quiz ou End ?
+  // Ou même theme, car theme va être undefined, ou alors il faut aussi le sauvegarder
+  setState("Home");
+
+  // 3. FETCH QUESTIONS
+  fetch("questions.json?again=" + Math.random())
+    .then((response) => response.json())
+    .then((json) => {
+      questions = json;
+      console.log("Questions loaded from json");
+      questionsLoaded = true;
+      initUpdateQuestionsStats();
+    });
+
+  render(); //rendu des points ? Mais il sont pas encore récupérés du storage
+
+  // 4. GETSCRIPT MATHJAX : si on le met en async dans le body il commence trop tôt ?
+  getScript("js/-async-initMathJax.js", () => {
+    console.log("Callback de getScript MathJax");
+  });
+}); // fin du listener sur onLoad
+
+
+
+
+
+function initUpdateQuestionsStats() {//callback du fetch des questions
+  console.log("Nb de questions téléchargées : " + questions.length);
+  // 1. initialisation de statsQuestions par des stats vides
+  // pour chaque question officielle venant d'être chargée
+  for (let i = 0; i < questions.length; i++) {
+    statsQuestions[i] ??= {
+      viewed: 0,
+      failed: 0,
+      skipped: 0,
+      successful: 0,
+      lastResult: 0,
+      penultimateResult: 0,
+      successfulLastTime: false,
+      successfulLastTwoTimes: false,
+    };
+  }
+
+  // 2. update from storage
+  if (window.localStorage.getItem("statsQuestions") !== null) {
+    let loadedStatsQuestions = JSON.parse(
+      window.localStorage.getItem("statsQuestions")
+    );
+    console.log(
+      "Questions possédant des données dans le storage : " +
+        loadedStatsQuestions.length
+    );
+    // ceci contient des valeurs non nulles,
+    //mais peut-être moins de clés que statsQuestions si des questions ont été traitées entre-temps.
+    for (let i = 0; i < loadedStatsQuestions.length; i++) {
+      statsQuestions[i] = loadedStatsQuestions[i]; // on écrase quand il existe une valeur loadée
+    }
+  }
+}
+
+function getScript(scriptUrl, callback) {
+  const script = document.createElement("script");
+  script.src = scriptUrl + "?unique=" + Math.random();
+  script.defer = true;
+  script.onload = callback;
+  document.body.appendChild(script);
+}
+function shuffleArray(array) {
+  // attention !  le tableau est muté sur place
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+
+function startQuiz() {
+  console.log("startQuiz() sur le thème " + theme.id);
+
+  // construction du quiz
+  // Éventuellement, changer méthode pour garantir au moins un V et un F.
+  quiz = structuredClone(theme);
+  shuffleArray(quiz.questions);
+  // on vide la fin pour ne garder au plus que QUIZ_LENGTH questions
+  while (quiz.questions.length > MAX_QUIZ_LENGTH) quiz.questions.shift();
+  console.log("questions qui vont tomber : " + quiz.questions);
+
+  quiz.quizLength = quiz.questions.length;
+  quiz.nbQuestionsFailed = 0;
+  quiz.nbQuestionsSuccessful = 0;
+  quiz.nbQuestionsSkipped = 0;
+  quiz.history = [];
+  quiz.result = 0;
+  quiz.points = 0;
+  quiz.bonus = 0;
+  quiz.finalGrade = 0;
+  if (!quiz.maxPointsPerQuestion)
+    quiz.maxPointsPerQuestion = MAX_POINTS_PER_QUESTION;
+
+  user.nbQuizStarted += 1;
+  nextQuestion();
+}
+// préciser le type des éléments de quiz.history :
+// c'est ce qui va être envoyé au serveur :
+// tableau d'objets du type 'quizFinishedEvent' :
+// {
+// questionNumber: int,
+// submittedAnswer: true, false ou undefined,
+// result:  : 1, 0 ou -1
+// }
+
+function nextQuestion() {
+  // appelée par startQuiz() ou bien validateAnswer()
+  questionNumber = quiz.questions.splice(0, 1)[0];
+  // attention on l'enlève d ela liste
+  question = structuredClone(questions[questionNumber]);
+  question.num = questionNumber; // on rajoute dans l'objet
+  question.points = 0;
+  setState("Quiz");
+  render();
+  MathJax.typeset();
+  statsQuestions[question.num].viewed += 1;
+  statsThemes[theme.id].nbQuestionsViewed += 1;
+  user.nbQuestionsViewed += 1;
+}
+
+function submitAnswer(answer) {
+  //called by button
+  question.submittedAnswer = answer;
+  validateAnswer();
+}
+
+function validateAnswer() {
+  //appelée à la fin de  submitAnswer()
+  if (question.submittedAnswer === undefined) {
+    // SKIPPED
+    question.result = 0;
+    question.points = 0;
+    statsQuestions[question.num].skipped += 1;
+    statsQuestions[question.num].successfulLastTime = false;
+    statsQuestions[question.num].successfulLastTwoTimes = false;
+    statsThemes[theme.id].nbQuestionsSkipped += 1;
+    user.combo = 0;
+    user.nbQuestionsSkipped += 1;
+    quiz.nbQuestionsSkipped += 1;
+    console.log("question sautée");
+    toast("Question sautée", "var(--c-warning)");
+  } else if (question.submittedAnswer === question.answer) {
+    // SUCCESS
+    question.result = 1;
+    statsQuestions[question.num].successful += 1;
+    if (statsQuestions[question.num].successfulLastTime)
+      statsQuestions[question.num].successfulLastTwoTimes = true;
+    statsQuestions[question.num].successfulLastTime = true;
+
+    statsThemes[theme.id].nbQuestionsSuccessful += 1;
+    user.combo += 1;
+    user.longestCombo = Math.max(user.combo, user.longestCombo);
+    user.nbQuestionsSuccessful += 1;
+    quiz.nbQuestionsSuccessful += 1;
+
+    question.points = Math.min(quiz.maxPointsPerQuestion, user.combo);
+
+    // toast success
+    let congratulationsMessage = "";
+    if (user.combo > 1) congratulationsMessage += user.combo + " D'AFFILÉE !\n";
+
+    congratulationsMessage +=
+      "+" + question.points + " pt" + (question.points > 1 ? "s" : "");
+    toast(congratulationsMessage, "var(--c-success)");
+    //toast Combo:
+  } else {
+    // FAIL
+    question.result = -1;
+    questions.points = -1;
+    statsQuestions[question.num].failed++;
+    statsQuestions[question.num].successfulLastTime = false;
+    statsQuestions[question.num].successfulLastTwoTimes = false;
+    statsThemes[theme.id].nbQuestionsFailed++;
+    user.combo = 0;
+    user.nbQuestionsFailed++;
+    quiz.nbQuestionsFailed++;
+    toast("-1 pt", "var(--c-danger)");
+  }
+
+  console.log("Q" + question.num + ": " + questions[question.num].statement);
+  console.log(
+    "Submitted answer : " +
+      question.submittedAnswer +
+      ", Result : " +
+      question.result
+  );
+  quiz.result += question.result;
+  statsQuestions[question.num].penultimateResult =
+    statsQuestions[question.num].lastResult;
+  statsQuestions[question.num].lastResult = question.result;
+
+  // CHECK GAMEOVER ??
+  let maxAchievableResult = quiz.result + quiz.questions.length;
+  let isGameover = maxAchievableResult < MIN_QUIZ_RESULT;
+  if (isGameover) {
+    //alert(
+    //  "=========\nGAMEOVER\n=========\n\nTrop de questions ratées ou sautées"
+    //);
+
+    alertGameover();
+
+    user.nbQuizGameover++;
+    gotoTheme(theme.id);
+    return;
+  }
+
+  // BONUS COMBO
+
+  question.bonus = Math.max(question.points - 1, 0); // pts gagnés à cause d'un bonus
+
+  quiz.points += question.points;
+  quiz.bonus += question.bonus;
+
+  quiz.history.push({
+    questionNumber: question.num,
+    submittedAnswer: question.submittedAnswer,
+    result: question.result,
+  });
+
+  /* gestion des combos, éventuellement affichage de messages (combo etc)*/
+  // type "10 d'affilée etc ? mais déjà affiché dans le toast"
+  // ou alors : "100ème question réussie"
+
+  saveToLocalStorage();
+
+  if (quiz.questions.length > 0) nextQuestion();
+  else showQuizResults(); // quiz terminé !
+}
+
+function confirmQuit() {
+  //apelée par bouton "quitter"
+  let text =
+    "=======================\nDEMANDE DE CONFIRMATION\n=======================\n\nSouhaites-tu vraiment quitter la partie en cours ?\n\n(Attention, les points de la partie en cours ne seront pas sauvegardés.)";
+  if (confirm(text) == true) {
+    user.nbQuizAborted++;
+
+    gotoTheme(theme.id); // ou alors faire une fonction abortQuiz ?
+  }
+}
+
+function showQuizResults() {
+  //appelée par validateResults() si la liste de questions est vide
+  if (daysSinceLastActive() > 0) {
+    //reset daily stats
+    user.pointsToday = 0;
+    user.nbQuizFinishedToday = 0;
+    user.nbQuizPerfectToday = 0;
+  }
+  // update streak and longestStreak
+  // !! AVANT modif lastActiveTime
+
+  if (daysSinceLastActive() == 1 || user.lastStreak == 0) {
+    user.lastStreak++;
+    notification(
+      "🔥STREAK🔥\n Un jour d'affilée de plus !",
+      "oklch(70% 90% var(--hue-accent))"
+    );
+  } else if (daysSinceLastActive() > 1) {
+    user.lastStreak = 1;
+  }
+  user.longestStreak = Math.max(user.longestStreak, user.lastStreak);
+
+  // CALCUL NOTE
+  quiz.finalGrade = grade20FromResult(
+    quiz.nbQuestionsSuccessful,
+    quiz.quizLength
+  );
+  // SI PERFECT :
+  if (quiz.finalGrade == 20) {
+    user.nbQuizPerfect++;
+    user.nbQuizPerfectToday++;
+    // félicitation tous les 10 perfects :
+    if (user.nbQuizPerfect % 10 == 0) {
+      toast(
+        `${user.nbQuizPerfect}ème perfect !`,
+        "oklch(70%,100% var(--c-accent)"
+      );
+    }
+  }
+
+  // BOOST
+  console.log("points avant booster : " + quiz.points);
+  quiz.points *= getBoost();
+  console.log("boost multiplier : " + getBoost());
+  console.log("points après booster : " + quiz.points);
+  // faire apparaître le boost pendant tout le quiz en haut ?
+
+  user.points += quiz.points;
+  user.pointsToday += quiz.points;
+  user.nbQuizFinished++;
+  user.nbQuizFinishedToday++;
+
+  statsThemes[theme.id].nbQuizFinished++;
+
+  finishedQuizHistory.push({
+    date: new Date(),
+    details: quiz.history,
+    pointsEarned: quiz.points,
+  });
+
+  // message de félicitations tous les 10 quiz terminés
+  if (user.nbQuizFinished % 10 == 0) {
+    toast(
+      user.nbQuizFinished + " parties terminées, bravo !",
+      "oklch(70% 100% var(--hue-accent))"
+    );
+  }
+
+  // - - - - update lastActive - - - -
+  user.lastActiveTime = Date.now();
+
+  saveToLocalStorage();
+
+  setState("End");
+  render();
+
+  sendStatistics();
+}
+
+function giveBoost() {
+  if (getBoost() > 1) return; // on ne donne pas de boost s'il y en a déjà un actif
+
+  let thisDate = new Date();
+  let thisHour = thisDate.getHours();
+
+  for (let i = 0; i < happyHourList.length; i++) {
+    if (happyHourList[i][0] <= thisHour && thisHour < happyHourList[i][1]) {
+      user.lastBoostMultiplier = 2;
+      user.lastBoostEnd = new Date(
+        thisDate.getFullYear(),
+        thisDate.getMonth(),
+        thisDate.getDate(),
+        happyHourList[i][1]
+      ).getTime();
+      notification(
+        "HAPPY HOUR :\nPoints doublés jusqu'à " + happyHourList[i][1] + "h",
+        "oklch(70% 100% var(--hue-accent)"
+      );
+      return;
+    }
+  }
+
+  if (Math.random() < BOOST_PROBABILITY) {
+    user.lastBoostMultiplier = 2;
+    user.lastBoostEnd = Date.now() + BOOST_DURATION;
+    notification(
+      "! BOOST !\nPoints doublés pendant " +
+        BOOST_DURATION / (60 * 1000) +
+        " minutes !",
+      "oklch(70% 100% var(--hue-accent)"
+    );
+  }
+}
+
+function unstack(targetName) {
+  getHighscores(); // pour que les scores s'actualisent
+  /* appelé lorsque le joueur sort de l'écran de fin : il faut afficher tous les messages empilés */
+  /* provisoire */
+
+  giveBoost();
+
+  if (targetName == "Chapters") goto("Chapters");
+  else if (targetName == "Quiz") startQuiz();
+}
+
+function getBoost() {
+  if (Date.now() < user.lastBoostEnd) return user.lastBoostMultiplier;
+  else return 1;
+}
+
+// - - - COMPOSANTS - - - --
+
+function glyphResult(note) {
+  // écran de fin de quiz
+  let glyph = "";
+  if (note == 20) glyph = "🏆";
+  else if (note >= 16) glyph = "🎉";
+  else if (note >= 10) glyph = "👍";
+  else if (note >= 8) glyph = "😓";
+  else glyph = "😣";
+  return glyph;
+}
+function grade20FromResult(result, maxResult) {
+  let MAX_GRADE = 20; // ou 100
+  let posResult = Math.max(0, result);
+  let grade = (MAX_GRADE * posResult) / maxResult;
+  let roundedGrade = Math.floor(grade);
+  return roundedGrade;
+}
+
+function htmlQuizProgress() {
+  if (state != "Quiz" && state != "End") return "";
+  let s = "";
+  let color = "";
+  for (let i = 0; i < quiz.history.length; i++) {
+    if (quiz.history[i].result == 1) color = "var(--c-success)";
+    if (quiz.history[i].result == 0) color = "var(--c-warning)";
+    if (quiz.history[i].result == -1) color = "var(--c-danger)";
+    s += `<div style='flex-grow:1; background-color:${color}'>&nbsp;</div>`;
+  }
+  let nbRemainingAnswers =
+    state == "Quiz" ? quiz.questions.length + 1 : quiz.questions.length;
+  for (let i = 0; i < nbRemainingAnswers; i++) {
+    //rendu après que la question ait été supprimée!
+    s += `<div style='flex-grow:1;background-color:var(--c-primary-40-desat)'>&nbsp;</div>`;
+  }
+  return s;
+}
+
+// - - - - - - - - - N O T I F S  /  T O A S T
+
+function toast(message, color) {
+  Toastify({
+    text: message,
+    duration: 800,
+    destination: "",
+    newWindow: true,
+    close: false,
+    gravity: "top", // `top` or `bottom`
+    position: "center", // `left`, `center` or `right`
+    stopOnFocus: true, // Prevents dismissing of toast on hover
+    style: {
+      "border-radius": "2rem",
+      background: color,
+      "text-align": "center",
+    },
+    onClick: function () {}, // Callback after click
+  }).showToast();
+}
+
+function notification(message, color) {
+  Toastify({
+    text: message,
+    duration: 5000,
+    destination: "",
+    newWindow: true,
+    close: false,
+    gravity: "top", // `top` or `bottom`
+    position: "center", // `left`, `center` or `right`
+    stopOnFocus: true, // Prevents dismissing of toast on hover
+    style: {
+      "border-radius": "2rem",
+      background: color,
+      "text-align": "center",
+    },
+    onClick: function () {}, // Callback after click
+  }).showToast();
+}
+
+function alertGameover() {
+  Toastify({
+    text: "GAMEOVER\n\n Trop de questions sautées ou ratées !",
+    duration: 5000,
+    destination: "",
+    newWindow: true,
+    close: false,
+    gravity: "top", // `top` or `bottom`
+    position: "center", // `left`, `center` or `right`
+    stopOnFocus: true, // Prevents dismissing of toast on hover
+    style: {
+      "border-radius": "2rem",
+      background: "var(--c-danger)",
+      "text-align": "center",
+    },
+    onClick: function () {}, // Callback after click
+  }).showToast();
+}
+
+// ATTENTION? UTILISER 'VAR' ET NON 'LET'
+// de sorte à pouvoir récupérer par window[pathname]
+var svgPathFasMagnifyingGlass = `<path d="M416 208c0 45.9-14.9 88.3-40 122.7L502.6 457.4c12.5 12.5 12.5 32.8 0 45.3s-32.8 12.5-45.3 0L330.7 376c-34.4 25.2-76.8 40-122.7 40C93.1 416 0 322.9 0 208S93.1 0 208 0S416 93.1 416 208zM208 352a144 144 0 1 0 0-288 144 144 0 1 0 0 288z"/>`;
+
+// icones menu : inliner, peut-être ? Pour éviter le glitch au load ?
+
+// icones utilisées dans les sections ? : dégraisser ici avec emojis ?
+var svgPathFasCheckDouble = `<path d="M374.6 86.6c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 178.7l-57.4-57.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l80 80c12.5 12.5 32.8 12.5 45.3 0l160-160zm96 128c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0L192 402.7 86.6 297.4c-12.5-12.5-32.8-12.5-45.3 0s-12.5 32.8 0 45.3l128 128c12.5 12.5 32.8 12.5 45.3 0l256-256z"/>`;
+var svgPathFasCheck = `<path d="M470.6 105.4c12.5 12.5 12.5 32.8 0 45.3l-256 256c-12.5 12.5-32.8 12.5-45.3 0l-128-128c-12.5-12.5-12.5-32.8 0-45.3s32.8-12.5 45.3 0L192 338.7 425.4 105.4c12.5-12.5 32.8-12.5 45.3 0z"/>`;
+var svgPathFarEye = `<path d="M288 80c-65.2 0-118.8 29.6-159.9 67.7C89.6 183.5 63 226 49.4 256c13.6 30 40.2 72.5 78.6 108.3C169.2 402.4 222.8 432 288 432s118.8-29.6 159.9-67.7C486.4 328.5 513 286 526.6 256c-13.6-30-40.2-72.5-78.6-108.3C406.8 109.6 353.2 80 288 80zM95.4 112.6C142.5 68.8 207.2 32 288 32s145.5 36.8 192.6 80.6c46.8 43.5 78.1 95.4 93 131.1c3.3 7.9 3.3 16.7 0 24.6c-14.9 35.7-46.2 87.7-93 131.1C433.5 443.2 368.8 480 288 480s-145.5-36.8-192.6-80.6C48.6 356 17.3 304 2.5 268.3c-3.3-7.9-3.3-16.7 0-24.6C17.3 208 48.6 156 95.4 112.6zM288 336c44.2 0 80-35.8 80-80s-35.8-80-80-80c-.7 0-1.3 0-2 0c1.3 5.1 2 10.5 2 16c0 35.3-28.7 64-64 64c-5.5 0-10.9-.7-16-2c0 .7 0 1.3 0 2c0 44.2 35.8 80 80 80zm0-208a128 128 0 1 1 0 256 128 128 0 1 1 0-256z"/>`;
+var svgPathFasDumbbell = `<path d="M112 96c0-17.7 14.3-32 32-32h16c17.7 0 32 14.3 32 32V224v64V416c0 17.7-14.3 32-32 32H144c-17.7 0-32-14.3-32-32V384H64c-17.7 0-32-14.3-32-32V288c-17.7 0-32-14.3-32-32s14.3-32 32-32V160c0-17.7 14.3-32 32-32h48V96zm416 0v32h48c17.7 0 32 14.3 32 32v64c17.7 0 32 14.3 32 32s-14.3 32-32 32v64c0 17.7-14.3 32-32 32H528v32c0 17.7-14.3 32-32 32H480c-17.7 0-32-14.3-32-32V288 224 96c0-17.7 14.3-32 32-32h16c17.7 0 32 14.3 32 32zM416 224v64H224V224H416z"/>`;
+var svgPathFasListCheck = `<path d="M152.1 38.2c9.9 8.9 10.7 24 1.8 33.9l-72 80c-4.4 4.9-10.6 7.8-17.2 7.9s-12.9-2.4-17.6-7L7 113C-2.3 103.6-2.3 88.4 7 79s24.6-9.4 33.9 0l22.1 22.1 55.1-61.2c8.9-9.9 24-10.7 33.9-1.8zm0 160c9.9 8.9 10.7 24 1.8 33.9l-72 80c-4.4 4.9-10.6 7.8-17.2 7.9s-12.9-2.4-17.6-7L7 273c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l22.1 22.1 55.1-61.2c8.9-9.9 24-10.7 33.9-1.8zM224 96c0-17.7 14.3-32 32-32l224 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-224 0c-17.7 0-32-14.3-32-32zm0 160c0-17.7 14.3-32 32-32l224 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-224 0c-17.7 0-32-14.3-32-32zM160 416c0-17.7 14.3-32 32-32l288 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-288 0c-17.7 0-32-14.3-32-32zM48 368a48 48 0 1 1 0 96 48 48 0 1 1 0-96z"/>`;
+// enlever celui-ci ? Inutile ?
+var svgPathFasArrowRotateRight = `<path d="M386.3 160L336 160c-17.7 0-32 14.3-32 32s14.3 32 32 32l128 0c17.7 0 32-14.3 32-32l0-128c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 51.2L414.4 97.6c-87.5-87.5-229.3-87.5-316.8 0s-87.5 229.3 0 316.8s229.3 87.5 316.8 0c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0c-62.5 62.5-163.8 62.5-226.3 0s-62.5-163.8 0-226.3s163.8-62.5 226.3 0L386.3 160z"/>`;
+
+// icones user : ça prend de la place mais ça ajoute un côté sympa
+var svgPathFasUserLarge = `<path d="M256 288c79.5 0 144-64.5 144-144S335.5 0 256 0S112 64.5 112 144s64.5 144 144 144zm-94.7 32C72.2 320 0 392.2 0 481.3c0 17 13.8 30.7 30.7 30.7H481.3c17 0 30.7-13.8 30.7-30.7C512 392.2 439.8 320 350.7 320H161.3z"/>`;
+var svgPathFasUserGraduate = `<path d="M219.3 .5c3.1-.6 6.3-.6 9.4 0l200 40C439.9 42.7 448 52.6 448 64s-8.1 21.3-19.3 23.5L352 102.9V160c0 70.7-57.3 128-128 128s-128-57.3-128-128V102.9L48 93.3v65.1l15.7 78.4c.9 4.7-.3 9.6-3.3 13.3s-7.6 5.9-12.4 5.9H16c-4.8 0-9.3-2.1-12.4-5.9s-4.3-8.6-3.3-13.3L16 158.4V86.6C6.5 83.3 0 74.3 0 64C0 52.6 8.1 42.7 19.3 40.5l200-40zM129.1 323.2l83.2 88.4c6.3 6.7 17 6.7 23.3 0l83.2-88.4c73.7 14.9 129.1 80 129.1 158.1c0 17-13.8 30.7-30.7 30.7H30.7C13.8 512 0 498.2 0 481.3c0-78.1 55.5-143.2 129.1-158.1z"/>`;
+var svgPathFasUserNinja = `<path d="M224 256c-57.2 0-105.6-37.5-122-89.3c-1.1 1.3-2.2 2.6-3.5 3.8c-15.8 15.8-38.8 20.7-53.6 22.1c-8.1 .8-14.6-5.7-13.8-13.8c1.4-14.7 6.3-37.8 22.1-53.6c5.8-5.8 12.6-10.1 19.6-13.4c-7-3.2-13.8-7.6-19.6-13.4C37.4 82.7 32.6 59.7 31.1 44.9c-.8-8.1 5.7-14.6 13.8-13.8c14.7 1.4 37.8 6.3 53.6 22.1c4.8 4.8 8.7 10.4 11.7 16.1C131.4 28.2 174.4 0 224 0c70.7 0 128 57.3 128 128s-57.3 128-128 128zM0 482.3C0 396 61.3 324.1 142.7 307.6l68.5 91.4c6.4 8.5 19.2 8.5 25.6 0l68.5-91.4C386.7 324.1 448 396 448 482.3c0 16.4-13.3 29.7-29.7 29.7H29.7C13.3 512 0 498.7 0 482.3zM160 96c-8.8 0-16 7.2-16 16s7.2 16 16 16H288c8.8 0 16-7.2 16-16s-7.2-16-16-16H160z"/>`;
+var svgPathFasUserAstronaut = `<path d="M370.7 96.1C346.1 39.5 289.7 0 224 0S101.9 39.5 77.3 96.1C60.9 97.5 48 111.2 48 128v64c0 16.8 12.9 30.5 29.3 31.9C101.9 280.5 158.3 320 224 320s122.1-39.5 146.7-96.1c16.4-1.4 29.3-15.1 29.3-31.9V128c0-16.8-12.9-30.5-29.3-31.9zM336 144v16c0 53-43 96-96 96H208c-53 0-96-43-96-96V144c0-26.5 21.5-48 48-48H288c26.5 0 48 21.5 48 48zM189.3 162.7l-6-21.2c-.9-3.3-3.9-5.5-7.3-5.5s-6.4 2.2-7.3 5.5l-6 21.2-21.2 6c-3.3 .9-5.5 3.9-5.5 7.3s2.2 6.4 5.5 7.3l21.2 6 6 21.2c.9 3.3 3.9 5.5 7.3 5.5s6.4-2.2 7.3-5.5l6-21.2 21.2-6c3.3-.9 5.5-3.9 5.5-7.3s-2.2-6.4-5.5-7.3l-21.2-6zM112.7 316.5C46.7 342.6 0 407 0 482.3C0 498.7 13.3 512 29.7 512H128V448c0-17.7 14.3-32 32-32H288c17.7 0 32 14.3 32 32v64l98.3 0c16.4 0 29.7-13.3 29.7-29.7c0-75.3-46.7-139.7-112.7-165.8C303.9 338.8 265.5 352 224 352s-79.9-13.2-111.3-35.5zM176 448c-8.8 0-16 7.2-16 16v48h32V464c0-8.8-7.2-16-16-16zm96 32c8.8 0 16-7.2 16-16s-7.2-16-16-16s-16 7.2-16 16s7.2 16 16 16z"/>`;
+var svgPathFasRobot = `<path d="M320 0c17.7 0 32 14.3 32 32V96H480c35.3 0 64 28.7 64 64V448c0 35.3-28.7 64-64 64H160c-35.3 0-64-28.7-64-64V160c0-35.3 28.7-64 64-64H288V32c0-17.7 14.3-32 32-32zM208 384c-8.8 0-16 7.2-16 16s7.2 16 16 16h32c8.8 0 16-7.2 16-16s-7.2-16-16-16H208zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16h32c8.8 0 16-7.2 16-16s-7.2-16-16-16H304zm96 0c-8.8 0-16 7.2-16 16s7.2 16 16 16h32c8.8 0 16-7.2 16-16s-7.2-16-16-16H400zM264 256c0-22.1-17.9-40-40-40s-40 17.9-40 40s17.9 40 40 40s40-17.9 40-40zm152 40c22.1 0 40-17.9 40-40s-17.9-40-40-40s-40 17.9-40 40s17.9 40 40 40zM48 224H64V416H48c-26.5 0-48-21.5-48-48V272c0-26.5 21.5-48 48-48zm544 0c26.5 0 48 21.5 48 48v96c0 26.5-21.5 48-48 48H576V224h16z"/>`;
 
 // - - - - - - - - - - - - - - - - - - - - - -
 // - - - - - -- - T H E M E S  - - - - - - - -
@@ -1199,429 +1690,6 @@ let themes = {
   },
 };
 
-// ceci doit tourner après que les thèmes soient loadés
-// c'est le cas uniquement car le script est inliné après themes.js, à cause de son nom.
-
-for (let themeId in themes) {
-  //initialisation
-  statsThemes[themeId] ??= {
-    nbQuestionsViewed: 0,
-    nbQuestionsSuccessful: 0,
-    nbQuestionsFailed: 0,
-    nbQuestionsSkipped: 0,
-    nbQuizFinished: 0,
-    questionsAlreadySeen: 0,
-    questionsSuccessfulLastTime: 0,
-    questionsSuccessfulLastTwoTimes: 0,
-  };
-}
-
-function shuffleArray(array) {
-  // attention !  le tableau est muté sur place
-  for (let i = array.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
-  }
-}
-
-function startQuiz() {
-  console.log("startQuiz() sur le thème " + theme.id);
-
-  // construction du quiz
-  // Éventuellement, changer méthode pour garantir au moins un V et un F.
-  quiz = structuredClone(theme);
-  shuffleArray(quiz.questions);
-  // on vide la fin pour ne garder au plus que QUIZ_LENGTH questions
-  while (quiz.questions.length > MAX_QUIZ_LENGTH) quiz.questions.shift();
-  console.log("questions qui vont tomber : " + quiz.questions);
-
-  quiz.quizLength = quiz.questions.length;
-  quiz.nbQuestionsFailed = 0;
-  quiz.nbQuestionsSuccessful = 0;
-  quiz.nbQuestionsSkipped = 0;
-  quiz.history = [];
-  quiz.result = 0;
-  quiz.points = 0;
-  quiz.bonus = 0;
-  quiz.finalGrade = 0;
-  if (!quiz.maxPointsPerQuestion)
-    quiz.maxPointsPerQuestion = MAX_POINTS_PER_QUESTION;
-
-  user.nbQuizStarted += 1;
-  nextQuestion();
-}
-// préciser le type des éléments de quiz.history :
-// c'est ce qui va être envoyé au serveur :
-// tableau d'objets du type 'quizFinishedEvent' :
-// {
-// questionNumber: int,
-// submittedAnswer: true, false ou undefined,
-// result:  : 1, 0 ou -1
-// }
-
-function nextQuestion() {
-  // appelée par startQuiz() ou bien validateAnswer()
-  questionNumber = quiz.questions.splice(0, 1)[0];
-  // attention on l'enlève d ela liste
-  question = structuredClone(questions[questionNumber]);
-  question.num = questionNumber; // on rajoute dans l'objet
-  question.points = 0;
-  setState("Quiz");
-  render();
-  MathJax.typeset();
-  statsQuestions[question.num].viewed += 1;
-  statsThemes[theme.id].nbQuestionsViewed += 1;
-  user.nbQuestionsViewed += 1;
-}
-
-function submitAnswer(answer) {
-  //called by button
-  question.submittedAnswer = answer;
-  validateAnswer();
-}
-
-function validateAnswer() {
-  //appelée à la fin de  submitAnswer()
-  if (question.submittedAnswer === undefined) {
-    // SKIPPED
-    question.result = 0;
-    question.points = 0;
-    statsQuestions[question.num].skipped += 1;
-    statsQuestions[question.num].successfulLastTime = false;
-    statsQuestions[question.num].successfulLastTwoTimes = false;
-    statsThemes[theme.id].nbQuestionsSkipped += 1;
-    user.combo = 0;
-    user.nbQuestionsSkipped += 1;
-    quiz.nbQuestionsSkipped += 1;
-    console.log("question sautée");
-    toast("Question sautée", "var(--c-warning)");
-  } else if (question.submittedAnswer === question.answer) {
-    // SUCCESS
-    question.result = 1;
-    statsQuestions[question.num].successful += 1;
-    if (statsQuestions[question.num].successfulLastTime)
-      statsQuestions[question.num].successfulLastTwoTimes = true;
-    statsQuestions[question.num].successfulLastTime = true;
-
-    statsThemes[theme.id].nbQuestionsSuccessful += 1;
-    user.combo += 1;
-    user.longestCombo = Math.max(user.combo, user.longestCombo);
-    user.nbQuestionsSuccessful += 1;
-    quiz.nbQuestionsSuccessful += 1;
-
-    question.points = Math.min(quiz.maxPointsPerQuestion, user.combo);
-
-    // toast success
-    let congratulationsMessage = "";
-    if (user.combo > 1) congratulationsMessage += user.combo + " D'AFFILÉE !\n";
-
-    congratulationsMessage +=
-      "+" + question.points + " pt" + (question.points > 1 ? "s" : "");
-    toast(congratulationsMessage, "var(--c-success)");
-    //toast Combo:
-  } else {
-    // FAIL
-    question.result = -1;
-    questions.points = -1;
-    statsQuestions[question.num].failed++;
-    statsQuestions[question.num].successfulLastTime = false;
-    statsQuestions[question.num].successfulLastTwoTimes = false;
-    statsThemes[theme.id].nbQuestionsFailed++;
-    user.combo = 0;
-    user.nbQuestionsFailed++;
-    quiz.nbQuestionsFailed++;
-    toast("-1 pt", "var(--c-danger)");
-  }
-
-  console.log("Q" + question.num + ": " + questions[question.num].statement);
-  console.log(
-    "Submitted answer : " +
-      question.submittedAnswer +
-      ", Result : " +
-      question.result
-  );
-  quiz.result += question.result;
-  statsQuestions[question.num].penultimateResult =
-    statsQuestions[question.num].lastResult;
-  statsQuestions[question.num].lastResult = question.result;
-
-  // CHECK GAMEOVER ??
-  let maxAchievableResult = quiz.result + quiz.questions.length;
-  let isGameover = maxAchievableResult < MIN_QUIZ_RESULT;
-  if (isGameover) {
-    //alert(
-    //  "=========\nGAMEOVER\n=========\n\nTrop de questions ratées ou sautées"
-    //);
-
-    alertGameover();
-
-    user.nbQuizGameover++;
-    gotoTheme(theme.id);
-    return;
-  }
-
-  // BONUS COMBO
-
-  question.bonus = Math.max(question.points - 1, 0); // pts gagnés à cause d'un bonus
-
-  quiz.points += question.points;
-  quiz.bonus += question.bonus;
-
-  quiz.history.push({
-    questionNumber: question.num,
-    submittedAnswer: question.submittedAnswer,
-    result: question.result,
-  });
-
-  /* gestion des combos, éventuellement affichage de messages (combo etc)*/
-  // type "10 d'affilée etc ? mais déjà affiché dans le toast"
-  // ou alors : "100ème question réussie"
-
-  saveToLocalStorage();
-
-  if (quiz.questions.length > 0) nextQuestion();
-  else showQuizResults(); // quiz terminé !
-}
-
-function confirmQuit() {
-  //apelée par bouton "quitter"
-  let text =
-    "=======================\nDEMANDE DE CONFIRMATION\n=======================\n\nSouhaites-tu vraiment quitter la partie en cours ?\n\n(Attention, les points de la partie en cours ne seront pas sauvegardés.)";
-  if (confirm(text) == true) {
-    user.nbQuizAborted++;
-
-    gotoTheme(theme.id); // ou alors faire une fonction abortQuiz ?
-  }
-}
-
-function showQuizResults() {
-  //appelée par validateResults() si la liste de questions est vide
-  if (daysSinceLastActive() > 0) {
-    //reset daily stats
-    user.pointsToday = 0;
-    user.nbQuizFinishedToday = 0;
-    user.nbQuizPerfectToday = 0;
-  }
-  // update streak and longestStreak
-  // !! AVANT modif lastActiveTime
-
-  if (daysSinceLastActive() == 1 || user.lastStreak == 0) {
-    user.lastStreak++;
-    notification(
-      "🔥STREAK🔥\n Un jour d'affilée de plus !",
-      "oklch(70% 90% var(--hue-accent))"
-    );
-  } else if (daysSinceLastActive() > 1) {
-    user.lastStreak = 1;
-  }
-  user.longestStreak = Math.max(user.longestStreak, user.lastStreak);
-
-  // CALCUL NOTE
-  quiz.finalGrade = grade20FromResult(
-    quiz.nbQuestionsSuccessful,
-    quiz.quizLength
-  );
-  // SI PERFECT :
-  if (quiz.finalGrade == 20) {
-    user.nbQuizPerfect++;
-    user.nbQuizPerfectToday++;
-    // félicitation tous les 10 perfects :
-    if (user.nbQuizPerfect % 10 == 0) {
-      toast(
-        `${user.nbQuizPerfect}ème perfect !`,
-        "oklch(70%,100% var(--c-accent)"
-      );
-    }
-  }
-
-  // BOOST
-  console.log("points avant booster : " + quiz.points);
-  quiz.points *= getBoost();
-  console.log("boost multiplier : " + getBoost());
-  console.log("points après booster : " + quiz.points);
-  // faire apparaître le boost pendant tout le quiz en haut ?
-
-  user.points += quiz.points;
-  user.pointsToday += quiz.points;
-  user.nbQuizFinished++;
-  user.nbQuizFinishedToday++;
-
-  statsThemes[theme.id].nbQuizFinished++;
-
-  finishedQuizHistory.push({
-    date: new Date(),
-    details: quiz.history,
-    pointsEarned: quiz.points,
-  });
-
-  // message de félicitations tous les 10 quiz terminés
-  if (user.nbQuizFinished % 10 == 0) {
-    toast(
-      user.nbQuizFinished + " parties terminées, bravo !",
-      "oklch(70% 100% var(--hue-accent))"
-    );
-  }
-
-  // - - - - update lastActive - - - -
-  user.lastActiveTime = Date.now();
-
-  saveToLocalStorage();
-
-  setState("End");
-  render();
-
-  sendStatistics();
-}
-
-function giveBoost() {
-  if (getBoost() > 1) return; // on ne donne pas de boost s'il y en a déjà un actif
-
-  let thisDate = new Date();
-  let thisHour = thisDate.getHours();
-
-  for (let i = 0; i < happyHourList.length; i++) {
-    if (happyHourList[i][0] <= thisHour && thisHour < happyHourList[i][1]) {
-      user.lastBoostMultiplier = 2;
-      user.lastBoostEnd = new Date(
-        thisDate.getFullYear(),
-        thisDate.getMonth(),
-        thisDate.getDate(),
-        happyHourList[i][1]
-      ).getTime();
-      notification(
-        "HAPPY HOUR :\nPoints doublés jusqu'à " + happyHourList[i][1] + "h",
-        "oklch(70% 100% var(--hue-accent)"
-      );
-      return;
-    }
-  }
-
-  if (Math.random() < BOOST_PROBABILITY) {
-    user.lastBoostMultiplier = 2;
-    user.lastBoostEnd = Date.now() + BOOST_DURATION;
-    notification(
-      "! BOOST !\nPoints doublés pendant " +
-        BOOST_DURATION / (60 * 1000) +
-        " minutes !",
-      "oklch(70% 100% var(--hue-accent)"
-    );
-  }
-}
-
-function unstack(targetName) {
-  getHighscores(); // pour que les scores s'actualisent
-  /* appelé lorsque le joueur sort de l'écran de fin : il faut afficher tous les messages empilés */
-  /* provisoire */
-
-  giveBoost();
-
-  if (targetName == "Chapters") goto("Chapters");
-  else if (targetName == "Quiz") startQuiz();
-}
-
-function getBoost() {
-  if (Date.now() < user.lastBoostEnd) return user.lastBoostMultiplier;
-  else return 1;
-}
-
-// - - - COMPOSANTS - - - --
-
-function glyphResult(note) {
-  // écran de fin de quiz
-  let glyph = "";
-  if (note == 20) glyph = "🏆";
-  else if (note >= 16) glyph = "🎉";
-  else if (note >= 10) glyph = "👍";
-  else if (note >= 8) glyph = "😓";
-  else glyph = "😣";
-  return glyph;
-}
-function grade20FromResult(result, maxResult) {
-  let MAX_GRADE = 20; // ou 100
-  let posResult = Math.max(0, result);
-  let grade = (MAX_GRADE * posResult) / maxResult;
-  let roundedGrade = Math.floor(grade);
-  return roundedGrade;
-}
-
-function htmlQuizProgress() {
-  if (state != "Quiz" && state != "End") return "";
-  let s = "";
-  let color = "";
-  for (let i = 0; i < quiz.history.length; i++) {
-    if (quiz.history[i].result == 1) color = "var(--c-success)";
-    if (quiz.history[i].result == 0) color = "var(--c-warning)";
-    if (quiz.history[i].result == -1) color = "var(--c-danger)";
-    s += `<div style='flex-grow:1; background-color:${color}'>&nbsp;</div>`;
-  }
-  let nbRemainingAnswers =
-    state == "Quiz" ? quiz.questions.length + 1 : quiz.questions.length;
-  for (let i = 0; i < nbRemainingAnswers; i++) {
-    //rendu après que la question ait été supprimée!
-    s += `<div style='flex-grow:1;background-color:var(--c-primary-40-desat)'>&nbsp;</div>`;
-  }
-  return s;
-}
-
-// - - - - - - - - - N O T I F S  /  T O A S T
-
-function toast(message, color) {
-  Toastify({
-    text: message,
-    duration: 800,
-    destination: "",
-    newWindow: true,
-    close: false,
-    gravity: "top", // `top` or `bottom`
-    position: "center", // `left`, `center` or `right`
-    stopOnFocus: true, // Prevents dismissing of toast on hover
-    style: {
-      "border-radius": "2rem",
-      background: color,
-      "text-align": "center",
-    },
-    onClick: function () {}, // Callback after click
-  }).showToast();
-}
-
-function notification(message, color) {
-  Toastify({
-    text: message,
-    duration: 5000,
-    destination: "",
-    newWindow: true,
-    close: false,
-    gravity: "top", // `top` or `bottom`
-    position: "center", // `left`, `center` or `right`
-    stopOnFocus: true, // Prevents dismissing of toast on hover
-    style: {
-      "border-radius": "2rem",
-      background: color,
-      "text-align": "center",
-    },
-    onClick: function () {}, // Callback after click
-  }).showToast();
-}
-
-function alertGameover() {
-  Toastify({
-    text: "GAMEOVER\n\n Trop de questions sautées ou ratées !",
-    duration: 5000,
-    destination: "",
-    newWindow: true,
-    close: false,
-    gravity: "top", // `top` or `bottom`
-    position: "center", // `left`, `center` or `right`
-    stopOnFocus: true, // Prevents dismissing of toast on hover
-    style: {
-      "border-radius": "2rem",
-      background: "var(--c-danger)",
-      "text-align": "center",
-    },
-    onClick: function () {}, // Callback after click
-  }).showToast();
-}
-
 /**
  * Minified by jsDelivr using Terser v5.14.1.
  * Original file: /npm/toastify-js@1.12.0/src/toastify.js
@@ -1637,69 +1705,3 @@ function alertGameover() {
  */
 !function(t,o){"object"==typeof module&&module.exports?module.exports=o():t.Toastify=o()}(this,(function(t){var o=function(t){return new o.lib.init(t)};function i(t,o){return o.offset[t]?isNaN(o.offset[t])?o.offset[t]:o.offset[t]+"px":"0px"}function s(t,o){return!(!t||"string"!=typeof o)&&!!(t.className&&t.className.trim().split(/\s+/gi).indexOf(o)>-1)}return o.defaults={oldestFirst:!0,text:"Toastify is awesome!",node:void 0,duration:3e3,selector:void 0,callback:function(){},destination:void 0,newWindow:!1,close:!1,gravity:"toastify-top",positionLeft:!1,position:"",backgroundColor:"",avatar:"",className:"",stopOnFocus:!0,onClick:function(){},offset:{x:0,y:0},escapeMarkup:!0,ariaLive:"polite",style:{background:""}},o.lib=o.prototype={toastify:"1.12.0",constructor:o,init:function(t){return t||(t={}),this.options={},this.toastElement=null,this.options.text=t.text||o.defaults.text,this.options.node=t.node||o.defaults.node,this.options.duration=0===t.duration?0:t.duration||o.defaults.duration,this.options.selector=t.selector||o.defaults.selector,this.options.callback=t.callback||o.defaults.callback,this.options.destination=t.destination||o.defaults.destination,this.options.newWindow=t.newWindow||o.defaults.newWindow,this.options.close=t.close||o.defaults.close,this.options.gravity="bottom"===t.gravity?"toastify-bottom":o.defaults.gravity,this.options.positionLeft=t.positionLeft||o.defaults.positionLeft,this.options.position=t.position||o.defaults.position,this.options.backgroundColor=t.backgroundColor||o.defaults.backgroundColor,this.options.avatar=t.avatar||o.defaults.avatar,this.options.className=t.className||o.defaults.className,this.options.stopOnFocus=void 0===t.stopOnFocus?o.defaults.stopOnFocus:t.stopOnFocus,this.options.onClick=t.onClick||o.defaults.onClick,this.options.offset=t.offset||o.defaults.offset,this.options.escapeMarkup=void 0!==t.escapeMarkup?t.escapeMarkup:o.defaults.escapeMarkup,this.options.ariaLive=t.ariaLive||o.defaults.ariaLive,this.options.style=t.style||o.defaults.style,t.backgroundColor&&(this.options.style.background=t.backgroundColor),this},buildToast:function(){if(!this.options)throw"Toastify is not initialized";var t=document.createElement("div");for(var o in t.className="toastify on "+this.options.className,this.options.position?t.className+=" toastify-"+this.options.position:!0===this.options.positionLeft?(t.className+=" toastify-left",console.warn("Property `positionLeft` will be depreciated in further versions. Please use `position` instead.")):t.className+=" toastify-right",t.className+=" "+this.options.gravity,this.options.backgroundColor&&console.warn('DEPRECATION NOTICE: "backgroundColor" is being deprecated. Please use the "style.background" property.'),this.options.style)t.style[o]=this.options.style[o];if(this.options.ariaLive&&t.setAttribute("aria-live",this.options.ariaLive),this.options.node&&this.options.node.nodeType===Node.ELEMENT_NODE)t.appendChild(this.options.node);else if(this.options.escapeMarkup?t.innerText=this.options.text:t.innerHTML=this.options.text,""!==this.options.avatar){var s=document.createElement("img");s.src=this.options.avatar,s.className="toastify-avatar","left"==this.options.position||!0===this.options.positionLeft?t.appendChild(s):t.insertAdjacentElement("afterbegin",s)}if(!0===this.options.close){var e=document.createElement("button");e.type="button",e.setAttribute("aria-label","Close"),e.className="toast-close",e.innerHTML="&#10006;",e.addEventListener("click",function(t){t.stopPropagation(),this.removeElement(this.toastElement),window.clearTimeout(this.toastElement.timeOutValue)}.bind(this));var n=window.innerWidth>0?window.innerWidth:screen.width;("left"==this.options.position||!0===this.options.positionLeft)&&n>360?t.insertAdjacentElement("afterbegin",e):t.appendChild(e)}if(this.options.stopOnFocus&&this.options.duration>0){var a=this;t.addEventListener("mouseover",(function(o){window.clearTimeout(t.timeOutValue)})),t.addEventListener("mouseleave",(function(){t.timeOutValue=window.setTimeout((function(){a.removeElement(t)}),a.options.duration)}))}if(void 0!==this.options.destination&&t.addEventListener("click",function(t){t.stopPropagation(),!0===this.options.newWindow?window.open(this.options.destination,"_blank"):window.location=this.options.destination}.bind(this)),"function"==typeof this.options.onClick&&void 0===this.options.destination&&t.addEventListener("click",function(t){t.stopPropagation(),this.options.onClick()}.bind(this)),"object"==typeof this.options.offset){var l=i("x",this.options),r=i("y",this.options),p="left"==this.options.position?l:"-"+l,d="toastify-top"==this.options.gravity?r:"-"+r;t.style.transform="translate("+p+","+d+")"}return t},showToast:function(){var t;if(this.toastElement=this.buildToast(),!(t="string"==typeof this.options.selector?document.getElementById(this.options.selector):this.options.selector instanceof HTMLElement||"undefined"!=typeof ShadowRoot&&this.options.selector instanceof ShadowRoot?this.options.selector:document.body))throw"Root element is not defined";var i=o.defaults.oldestFirst?t.firstChild:t.lastChild;return t.insertBefore(this.toastElement,i),o.reposition(),this.options.duration>0&&(this.toastElement.timeOutValue=window.setTimeout(function(){this.removeElement(this.toastElement)}.bind(this),this.options.duration)),this},hideToast:function(){this.toastElement.timeOutValue&&clearTimeout(this.toastElement.timeOutValue),this.removeElement(this.toastElement)},removeElement:function(t){t.className=t.className.replace(" on",""),window.setTimeout(function(){this.options.node&&this.options.node.parentNode&&this.options.node.parentNode.removeChild(this.options.node),t.parentNode&&t.parentNode.removeChild(t),this.options.callback.call(t),o.reposition()}.bind(this),400)}},o.reposition=function(){for(var t,o={top:15,bottom:15},i={top:15,bottom:15},e={top:15,bottom:15},n=document.getElementsByClassName("toastify"),a=0;a<n.length;a++){t=!0===s(n[a],"toastify-top")?"toastify-top":"toastify-bottom";var l=n[a].offsetHeight;t=t.substr(9,t.length-1);(window.innerWidth>0?window.innerWidth:screen.width)<=360?(n[a].style[t]=e[t]+"px",e[t]+=l+15):!0===s(n[a],"toastify-left")?(n[a].style[t]=o[t]+"px",o[t]+=l+15):(n[a].style[t]=i[t]+"px",i[t]+=l+15)}return this},o.lib.init.prototype=o.lib,o}));
 //# sourceMappingURL=/sm/e1ebbfe1bf0b0061f0726ebc83434e1c2f8308e6354c415fd05ecccdaad47617.map
-const URL_QUIZ_FINISHED = "backend/quiz_finished.php";
-const PATH_HIGHSCORES_ALLTIME = "backend/highscores_alltime.html.txt";
-const PATH_HIGHSCORES_RECENT = "backend/highscores_recent.html.txt";
-
-function sendStatistics() {
-  let requestBody = {
-    user: JSON.stringify(user),
-    quiz: JSON.stringify(quiz),
-  };
-
-  fetch(URL_QUIZ_FINISHED, {
-    method: "POST",
-    headers: {
-      Accept: "application/json",
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(requestBody),
-  });
-
-  console.log("Points envoyés");
-}
-
-window.addEventListener("DOMContentLoaded", () => {
-  getHighscores(); // fetch un fichier texte et inneHTML dans le div, qui doit donc exister
-});
-
-function getHighscores() {
-  getHighscoresAlltime();
-  getHighscoresRecent();
-}
-
-function getHighscoresAlltime() {
-  console.log("Downloading Highscores (alltime)");
-  document.getElementById("loadingHighscoresAlltime").classList.add("rotating");
-  document.getElementById("loadingHighscoresAlltime").style.opacity = "50%";
-  fetch(PATH_HIGHSCORES_ALLTIME + "?unique=" + Math.random())
-    .then((response) => response.text())
-    .then((data) => {
-      document.getElementById("highscoresAlltime").innerHTML = data;
-      document.getElementById("loadingHighscoresAlltime").style.opacity =
-        "100%";
-      document
-        .getElementById("loadingHighscoresAlltime")
-        .classList.remove("rotating");
-
-      console.log("Alltime scores : ok");
-    });
-}
-
-function getHighscoresRecent() {
-  console.log("Downloading Highscores (recent)");
-  document.getElementById("loadingHighscoresRecent").classList.add("rotating");
-  document.getElementById("loadingHighscoresRecent").style.opacity = "50%";
-  fetch(PATH_HIGHSCORES_RECENT + "?unique=" + Math.random())
-    .then((response) => response.text())
-    .then((data) => {
-      document.getElementById("highscoresRecent").innerHTML = data;
-      document.getElementById("loadingHighscoresRecent").style.opacity = "100%";
-      document
-        .getElementById("loadingHighscoresRecent")
-        .classList.remove("rotating");
-
-      console.log("Recent score : ok");
-    });
-}
-
