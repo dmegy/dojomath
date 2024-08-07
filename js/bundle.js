@@ -786,7 +786,11 @@ function getScript(scriptUrl, callback) {
 // - - - - - - - - - - - - - - - - - - -
 
 window.addEventListener("load", () => {
-  fetch("questions.json?again=" + Math.random())
+  fetch("questions.json?again=" + Math.random(), {
+    headers: {
+      "Accept-Encoding": "gzip",
+    },
+  })
     .then((response) => response.json())
     .then((json) => {
       questions = json;
