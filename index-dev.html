@@ -45,6 +45,7 @@
     <script defer src="js/chapters.js"></script>
     <script defer src="js/themes.js"></script>
     <script defer src="js/onLoad.js"></script>
+    <script defer src="js/onLoadFetchQuestions.js"></script>
     <script defer src="js/quiz.js"></script>
     <script defer src="js/backend.js"></script>
     <script defer src="js/toastify.js"></script>
@@ -133,15 +134,33 @@
               DojoMath est une création du
               <a target="_blanck" href="https://dmegy.perso.math.cnrs.fr/club"
                 >Club Mathématique de Nancy</a
-              >. 
+              >.
             </p>
 
-            <p>Partager via : 
-              <a href="javascript:(()=>{var msg=''; var u=''; var isMobile=/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent); if(isMobile){ u = '.whatsapp://send?text=' + msg; } else { u = 'https://wa.me/?text=' + msg;} window.open(u);})();" >Whatsapp</a>, 
-              <a target="_blank" href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fwww.dojomath.fr%2F&t=DojoMath">Facebook</a>,
-              <a target="_blank" href="https://twitter.com/intent/tweet?text=DojoMath&url=https%3A%2F%2Fwww.dojomath.fr%2F">X</a>, 
-              <a target="_blank" href="mailto:?subject=DojoMath.fr&body=Site de Quiz Mathématiques : https%3A%2F%2Fwww.dojomath.fr%2F">Email</a>, 
-              <a onclick="window.open('sms://?&body=Site de Quiz Mathématiques : https%3A%2F%2Fwww.dojomath.fr%2F');">SMS</a>.</p>
+            <p>
+              Partager via :
+              <a
+                href="javascript:(()=>{var isMobile=/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent); var u = isMobile ? 'whatsapp://send?text=' + SHARE_ENCODED_MESSAGE : 'https://wa.me/?text=' + SHARE_ENCODED_MESSAGE ; window.open(u);})();"
+                >Whatsapp</a
+              >,
+              <a
+                target="_blank"
+                href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fwww.dojomath.fr%2F&t=DojoMath"
+                >Facebook</a
+              >,
+              <a
+                href="javascript:(()=>{window.open('https://twitter.com/intent/tweet?text=DojoMath&url=https%3A%2F%2Fwww.dojomath.fr%2F');})();"
+                >X</a
+              >,
+              <a
+                href="javascript:(()=>{window.open('mailto:?subject=DojoMath.fr&body='+SHARE_ENCODED_MESSAGE);})();"
+                >Email</a
+              >,
+              <a
+                href="javascript:(()=>{window.open('sms:?&body=' + SHARE_ENCODED_MESSAGE);})();"
+                >SMS</a
+              >.
+            </p>
           </div>
         </section>
 
@@ -469,7 +488,7 @@
                       x-html="statsThemes[theme.id].questionsAlreadySeen || '0' "
                       >?</span
                     >
-                    déjà affichées (<span
+                    déjà rencontrées (<span
                       x-html="percentage(statsThemes[theme.id].questionsAlreadySeen/theme.questions.length) || '0' "
                       >?</span
                     >%)
@@ -486,7 +505,7 @@
                       x-html="statsThemes[theme.id].questionsSuccessfulLastTime || '0' "
                       >?</span
                     >
-                    réussies (<span
+                    réussies au dernier essai (<span
                       x-html="percentage(statsThemes[theme.id].questionsSuccessfulLastTime/theme.questions.length) || '0' "
                     ></span
                     >%)</span
@@ -506,7 +525,7 @@
                       x-html="statsThemes[theme.id].questionsSuccessfulLastTwoTimes || '0' "
                       >?</span
                     >
-                    consolidées (<span
+                    réussies les deux dernières fois (<span
                       x-html="percentage(statsThemes[theme.id].questionsSuccessfulLastTwoTimes/theme.questions.length) || '0' "
                       >?</span
                     >%)

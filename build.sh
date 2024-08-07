@@ -1,5 +1,9 @@
 #!/bin/bash
 
+
+# TODO : version embedded avec absolument tout dans le html : fontes, questions
+
+
 /bin/zsh bundle_minify_css.sh
 
 /bin/zsh bundle_minify_js.sh
@@ -103,5 +107,10 @@ escaped_js_content=$(printf '%s' "$js_content" | sed -e 's/[\/&]/\\&/g')
 sed -i '' -e "s/\/\* INLINE JAVASCRIPT HERE \*\//${escaped_js_content}/g" "$index_file" # BSD sed
 
 
-
+# - - - - - - - -- - - - - -
+# pour déployer une version de test, avant d'uploader index.html
+cp index.html index-stage.html
+#
+# inutile pour l'instant : 
+gzip < questions.json > questions.json.gz
 

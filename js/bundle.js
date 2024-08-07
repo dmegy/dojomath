@@ -9,6 +9,10 @@ const MAX_POINTS_PER_QUESTION = 20; //maximum de pts que l'on peut gagner à cha
 const BOOST_PROBABILITY = 0.2;
 const BOOST_DURATION = 10 * 60 * 1000; // 10 minutes
 
+const SHARE_ENCODED_MESSAGE = encodeURIComponent(
+  "Quiz de maths sur https://www.dojomath.fr/"
+);
+
 let happyHourList = [
   [6, 8],
   [12, 14],
@@ -150,26 +154,19 @@ function goto(newState) {
 }
 
 function computeThemeStats(themeId) {
-  // bug sur alreadyseen ?
-  // écrit dans statsThemes, à partir des données de statsQuestions
-  let th = themes[themeId]; // référence ?
-  let questionsAlreadySeen = 0;
-  let questionsSuccessfulLastTime = 0;
-  let questionsSuccessfulLastTwoTimes = 0;
-
-  for (let i = 0; i < th.questions.length; i++) {
-    let questionNumber = th.questions[i];
-    if (statsQuestions[questionNumber].viewed > 0) questionsAlreadySeen++;
-    if (statsQuestions[questionNumber].successfulLastTime)
-      questionsSuccessfulLastTime++;
-    if (statsQuestions[questionNumber].successfulLastTwoTimes)
-      questionsSuccessfulLastTwoTimes++;
-  }
-  statsThemes[themeId].questionsAlreadySeen = questionsAlreadySeen;
-  statsThemes[themeId].questionsSuccessfulLastTime =
-    questionsSuccessfulLastTime;
-  statsThemes[themeId].questionsSuccessfulLastTwoTimes =
-    questionsSuccessfulLastTwoTimes;
+  // attention confusion possible
+  // cette fonction ne calcule pas, par exemple, toute l'activité sur un thème
+  statsThemes[themeId].questionsAlreadySeen = 0;
+  statsThemes[themeId].questionsSuccessfulLastTime = 0;
+  statsThemes[themeId].questionsSuccessfulLastTwoTimes = 0;
+  themes[themeId].questions.forEach((n) => {
+    if (statsQuestions[n].viewed > 0)
+      statsThemes[themeId].questionsAlreadySeen++;
+    if (statsQuestions[n].successfulLastTime)
+      statsThemes[themeId].questionsSuccessfulLastTime++;
+    if (statsQuestions[n].successfulLastTwoTimes)
+      statsThemes[themeId].questionsSuccessfulLastTwoTimes++;
+  });
 
   console.log("thème " + themeId + " : stats calculées");
 }
@@ -241,28 +238,26 @@ function fromB64(x) {
 // - - - - - - - - - - - - - - - - - - - - - - - - -
 
 function xShow() {
-  // boucle sur les éléments avec x-show et les affiche conditionnellement à l'argument
-  let elements = document.querySelectorAll("[x-show]");
-  for (let i = 0; i < elements.length; i++) {
-    if (eval(elements[i].attributes["x-show"].value)) {
-      elements[i].style.display = "";
+  // boucle sur les éléments avec argument 'x-show'
+  // et les affiche conditionnellement à la valeur évaluée de l'argument
+  document.querySelectorAll("[x-show]").forEach((element) => {
+    if (eval(element.attributes["x-show"].value)) {
+      element.style.display = "";
     } else {
-      elements[i].style.display = "none";
+      element.style.display = "none";
     }
-  }
+  });
 }
 
 function xHtml() {
-  // boucle sur les éléments avec x-html  visibles et affiche le contenu
-  let elements = document.querySelectorAll("[x-html]");
-  for (let i = 0; i < elements.length; i++) {
-    if (elements[i].offsetParent === null) {
+  document.querySelectorAll("[x-html]").forEach((element) => {
+    if (element.offsetParent === null) {
       // seule méthode trouvée pour vérifier la visibilité
-      continue;
+      return;
     }
-    let content = eval(elements[i].attributes["x-html"].value);
-    elements[i].innerHTML = content;
-  }
+    let content = eval(element.attributes["x-html"].value);
+    element.innerHTML = content;
+  });
 }
 
 // éventuellement coder le x-for pour le composant de références de thèmes, avec liste de liens à afficher...
@@ -288,9 +283,9 @@ function render() {
     });
 }
 
-
-function percentage(t) {// input : 1<= t <=1, output : integer 0<=p<=100
-  if(t<0 || t>1) throw new Error();
+function percentage(t) {
+  // input : 1<= t <=1, output : integer 0<=p<=100
+  if (t < 0 || t > 1) throw new Error();
   return Math.floor(100 * t);
 }
 
@@ -697,24 +692,26 @@ function htmlSelectAreaCode() {
   return s;
 }
 
-// - - - - - - - - - - - - - - - - - - - - - - - 
+// - - - - - - - - - - - - - - - - - - - - - - -
 // - - - - LISTENER ONLOAD and getScript, Mathjax etc
 // - - - - - - - - - - - - - - - - - - - - - - -
 
-
-
-
 window.addEventListener("load", () => {
-  // ATTENTION les thèmes+chapitres sont loadés, les questions non.
-  // 1. initialisation statsThemes en fonction du ombre de thèmes présents
-  // 2. update de statsThèmes avec le localstorage
-  // 3. fetch des questions avec callback
-  // 4. getScript Mathjax
+  initUpdateStatsThemes(); // a besoin que les thèmes soient loadés avant !
 
+  setState("Home"); // todo : sauvegarder state dans le storage pour les refreshs ?
 
-  // 1. initialisation statsThemes (doit tourner après chargement thèmes)
+  render(); //rendu des points ? Mais il sont pas encore récupérés du storage
+
+  // 4. GETSCRIPT MATHJAX : si on le met en async dans le body il commence trop tôt ?
+  getScript("js/-async-initMathJax.js", () => {
+    console.log("Callback de getScript MathJax");
+  });
+}); // fin du listener sur onLoad
+
+function initUpdateStatsThemes() {
+  // initialisation statsThemes (doit tourner *après* chargement thèmes. actuellement dans onLoad)
   for (let themeId in themes) {
-    //initialisation
     statsThemes[themeId] ??= {
       nbQuestionsViewed: 0,
       nbQuestionsSuccessful: 0,
@@ -726,8 +723,7 @@ window.addEventListener("load", () => {
       questionsSuccessfulLastTwoTimes: 0,
     };
   }
-
-  // 2. synchro statsThemes avec storage
+  // synchro statsThemes avec storage
   if (window.localStorage.getItem("statsThemes") !== null) {
     loadedStatsThemes = JSON.parse(window.localStorage.getItem("statsThemes"));
     console.log("statsThemes : data exists in storage. Loaded.");
@@ -741,35 +737,10 @@ window.addEventListener("load", () => {
 
     console.log("statsThemes updated");
   }
+}
 
-  // passage du state de Loading à Home :
-  // mais en fait il faudrait détecter le state sauvegardé dans le storage et loader ce state-là, sauf si c'est Quiz ou End ?
-  // Ou même theme, car theme va être undefined, ou alors il faut aussi le sauvegarder
-  setState("Home");
-
-  // 3. FETCH QUESTIONS
-  fetch("questions.json?again=" + Math.random())
-    .then((response) => response.json())
-    .then((json) => {
-      questions = json;
-      console.log("Questions loaded from json");
-      questionsLoaded = true;
-      initUpdateQuestionsStats();
-    });
-
-  render(); //rendu des points ? Mais il sont pas encore récupérés du storage
-
-  // 4. GETSCRIPT MATHJAX : si on le met en async dans le body il commence trop tôt ?
-  getScript("js/-async-initMathJax.js", () => {
-    console.log("Callback de getScript MathJax");
-  });
-}); // fin du listener sur onLoad
-
-
-
-
-
-function initUpdateQuestionsStats() {//callback du fetch des questions
+function initUpdateStatsQuestions() {
+  //callback du fetch des questions
   console.log("Nb de questions téléchargées : " + questions.length);
   // 1. initialisation de statsQuestions par des stats vides
   // pour chaque question officielle venant d'être chargée
@@ -810,6 +781,21 @@ function getScript(scriptUrl, callback) {
   script.onload = callback;
   document.body.appendChild(script);
 }
+
+// ce fichier sera ignoré par le build de la version embedded
+// - - - - - - - - - - - - - - - - - - -
+
+window.addEventListener("load", () => {
+  fetch("questions.json?again=" + Math.random())
+    .then((response) => response.json())
+    .then((json) => {
+      questions = json;
+      console.log("Questions loaded from json");
+      questionsLoaded = true;
+      initUpdateStatsQuestions();
+    });
+}); // fin du listener sur onLoad
+
 function shuffleArray(array) {
   // attention !  le tableau est muté sur place
   for (let i = array.length - 1; i > 0; i--) {
@@ -1094,7 +1080,7 @@ function giveBoost() {
     user.lastBoostMultiplier = 2;
     user.lastBoostEnd = Date.now() + BOOST_DURATION;
     notification(
-      "! BOOST !\nPoints doublés pendant " +
+      "BOOST !\nPoints doublés pendant " +
         BOOST_DURATION / (60 * 1000) +
         " minutes !",
       "oklch(70% 100% var(--hue-accent)"
@@ -1139,22 +1125,30 @@ function grade20FromResult(result, maxResult) {
 }
 
 function htmlQuizProgress() {
-  if (state != "Quiz" && state != "End") return "";
-  let s = "";
+  // affiche une succession de div dont les couleurs correspondent aux résultats des questions en cours, ou des dic de couleur neutre pour les questions restantes.
+  if (state != "Quiz" && state != "End") return ""; // évite l'imbrication dans un x-show
+  let s = ""; // sortie
   let color = "";
-  for (let i = 0; i < quiz.history.length; i++) {
-    if (quiz.history[i].result == 1) color = "var(--c-success)";
-    if (quiz.history[i].result == 0) color = "var(--c-warning)";
-    if (quiz.history[i].result == -1) color = "var(--c-danger)";
+
+  quiz.history.forEach((obj) => {
+    if (obj.result == 1) color = "var(--c-success)";
+    if (obj.result == 0) color = "var(--c-warning)";
+    if (obj.result == -1) color = "var(--c-danger)";
     s += `<div style='flex-grow:1; background-color:${color}'>&nbsp;</div>`;
-  }
+  });
+
+  // Explication :  en mode Quiz, le rendu est fait une fois la question en cours supprimée
+  // En mode "End", il ne faut pas ajouter le "+1" sinon on obtient 11.
   let nbRemainingAnswers =
     state == "Quiz" ? quiz.questions.length + 1 : quiz.questions.length;
   for (let i = 0; i < nbRemainingAnswers; i++) {
-    //rendu après que la question ait été supprimée!
     s += `<div style='flex-grow:1;background-color:var(--c-primary-40-desat)'>&nbsp;</div>`;
   }
   return s;
+}
+
+function htmlSolutions() {
+  // correction du quiz
 }
 
 // - - - - - - - - - N O T I F S  /  T O A S T

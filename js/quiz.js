@@ -282,7 +282,7 @@ function giveBoost() {
     user.lastBoostMultiplier = 2;
     user.lastBoostEnd = Date.now() + BOOST_DURATION;
     notification(
-      "! BOOST !\nPoints doublés pendant " +
+      "BOOST !\nPoints doublés pendant " +
         BOOST_DURATION / (60 * 1000) +
         " minutes !",
       "oklch(70% 100% var(--hue-accent)"
@@ -327,22 +327,30 @@ function grade20FromResult(result, maxResult) {
 }
 
 function htmlQuizProgress() {
-  if (state != "Quiz" && state != "End") return "";
-  let s = "";
+  // affiche une succession de div dont les couleurs correspondent aux résultats des questions en cours, ou des dic de couleur neutre pour les questions restantes.
+  if (state != "Quiz" && state != "End") return ""; // évite l'imbrication dans un x-show
+  let s = ""; // sortie
   let color = "";
-  for (let i = 0; i < quiz.history.length; i++) {
-    if (quiz.history[i].result == 1) color = "var(--c-success)";
-    if (quiz.history[i].result == 0) color = "var(--c-warning)";
-    if (quiz.history[i].result == -1) color = "var(--c-danger)";
+
+  quiz.history.forEach((obj) => {
+    if (obj.result == 1) color = "var(--c-success)";
+    if (obj.result == 0) color = "var(--c-warning)";
+    if (obj.result == -1) color = "var(--c-danger)";
     s += `<div style='flex-grow:1; background-color:${color}'>&nbsp;</div>`;
-  }
+  });
+
+  // Explication :  en mode Quiz, le rendu est fait une fois la question en cours supprimée
+  // En mode "End", il ne faut pas ajouter le "+1" sinon on obtient 11.
   let nbRemainingAnswers =
     state == "Quiz" ? quiz.questions.length + 1 : quiz.questions.length;
   for (let i = 0; i < nbRemainingAnswers; i++) {
-    //rendu après que la question ait été supprimée!
     s += `<div style='flex-grow:1;background-color:var(--c-primary-40-desat)'>&nbsp;</div>`;
   }
   return s;
+}
+
+function htmlSolutions() {
+  // correction du quiz
 }
 
 // - - - - - - - - - N O T I F S  /  T O A S T

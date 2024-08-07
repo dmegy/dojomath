@@ -8,6 +8,10 @@ const MAX_POINTS_PER_QUESTION = 20; //maximum de pts que l'on peut gagner à cha
 const BOOST_PROBABILITY = 0.2;
 const BOOST_DURATION = 10 * 60 * 1000; // 10 minutes
 
+const SHARE_ENCODED_MESSAGE = encodeURIComponent(
+  "Quiz de maths sur https://www.dojomath.fr/"
+);
+
 let happyHourList = [
   [6, 8],
   [12, 14],
@@ -149,26 +153,19 @@ function goto(newState) {
 }
 
 function computeThemeStats(themeId) {
-  // bug sur alreadyseen ?
-  // écrit dans statsThemes, à partir des données de statsQuestions
-  let th = themes[themeId]; // référence ?
-  let questionsAlreadySeen = 0;
-  let questionsSuccessfulLastTime = 0;
-  let questionsSuccessfulLastTwoTimes = 0;
-
-  for (let i = 0; i < th.questions.length; i++) {
-    let questionNumber = th.questions[i];
-    if (statsQuestions[questionNumber].viewed > 0) questionsAlreadySeen++;
-    if (statsQuestions[questionNumber].successfulLastTime)
-      questionsSuccessfulLastTime++;
-    if (statsQuestions[questionNumber].successfulLastTwoTimes)
-      questionsSuccessfulLastTwoTimes++;
-  }
-  statsThemes[themeId].questionsAlreadySeen = questionsAlreadySeen;
-  statsThemes[themeId].questionsSuccessfulLastTime =
-    questionsSuccessfulLastTime;
-  statsThemes[themeId].questionsSuccessfulLastTwoTimes =
-    questionsSuccessfulLastTwoTimes;
+  // attention confusion possible
+  // cette fonction ne calcule pas, par exemple, toute l'activité sur un thème
+  statsThemes[themeId].questionsAlreadySeen = 0;
+  statsThemes[themeId].questionsSuccessfulLastTime = 0;
+  statsThemes[themeId].questionsSuccessfulLastTwoTimes = 0;
+  themes[themeId].questions.forEach((n) => {
+    if (statsQuestions[n].viewed > 0)
+      statsThemes[themeId].questionsAlreadySeen++;
+    if (statsQuestions[n].successfulLastTime)
+      statsThemes[themeId].questionsSuccessfulLastTime++;
+    if (statsQuestions[n].successfulLastTwoTimes)
+      statsThemes[themeId].questionsSuccessfulLastTwoTimes++;
+  });
 
   console.log("thème " + themeId + " : stats calculées");
 }
@@ -240,28 +237,26 @@ function fromB64(x) {
 // - - - - - - - - - - - - - - - - - - - - - - - - -
 
 function xShow() {
-  // boucle sur les éléments avec x-show et les affiche conditionnellement à l'argument
-  let elements = document.querySelectorAll("[x-show]");
-  for (let i = 0; i < elements.length; i++) {
-    if (eval(elements[i].attributes["x-show"].value)) {
-      elements[i].style.display = "";
+  // boucle sur les éléments avec argument 'x-show'
+  // et les affiche conditionnellement à la valeur évaluée de l'argument
+  document.querySelectorAll("[x-show]").forEach((element) => {
+    if (eval(element.attributes["x-show"].value)) {
+      element.style.display = "";
     } else {
-      elements[i].style.display = "none";
+      element.style.display = "none";
     }
-  }
+  });
 }
 
 function xHtml() {
-  // boucle sur les éléments avec x-html  visibles et affiche le contenu
-  let elements = document.querySelectorAll("[x-html]");
-  for (let i = 0; i < elements.length; i++) {
-    if (elements[i].offsetParent === null) {
+  document.querySelectorAll("[x-html]").forEach((element) => {
+    if (element.offsetParent === null) {
       // seule méthode trouvée pour vérifier la visibilité
-      continue;
+      return;
     }
-    let content = eval(elements[i].attributes["x-html"].value);
-    elements[i].innerHTML = content;
-  }
+    let content = eval(element.attributes["x-html"].value);
+    element.innerHTML = content;
+  });
 }
 
 // éventuellement coder le x-for pour le composant de références de thèmes, avec liste de liens à afficher...
@@ -287,8 +282,8 @@ function render() {
     });
 }
 
-
-function percentage(t) {// input : 1<= t <=1, output : integer 0<=p<=100
-  if(t<0 || t>1) throw new Error();
+function percentage(t) {
+  // input : 1<= t <=1, output : integer 0<=p<=100
+  if (t < 0 || t > 1) throw new Error();
   return Math.floor(100 * t);
 }
