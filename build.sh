@@ -112,5 +112,5 @@ sed -i '' -e "s/\/\* INLINE JAVASCRIPT HERE \*\//${escaped_js_content}/g" "$inde
 cp index.html index-stage.html
 #
 # inutile pour l'instant : 
-gzip < questions.json > questions.json.gz
+#gzip < questions.json > questions.json.gz
 

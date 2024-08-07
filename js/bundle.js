@@ -88,6 +88,21 @@ if (window.localStorage.getItem("finishedQuizHistory") !== null) {
 // variables qui devront être synchronisées plus tard :
 
 let statsQuestions = [];
+// 2. update from storage
+if (window.localStorage.getItem("statsQuestions") !== null) {
+  let loadedStatsQuestions = JSON.parse(
+    window.localStorage.getItem("statsQuestions")
+  );
+  console.log(
+    "Questions possédant des données dans le storage : " +
+      loadedStatsQuestions.length
+  );
+  // ceci contient des valeurs non nulles,
+  //mais peut-être moins de clés que statsQuestions si des questions ont été traitées entre-temps.
+  for (let i = 0; i < loadedStatsQuestions.length; i++) {
+    statsQuestions[i] = loadedStatsQuestions[i]; // on écrase quand il existe une valeur loadée
+  }
+}
 
 let statsThemes = {}; //quest. vues, réussies, ratées, sautées, double-réussies
 
@@ -154,12 +169,24 @@ function goto(newState) {
 }
 
 function computeThemeStats(themeId) {
+  console.log("calcul des stats du thème " + themeId);
   // attention confusion possible
   // cette fonction ne calcule pas, par exemple, toute l'activité sur un thème
   statsThemes[themeId].questionsAlreadySeen = 0;
   statsThemes[themeId].questionsSuccessfulLastTime = 0;
   statsThemes[themeId].questionsSuccessfulLastTwoTimes = 0;
   themes[themeId].questions.forEach((n) => {
+    // initialisation des stats de la question si inexistant :
+    statsQuestions[n] ??= {
+      viewed: 0,
+      failed: 0,
+      skipped: 0,
+      successful: 0,
+      lastResult: 0,
+      penultimateResult: 0,
+      successfulLastTime: false,
+      successfulLastTwoTimes: false,
+    };
     if (statsQuestions[n].viewed > 0)
       statsThemes[themeId].questionsAlreadySeen++;
     if (statsQuestions[n].successfulLastTime)
@@ -739,41 +766,6 @@ function initUpdateStatsThemes() {
   }
 }
 
-function initUpdateStatsQuestions() {
-  //callback du fetch des questions
-  console.log("Nb de questions téléchargées : " + questions.length);
-  // 1. initialisation de statsQuestions par des stats vides
-  // pour chaque question officielle venant d'être chargée
-  for (let i = 0; i < questions.length; i++) {
-    statsQuestions[i] ??= {
-      viewed: 0,
-      failed: 0,
-      skipped: 0,
-      successful: 0,
-      lastResult: 0,
-      penultimateResult: 0,
-      successfulLastTime: false,
-      successfulLastTwoTimes: false,
-    };
-  }
-
-  // 2. update from storage
-  if (window.localStorage.getItem("statsQuestions") !== null) {
-    let loadedStatsQuestions = JSON.parse(
-      window.localStorage.getItem("statsQuestions")
-    );
-    console.log(
-      "Questions possédant des données dans le storage : " +
-        loadedStatsQuestions.length
-    );
-    // ceci contient des valeurs non nulles,
-    //mais peut-être moins de clés que statsQuestions si des questions ont été traitées entre-temps.
-    for (let i = 0; i < loadedStatsQuestions.length; i++) {
-      statsQuestions[i] = loadedStatsQuestions[i]; // on écrase quand il existe une valeur loadée
-    }
-  }
-}
-
 function getScript(scriptUrl, callback) {
   const script = document.createElement("script");
   script.src = scriptUrl + "?unique=" + Math.random();
@@ -796,7 +788,6 @@ window.addEventListener("load", () => {
       questions = json;
       console.log("Questions loaded from json");
       questionsLoaded = true;
-      initUpdateStatsQuestions();
     });
 }); // fin du listener sur onLoad
 
