@@ -17,6 +17,7 @@ window.addEventListener("load", () => {
 
 function initUpdateStatsThemes() {
   // initialisation statsThemes (doit tourner *après* chargement thèmes. actuellement dans onLoad)
+  // ceci pourrait
   for (let themeId in themes) {
     statsThemes[themeId] ??= {
       nbQuestionsViewed: 0,
@@ -30,18 +31,24 @@ function initUpdateStatsThemes() {
     };
   }
   // synchro statsThemes avec storage
-  if (window.localStorage.getItem("statsThemes") !== null) {
-    loadedStatsThemes = JSON.parse(window.localStorage.getItem("statsThemes"));
-    console.log("statsThemes : data exists in storage. Loaded.");
+  try {
+    if (window.localStorage.getItem("statsThemes") !== null) {
+      loadedStatsThemes = JSON.parse(
+        window.localStorage.getItem("statsThemes")
+      );
+      console.log("statsThemes : data exists in storage. Loaded.");
 
-    for (themeId in themes) {
-      statsThemes[themeId] = {};
-      if (themeId in loadedStatsThemes) {
-        statsThemes[themeId] = loadedStatsThemes[themeId];
+      for (themeId in themes) {
+        statsThemes[themeId] = {};
+        if (themeId in loadedStatsThemes) {
+          statsThemes[themeId] = loadedStatsThemes[themeId];
+        }
       }
-    }
 
-    console.log("statsThemes updated");
+      console.log("statsThemes updated");
+    }
+  } catch (e) {
+    console.log("localStorage disabled : could not load statistics");
   }
 }
 

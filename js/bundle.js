@@ -67,41 +67,46 @@ let user = {
   lastBoostEndTime: 0 /* time in millisec */,
   lastBoostMultiplier: 1,
 };
-if (window.localStorage.getItem("user") !== null) {
-  console.log("user already exists in storage");
-  // on écrase :
-  user = JSON.parse(window.localStorage.getItem("user"));
-  console.log("User updated");
-}
 
 let finishedQuizHistory = []; // historique des quiz finis
-if (window.localStorage.getItem("finishedQuizHistory") !== null) {
-  console.log("Quiz history exists in storage");
-  // on écrase :
-  finishedQuizHistory = JSON.parse(
-    window.localStorage.getItem("finishedQuizHistory")
-  );
-  console.log("Quiz history updated");
-}
-
-// - - - - - - - - - - - - -
-// variables qui devront être synchronisées plus tard :
-
 let statsQuestions = [];
-// 2. update from storage
-if (window.localStorage.getItem("statsQuestions") !== null) {
-  let loadedStatsQuestions = JSON.parse(
-    window.localStorage.getItem("statsQuestions")
-  );
-  console.log(
-    "Questions possédant des données dans le storage : " +
-      loadedStatsQuestions.length
-  );
-  // ceci contient des valeurs non nulles,
-  //mais peut-être moins de clés que statsQuestions si des questions ont été traitées entre-temps.
-  for (let i = 0; i < loadedStatsQuestions.length; i++) {
-    statsQuestions[i] = loadedStatsQuestions[i]; // on écrase quand il existe une valeur loadée
+
+// update from storage
+try {
+  if (window.localStorage.getItem("user") !== null) {
+    console.log("user already exists in storage");
+    // on écrase :
+    user = JSON.parse(window.localStorage.getItem("user"));
+    console.log("User updated");
   }
+  if (window.localStorage.getItem("finishedQuizHistory") !== null) {
+    console.log("Quiz history exists in storage");
+    // on écrase :
+    finishedQuizHistory = JSON.parse(
+      window.localStorage.getItem("finishedQuizHistory")
+    );
+    console.log("Quiz history updated");
+  }
+  // 2. update from storage
+  if (window.localStorage.getItem("statsQuestions") !== null) {
+    let loadedStatsQuestions = JSON.parse(
+      window.localStorage.getItem("statsQuestions")
+    );
+    console.log(
+      "Questions possédant des données dans le storage : " +
+        loadedStatsQuestions.length
+    );
+    // ceci contient des valeurs non nulles,
+    //mais peut-être moins de clés que statsQuestions si des questions ont été traitées entre-temps.
+    for (let i = 0; i < loadedStatsQuestions.length; i++) {
+      statsQuestions[i] = loadedStatsQuestions[i]; // on écrase quand il existe une valeur loadée
+    }
+  }
+} catch (e) {
+  alert(
+    "Il semble que les cookies soient désactivés.\n Ce site a besoin des cookies pour fonctionner correctement, pour stocker temporairement les résultats aux questions, les points gagnés etc.\n Sans cookies, toutes les données sont perdues à chaque rechargement de la page ou perte de connexion."
+  );
+  console.log("Localstorage disabled : could not load user data.");
 }
 
 let statsThemes = {}; //quest. vues, réussies, ratées, sautées, double-réussies
@@ -109,12 +114,19 @@ let statsThemes = {}; //quest. vues, réussies, ratées, sautées, double-réuss
 // - - - - - - - - - -
 
 function saveToLocalStorage() {
-  // à mettre ici et pas dans quiz.js
+  // à mettre dans app.js et pas dans quiz.js
   // En effet : modifications/enregistrement de user dans la page de profil
-  console.log("sauvegarde-> localStorage");
-  window.localStorage.setItem("statsQuestions", JSON.stringify(statsQuestions));
-  window.localStorage.setItem("statsThemes", JSON.stringify(statsThemes));
-  window.localStorage.setItem("user", JSON.stringify(user));
+  try {
+    window.localStorage.setItem(
+      "statsQuestions",
+      JSON.stringify(statsQuestions)
+    );
+    window.localStorage.setItem("statsThemes", JSON.stringify(statsThemes));
+    window.localStorage.setItem("user", JSON.stringify(user));
+    console.log("Saved data to localStorage");
+  } catch (e) {
+    console.log("localStorage disabled : could not save data");
+  }
 }
 
 function getUserStreak() {
@@ -157,7 +169,7 @@ function removeCircles() {
 function setState(s) {
   oldState = state;
   state = s;
-  window.localStorage.setItem("state", state);
+  //window.localStorage.setItem("state", state);
 }
 
 function goto(newState) {
@@ -738,6 +750,7 @@ window.addEventListener("load", () => {
 
 function initUpdateStatsThemes() {
   // initialisation statsThemes (doit tourner *après* chargement thèmes. actuellement dans onLoad)
+  // ceci pourrait
   for (let themeId in themes) {
     statsThemes[themeId] ??= {
       nbQuestionsViewed: 0,
@@ -751,18 +764,24 @@ function initUpdateStatsThemes() {
     };
   }
   // synchro statsThemes avec storage
-  if (window.localStorage.getItem("statsThemes") !== null) {
-    loadedStatsThemes = JSON.parse(window.localStorage.getItem("statsThemes"));
-    console.log("statsThemes : data exists in storage. Loaded.");
+  try {
+    if (window.localStorage.getItem("statsThemes") !== null) {
+      loadedStatsThemes = JSON.parse(
+        window.localStorage.getItem("statsThemes")
+      );
+      console.log("statsThemes : data exists in storage. Loaded.");
 
-    for (themeId in themes) {
-      statsThemes[themeId] = {};
-      if (themeId in loadedStatsThemes) {
-        statsThemes[themeId] = loadedStatsThemes[themeId];
+      for (themeId in themes) {
+        statsThemes[themeId] = {};
+        if (themeId in loadedStatsThemes) {
+          statsThemes[themeId] = loadedStatsThemes[themeId];
+        }
       }
-    }
 
-    console.log("statsThemes updated");
+      console.log("statsThemes updated");
+    }
+  } catch (e) {
+    console.log("localStorage disabled : could not load statistics");
   }
 }
 
@@ -775,6 +794,8 @@ function getScript(scriptUrl, callback) {
 }
 
 // ce fichier sera ignoré par le build de la version embedded
+// ceci peut être remplacé par un script src=questions.js par exemple, (en async)
+// ou par le fait d'inliner le contenu de questions.js
 // - - - - - - - - - - - - - - - - - - -
 
 window.addEventListener("load", () => {
@@ -786,10 +807,10 @@ window.addEventListener("load", () => {
     .then((response) => response.json())
     .then((json) => {
       questions = json;
-      console.log("Questions loaded from json");
+      console.log("Questions loaded from json : " + json.length);
       questionsLoaded = true;
     });
-}); // fin du listener sur onLoad
+});
 
 function shuffleArray(array) {
   // attention !  le tableau est muté sur place
@@ -1170,7 +1191,7 @@ function toast(message, color) {
 function notification(message, color) {
   Toastify({
     text: message,
-    duration: 5000,
+    duration: 4000,
     destination: "",
     newWindow: true,
     close: false,
@@ -1189,7 +1210,7 @@ function notification(message, color) {
 function alertGameover() {
   Toastify({
     text: "GAMEOVER\n\n Trop de questions sautées ou ratées !",
-    duration: 5000,
+    duration: 4000,
     destination: "",
     newWindow: true,
     close: false,

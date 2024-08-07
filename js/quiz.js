@@ -377,7 +377,7 @@ function toast(message, color) {
 function notification(message, color) {
   Toastify({
     text: message,
-    duration: 5000,
+    duration: 4000,
     destination: "",
     newWindow: true,
     close: false,
@@ -396,7 +396,7 @@ function notification(message, color) {
 function alertGameover() {
   Toastify({
     text: "GAMEOVER\n\n Trop de questions sautées ou ratées !",
-    duration: 5000,
+    duration: 4000,
     destination: "",
     newWindow: true,
     close: false,
