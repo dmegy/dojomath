@@ -367,7 +367,7 @@ function getHighscores() {
 
 function getBestPlayers() {
   console.log("Downloading Highscores (alltime)");
-  document.getElementById("loadingHighscoresAlltime").style.opacity = "50%";
+  document.getElementById("loadingHighscoresAlltime").style.opacity = "20%";
   fetch(URL_HIGHSCORES_ALLTIME + "?unique=" + Math.random())
     .then((response) => response.text())
     .then((data) => {
@@ -382,7 +382,7 @@ function getBestPlayers() {
 //deprecated
 function getRecentPlayers() {
   console.log("Downloading Highscores (recent players)");
-  document.getElementById("loadingHighscoresRecent").style.opacity = "50%";
+  document.getElementById("loadingHighscoresRecent").style.opacity = "20%";
   fetch(URL_HIGHSCORES_RECENT + "?unique=" + Math.random())
     .then((response) => response.text())
     .then((data) => {
@@ -1103,6 +1103,8 @@ function showQuizResults() {
   render();
 
   sendStatistics(); // au serveur
+
+  MathJax.typeset(); //solutions
 }
 
 function giveBoost() {
@@ -1200,7 +1202,45 @@ function htmlQuizProgress() {
 }
 
 function htmlSolutions() {
-  // correction du quiz
+  // affiche les solutions du quiz en cours, qui vient d'être fini.
+  let s = "<details style='opacity:70%;' open><summary>Correction:</summary>";
+
+  quiz.history.forEach((e) => {
+    s += htmlSolutionElement(e);
+  });
+  s += "</details>";
+  return s;
+}
+
+function htmlSolutionElement({ questionNumber, submittedAnswer, result }) {
+  let color, message;
+  if (result == 1) {
+    message = "✔ Question réussie";
+    color = "oklch(30% 30% var(--hue-success))";
+  }
+  if (result == 0) {
+    message = "⚠ Question sautée";
+    color = "oklch(30% 30% var(--hue-warning))";
+  }
+  if (result == -1) {
+    message = "✖ Question ratée";
+    color = "oklch(30% 30% var(--hue-danger))";
+  }
+  let answerDiv = "";
+  if (submittedAnswer === true)
+    answerDiv = "<div>(Réponse donnée : Vrai)</div>";
+  if (submittedAnswer === false)
+    answerDiv = "<div>(Réponse donnée : Faux)</div>";
+
+  let s = `<div style='color:white;margin-bottom:1rem;padding:1.5rem;width:100%;border-radius:2rem;background-color:${color}'>
+    <div style='margin-bottom:1rem;display:flex;justify-content:space-between'>
+      <div>${message}</div>
+      <div>Q${questionNumber}</div>
+    </div>
+    <div style="margin-bottom:1rem">${questions[questionNumber].statement}</div>
+    ${answerDiv}
+  </div>`;
+  return s;
 }
 
 // - - - - - - - - - N O T I F S  /  T O A S T
@@ -1275,7 +1315,6 @@ var svgPathFarEye = `<path d="M288 80c-65.2 0-118.8 29.6-159.9 67.7C89.6 183.5 6
 var svgPathFasDumbbell = `<path d="M112 96c0-17.7 14.3-32 32-32h16c17.7 0 32 14.3 32 32V224v64V416c0 17.7-14.3 32-32 32H144c-17.7 0-32-14.3-32-32V384H64c-17.7 0-32-14.3-32-32V288c-17.7 0-32-14.3-32-32s14.3-32 32-32V160c0-17.7 14.3-32 32-32h48V96zm416 0v32h48c17.7 0 32 14.3 32 32v64c17.7 0 32 14.3 32 32s-14.3 32-32 32v64c0 17.7-14.3 32-32 32H528v32c0 17.7-14.3 32-32 32H480c-17.7 0-32-14.3-32-32V288 224 96c0-17.7 14.3-32 32-32h16c17.7 0 32 14.3 32 32zM416 224v64H224V224H416z"/>`;
 var svgPathFasListCheck = `<path d="M152.1 38.2c9.9 8.9 10.7 24 1.8 33.9l-72 80c-4.4 4.9-10.6 7.8-17.2 7.9s-12.9-2.4-17.6-7L7 113C-2.3 103.6-2.3 88.4 7 79s24.6-9.4 33.9 0l22.1 22.1 55.1-61.2c8.9-9.9 24-10.7 33.9-1.8zm0 160c9.9 8.9 10.7 24 1.8 33.9l-72 80c-4.4 4.9-10.6 7.8-17.2 7.9s-12.9-2.4-17.6-7L7 273c-9.4-9.4-9.4-24.6 0-33.9s24.6-9.4 33.9 0l22.1 22.1 55.1-61.2c8.9-9.9 24-10.7 33.9-1.8zM224 96c0-17.7 14.3-32 32-32l224 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-224 0c-17.7 0-32-14.3-32-32zm0 160c0-17.7 14.3-32 32-32l224 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-224 0c-17.7 0-32-14.3-32-32zM160 416c0-17.7 14.3-32 32-32l288 0c17.7 0 32 14.3 32 32s-14.3 32-32 32l-288 0c-17.7 0-32-14.3-32-32zM48 368a48 48 0 1 1 0 96 48 48 0 1 1 0-96z"/>`;
 // enlever celui-ci ? Inutile ?
-var svgPathFasArrowRotateRight = `<path d="M386.3 160L336 160c-17.7 0-32 14.3-32 32s14.3 32 32 32l128 0c17.7 0 32-14.3 32-32l0-128c0-17.7-14.3-32-32-32s-32 14.3-32 32l0 51.2L414.4 97.6c-87.5-87.5-229.3-87.5-316.8 0s-87.5 229.3 0 316.8s229.3 87.5 316.8 0c12.5-12.5 12.5-32.8 0-45.3s-32.8-12.5-45.3 0c-62.5 62.5-163.8 62.5-226.3 0s-62.5-163.8 0-226.3s163.8-62.5 226.3 0L386.3 160z"/>`;
 
 // icones user : ça prend de la place mais ça ajoute un côté sympa
 var svgPathFasUserLarge = `<path d="M256 288c79.5 0 144-64.5 144-144S335.5 0 256 0S112 64.5 112 144s64.5 144 144 144zm-94.7 32C72.2 320 0 392.2 0 481.3c0 17 13.8 30.7 30.7 30.7H481.3c17 0 30.7-13.8 30.7-30.7C512 392.2 439.8 320 350.7 320H161.3z"/>`;

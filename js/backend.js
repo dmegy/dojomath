@@ -33,7 +33,7 @@ function getHighscores() {
 
 function getBestPlayers() {
   console.log("Downloading Highscores (alltime)");
-  document.getElementById("loadingHighscoresAlltime").style.opacity = "50%";
+  document.getElementById("loadingHighscoresAlltime").style.opacity = "20%";
   fetch(URL_HIGHSCORES_ALLTIME + "?unique=" + Math.random())
     .then((response) => response.text())
     .then((data) => {
@@ -48,7 +48,7 @@ function getBestPlayers() {
 //deprecated
 function getRecentPlayers() {
   console.log("Downloading Highscores (recent players)");
-  document.getElementById("loadingHighscoresRecent").style.opacity = "50%";
+  document.getElementById("loadingHighscoresRecent").style.opacity = "20%";
   fetch(URL_HIGHSCORES_RECENT + "?unique=" + Math.random())
     .then((response) => response.text())
     .then((data) => {

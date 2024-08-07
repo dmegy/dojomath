@@ -236,8 +236,7 @@
               x-html="htmlNumAdj(user.nbQuestionsViewed - user.nbQuestionsFailed - user.nbQuestionsSuccessful,'ignorée')"
               >?</span
             >,
-            <!-- pour prendre en compte les questions vues avant d'interrompre le quiz (pas comptés comme skipped) -->
-            <!-- ATTENTION BUG ?? somme non nulle donc pdifférence arfois negative -->
+
             <span
               style="color: var(--c-success)"
               x-html="htmlNumAdj(user.nbQuestionsSuccessful,'réussie')"
@@ -308,28 +307,6 @@
                 x-html="htmlProgress(getPerfectsToday(),5)"
               ></div>
             </div>
-
-            <!--
-            <div style="display: flex; gap: 0.5rem; align-items: center">
-              <div style="width: 1rem; flex-shrink: 0; text-align: center">
-                •
-              </div>
-              <div>Finir une partie entre 6h et 8h</div>
-            </div>
-
-            <div style="display: flex; gap: 0.5rem; align-items: center">
-              <div style="width: 1rem; flex-shrink: 0; text-align: center">
-                •
-              </div>
-              <div>Finir une partie entre midi et 14h</div>
-            </div>
-
-            <div style="display: flex; gap: 0.5rem; align-items: center">
-              <div style="width: 1rem; flex-shrink: 0; text-align: center">
-                •
-              </div>
-              <div>Finir une partie entre 18h et 20h</div>
-            </div>-->
           </div>
           <!-- - - - S T A T S > > > P R O C H A I N E S   E T A P E S - - - -->
           <h3>
@@ -394,8 +371,8 @@
               id="loadingHighscoresAlltime"
               class="btn btn-refresh-scores"
               onclick="getBestPlayers()"
-              >↻</span
-            >
+              >↻
+            </span>
           </h3>
           <div id="highscoresAlltime">- - - Chargement des scores - - -</div>
 
@@ -416,8 +393,8 @@
               id="loadingHighscoresRecentGames"
               class="btn btn-refresh-scores"
               onclick="getRecentGames()"
-              >↻</span
-            >
+              >↻
+            </span>
           </h3>
           <div id="highscoresRecentGames">
             - - - Chargement des parties récentes - - -
@@ -573,8 +550,9 @@
           </h1>
 
           <p style="color: var(--c-text-inactive)">
-            ⓘ La <b>note</b> est calculée sans tenir compte des pénalités dues
-            aux erreurs ni des bonus de bonnes réponses successives.
+            <span style="font-size: 1.4rem">ⓘ</span> La note est calculée sans
+            tenir compte des pénalités dues aux erreurs ni des bonus de bonnes
+            réponses successives.
           </p>
 
           <table width="100%" style="border-collapse: collapse">
@@ -671,6 +649,7 @@
               x-html="htmlShare('Je viens de gagner '+quiz.points+' points sur https://www.dojomath.fr/ ! ')"
             ></span>
           </div>
+          <div x-html="htmlSolutions()"></div>
         </section>
       </main>
       <!-- - - - - - -  F O O T E R  - - - - - - - - - -->

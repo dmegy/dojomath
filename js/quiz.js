@@ -253,6 +253,8 @@ function showQuizResults() {
   render();
 
   sendStatistics(); // au serveur
+
+  MathJax.typeset(); //solutions
 }
 
 function giveBoost() {
@@ -350,7 +352,45 @@ function htmlQuizProgress() {
 }
 
 function htmlSolutions() {
-  // correction du quiz
+  // affiche les solutions du quiz en cours, qui vient d'être fini.
+  let s = "<details style='opacity:70%;' open><summary>Correction:</summary>";
+
+  quiz.history.forEach((e) => {
+    s += htmlSolutionElement(e);
+  });
+  s += "</details>";
+  return s;
+}
+
+function htmlSolutionElement({ questionNumber, submittedAnswer, result }) {
+  let color, message;
+  if (result == 1) {
+    message = "✔ Question réussie";
+    color = "oklch(30% 30% var(--hue-success))";
+  }
+  if (result == 0) {
+    message = "⚠ Question sautée";
+    color = "oklch(30% 30% var(--hue-warning))";
+  }
+  if (result == -1) {
+    message = "✖ Question ratée";
+    color = "oklch(30% 30% var(--hue-danger))";
+  }
+  let answerDiv = "";
+  if (submittedAnswer === true)
+    answerDiv = "<div>(Réponse donnée : Vrai)</div>";
+  if (submittedAnswer === false)
+    answerDiv = "<div>(Réponse donnée : Faux)</div>";
+
+  let s = `<div style='color:white;margin-bottom:1rem;padding:1.5rem;width:100%;border-radius:2rem;background-color:${color}'>
+    <div style='margin-bottom:1rem;display:flex;justify-content:space-between'>
+      <div>${message}</div>
+      <div>Q${questionNumber}</div>
+    </div>
+    <div style="margin-bottom:1rem">${questions[questionNumber].statement}</div>
+    ${answerDiv}
+  </div>`;
+  return s;
 }
 
 // - - - - - - - - - N O T I F S  /  T O A S T
