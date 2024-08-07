@@ -401,39 +401,40 @@
           x-show="(state=='Highscores')"
           style="display: none"
         >
-          <!--<span
-            onclick="getHighscores()"
-            id="refreshHighscoresButton"
-            style="cursor: pointer"
-          >
-            <svg
-              style="width: 1.5rem; height: 1.5rem"
-              class="svg-icon"
-              viewBox="0 0 516 512"
-              x-html="svgPathFasArrowRotateRight"
-            ></svg>
-          </span>-->
-
           <h3>
-            Meilleurs scores :
+            Meilleurs joueurs :
             <span
               id="loadingHighscoresAlltime"
               class="btn btn-refresh-scores"
-              onclick="getHighscoresAlltime()"
+              onclick="getBestPlayers()"
               >↻</span
             >
           </h3>
           <div id="highscoresAlltime">- - - Chargement des scores - - -</div>
-          <h3>
-            Les plus récents :
+
+          <!--<h3>
+            Joueurs récents :
             <span
               id="loadingHighscoresRecent"
               class="btn btn-refresh-scores"
-              onclick="getHighscoresRecent()"
+              onclick="getRecentPlayers()"
               >↻</span
             >
           </h3>
-          <div id="highscoresRecent">- - - Chargement des scores - - -</div>
+          <div id="highscoresRecent">- - - Chargement des scores - - -</div>-->
+
+          <h3>
+            Parties récentes :
+            <span
+              id="loadingHighscoresRecentGames"
+              class="btn btn-refresh-scores"
+              onclick="getRecentGames()"
+              >↻</span
+            >
+          </h3>
+          <div id="highscoresRecentGames">
+            - - - Chargement des parties récentes - - -
+          </div>
         </section>
 
         <!-- - - - - - C H A P I T R E S - - - - - -->

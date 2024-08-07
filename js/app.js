@@ -4,7 +4,7 @@ const MIN_QUIZ_RESULT = 2; // attention certains quiz peuvent faire moins de 2 q
 const MAX_ERRORS_ALLOWED = 5; // inutilisé, on utilisé la constante précédente
 // (le but est d'empecher de cliquer sur 'passer' et que ça compte comme un quiz fini)
 const MAX_QUIZ_LENGTH = 10;
-const MAX_POINTS_PER_QUESTION = 20; //maximum de pts que l'on peut gagner à chaque question
+const MAX_POINTS_PER_QUESTION = 10; //maximum de pts que l'on peut gagner à chaque question
 const BOOST_PROBABILITY = 0.2;
 const BOOST_DURATION = 10 * 60 * 1000; // 10 minutes
 

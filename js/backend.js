@@ -1,6 +1,7 @@
 const URL_QUIZ_FINISHED = "backend/quiz_finished.php";
-const PATH_HIGHSCORES_ALLTIME = "backend/highscores_alltime.html.txt";
-const PATH_HIGHSCORES_RECENT = "backend/highscores_recent.html.txt";
+const URL_HIGHSCORES_ALLTIME = "backend/highscores_alltime.html.txt";
+const URL_HIGHSCORES_RECENT = "backend/highscores_recent.html.txt";
+const URL_HIGHSCORES_RECENT_GAMES = "backend/highscores_recent_games.html.txt";
 
 function sendStatistics() {
   let requestBody = {
@@ -25,41 +26,47 @@ window.addEventListener("DOMContentLoaded", () => {
 });
 
 function getHighscores() {
-  getHighscoresAlltime();
-  getHighscoresRecent();
+  getBestPlayers();
+  //getRecentPlayers();
+  getRecentGames();
 }
 
-function getHighscoresAlltime() {
+function getBestPlayers() {
   console.log("Downloading Highscores (alltime)");
-  document.getElementById("loadingHighscoresAlltime").classList.add("rotating");
   document.getElementById("loadingHighscoresAlltime").style.opacity = "50%";
-  fetch(PATH_HIGHSCORES_ALLTIME + "?unique=" + Math.random())
+  fetch(URL_HIGHSCORES_ALLTIME + "?unique=" + Math.random())
     .then((response) => response.text())
     .then((data) => {
       document.getElementById("highscoresAlltime").innerHTML = data;
       document.getElementById("loadingHighscoresAlltime").style.opacity =
         "100%";
-      document
-        .getElementById("loadingHighscoresAlltime")
-        .classList.remove("rotating");
 
       console.log("Alltime scores : ok");
     });
 }
 
-function getHighscoresRecent() {
-  console.log("Downloading Highscores (recent)");
-  document.getElementById("loadingHighscoresRecent").classList.add("rotating");
+//deprecated
+function getRecentPlayers() {
+  console.log("Downloading Highscores (recent players)");
   document.getElementById("loadingHighscoresRecent").style.opacity = "50%";
-  fetch(PATH_HIGHSCORES_RECENT + "?unique=" + Math.random())
+  fetch(URL_HIGHSCORES_RECENT + "?unique=" + Math.random())
     .then((response) => response.text())
     .then((data) => {
       document.getElementById("highscoresRecent").innerHTML = data;
       document.getElementById("loadingHighscoresRecent").style.opacity = "100%";
-      document
-        .getElementById("loadingHighscoresRecent")
-        .classList.remove("rotating");
+      console.log("Recent score : ok");
+    });
+}
 
+function getRecentGames() {
+  console.log("Downloading Recent Games");
+  document.getElementById("loadingHighscoresRecentGames").style.opacity = "50%";
+  fetch(URL_HIGHSCORES_RECENT_GAMES + "?unique=" + Math.random())
+    .then((response) => response.text())
+    .then((data) => {
+      document.getElementById("highscoresRecentGames").innerHTML = data;
+      document.getElementById("loadingHighscoresRecentGames").style.opacity =
+        "100%";
       console.log("Recent score : ok");
     });
 }

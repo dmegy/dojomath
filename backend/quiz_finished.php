@@ -76,18 +76,94 @@ if ( !$bon_referer )
   exit;
 
 
+
+
+// VALIDATION ! ! ! !
+
+// si erreur ou triche, on exit.
+
+
 // IP récupérée plus haut
 $userId = $user['userId'];
 $userName = $user['userName'];
 $userAreaCode = $user['areaCode'];
+$userPoints = $user['points'];
 $userStreak = $user['lastStreak'];
 
-$pointsEarned = $quiz['points']; // attention confusion possible
+$userCombo = $user['combo'];
+
+$pointsEarned = $quiz['points']; // attention confusion possible, ce sont les points gagnés à la partie
 $quizThemeId = $quiz['id'];
 $grade = $quiz['finalGrade'];
-$userPoints = $user['points'];
 
-$userCombo = $user['combo'];
+
+
+
+// - - - validation
+$errors = [];
+
+    // Validation des données selon les contraintes spécifiées
+if (!isset($userId) || !is_string($userId) || strlen($userId) > 16) {
+    $errors[] = "Invalid userId : " . $userId;
+}
+if (!is_string($userName) || strlen($userName) > 16) {
+    $errors[] = "Invalid userName : " . $userName ;
+}
+// validation numéro de département
+$validAreaCodes = ["AUCUN","","Autre","AEFE","986","987","988"];
+// Boucle de 1 à 95 pour générer les codes d'aire au format "01", "02", ..., "95"
+for ($i = 1; $i <= 95; $i++) {
+    $validAreaCodes[] = str_pad((string)$i, 2, '0', STR_PAD_LEFT);
+}
+for ($i = 971; $i <= 978; $i++) {
+    $validAreaCodes[] = (string)$i;
+}
+if (!in_array($userAreaCode, $validAreaCodes)) {
+    $errors[] = "Invalid UserAreaCode : " . $userAreaCode ;
+}
+
+if (!isset($userPoints) || !filter_var($userPoints, FILTER_VALIDATE_INT, ["options" => ["min_range" => 1, "max_range" => 900000]])) {
+    $errors[] = "Invalid userPoints : " . $userPoints;
+}
+// plus de validation !
+
+if (!isset($userStreak) || !filter_var($userStreak, FILTER_VALIDATE_INT, ["options" => ["min_range" => 0, "max_range" => 10000]])) {
+    $errors[] = "Invalid UserStreak : " . $userStreak;
+}
+// vérifier plutot si le streak est bien inférieur à date.now - user.firstconnection ...
+
+if (!isset($quizThemeId) || !is_string($quizThemeId) || strlen($quizThemeId) > 32) {
+    $errors[] = "Invalid QuizThemeId : " . $quizThemeId;
+}
+// là on pourrait tester que ça appartient à une liste précise.
+
+if (!isset($pointsEarned) || !filter_var($pointsEarned, FILTER_VALIDATE_INT, ["options" => ["min_range" => 0, "max_range" => 400]])) {
+    $errors[] = "Invalid pointsEarned : " . $pointsEarned;
+ }
+ 
+if (!filter_var($grade, FILTER_VALIDATE_INT, ["options" => ["min_range" => 0, "max_range" => 20]])) {
+     $errors[] = "Invalid Grade : " . $grade;
+}
+
+/*
+if (!filter_var($userCombo, FILTER_VALIDATE_INT, ["options" => ["min_range" => 0, "max_range" => 1000000]])) {
+    $errors[] = "Invalid UserCombo ! " . $userCombo; // rate pour zéro ??? pourquoi ??
+}*/
+
+// il faudrait des validations supplémentaires ici... note qui correspond aux résultats etc. 
+// Vérifier sur les données de quiz.
+
+
+// Execution validation :
+
+if (!empty($errors)) {
+    $response = [
+        'status' => 'Error',
+        'message' => "Errors : " . implode(', ', $errors)
+    ];
+    echo json_encode($response);
+    exit;
+}
 
 // - - - insertion dans base de données
 
@@ -131,6 +207,8 @@ try {
 include('build_highscores_alltime.php');
 
 include('build_highscores_recent.php');
+
+include('build_highscores_recent_games.php');
 
 
 
