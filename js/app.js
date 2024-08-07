@@ -8,6 +8,7 @@ const MAX_POINTS_PER_QUESTION = 10; //maximum de pts que l'on peut gagner à cha
 const BOOST_PROBABILITY = 0.2;
 const BOOST_DURATION = 10 * 60 * 1000; // 10 minutes
 
+// deprecated :
 const SHARE_ENCODED_MESSAGE = encodeURIComponent(
   "Quiz de maths sur https://www.dojomath.fr/"
 );
@@ -74,8 +75,11 @@ let statsQuestions = [];
 try {
   if (window.localStorage.getItem("user") !== null) {
     console.log("user already exists in storage");
-    // on écrase :
-    user = JSON.parse(window.localStorage.getItem("user"));
+    // on écrase, à partir de ce qu'il y a dans le storage, attention.
+    let loadedUser = JSON.parse(window.localStorage.getItem("user"));
+    for (let key in loadedUser) {
+      user[key] = loadedUser[key];
+    }
     console.log("User updated");
   }
   if (window.localStorage.getItem("finishedQuizHistory") !== null) {
@@ -98,7 +102,7 @@ try {
     // ceci contient des valeurs non nulles,
     //mais peut-être moins de clés que statsQuestions si des questions ont été traitées entre-temps.
     for (let i = 0; i < loadedStatsQuestions.length; i++) {
-      statsQuestions[i] = loadedStatsQuestions[i]; // on écrase quand il existe une valeur loadée
+      statsQuestions[i] = loadedStatsQuestions[i]; // on écrase quand il existe une valeur dans le storage
     }
   }
 } catch (e) {

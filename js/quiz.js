@@ -252,7 +252,7 @@ function showQuizResults() {
   setState("End");
   render();
 
-  sendStatistics();
+  sendStatistics(); // au serveur
 }
 
 function giveBoost() {

@@ -140,3 +140,28 @@ function htmlSelectAreaCode() {
   s += "</select>";
   return s;
 }
+
+function htmlShare(msg) {
+  let message = encodeURIComponent(msg);
+  return `<a
+                href="javascript:(()=>{var isMobile=/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent); var u = isMobile ? 'whatsapp://send?text=${message}' : 'https://wa.me/?text=${message}' ; window.open(u);})();"
+                >Whatsapp</a
+              > | 
+              <a
+                target="_blank"
+                href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fwww.dojomath.fr%2F&t=${message}"
+                >Facebook</a
+              > | 
+              <a
+                href="javascript:(()=>{window.open('https://twitter.com/intent/tweet?text=${message}&url=https%3A%2F%2Fwww.dojomath.fr%2F');})();"
+                >𝕏</a
+              > | 
+              <a
+                href="javascript:(()=>{window.open('mailto:?subject=DojoMath.fr&body=${message}');})();"
+                >Email</a
+              > | 
+              <a
+                href="javascript:(()=>{window.open('sms:?&body=${message}');})();"
+                >SMS</a
+              >`;
+}

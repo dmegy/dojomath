@@ -138,28 +138,15 @@
             </p>
 
             <p>
-              Partager via :
-              <a
-                href="javascript:(()=>{var isMobile=/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent); var u = isMobile ? 'whatsapp://send?text=' + SHARE_ENCODED_MESSAGE : 'https://wa.me/?text=' + SHARE_ENCODED_MESSAGE ; window.open(u);})();"
-                >Whatsapp</a
-              >,
-              <a
-                target="_blank"
-                href="https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fwww.dojomath.fr%2F&t=DojoMath"
-                >Facebook</a
-              >,
-              <a
-                href="javascript:(()=>{window.open('https://twitter.com/intent/tweet?text=DojoMath&url=https%3A%2F%2Fwww.dojomath.fr%2F');})();"
-                >X</a
-              >,
-              <a
-                href="javascript:(()=>{window.open('mailto:?subject=DojoMath.fr&body='+SHARE_ENCODED_MESSAGE);})();"
-                >Email</a
-              >,
-              <a
-                href="javascript:(()=>{window.open('sms:?&body=' + SHARE_ENCODED_MESSAGE);})();"
-                >SMS</a
-              >.
+              <svg
+                viewBox="0 0 600 512"
+                x-html="svgPathFasShareNodes"
+                style="fill: var(--c-text); height: 1rem"
+              ></svg>
+              Faire découvrir DojoMath :<br />
+              <span
+                x-html="htmlShare('Quiz de maths sur https://www.dojomath.fr/')"
+              ></span>
             </p>
           </div>
         </section>
@@ -673,6 +660,17 @@
               </tr>
             </tfoot>
           </table>
+          <div style="margin-top: 1rem; opacity: 70%">
+            <svg
+              viewBox="0 0 600 512"
+              x-html="svgPathFasShareNodes"
+              style="fill: var(--c-text); height: 1rem"
+            ></svg>
+            Partage ton score avec tes amis !<br />
+            <span
+              x-html="htmlShare('Je viens de gagner '+quiz.points+' points sur https://www.dojomath.fr/ ! ')"
+            ></span>
+          </div>
         </section>
       </main>
       <!-- - - - - - -  F O O T E R  - - - - - - - - - -->

@@ -88,6 +88,7 @@ $userId = $user['userId'];
 $userName = $user['userName'];
 $userAreaCode = $user['areaCode'];
 $userPoints = $user['points'];
+$userPointsPreviously = $user['pointsPreviously'];
 $userStreak = $user['lastStreak'];
 
 $userCombo = $user['combo'];
@@ -126,6 +127,11 @@ if (!isset($userPoints) || !filter_var($userPoints, FILTER_VALIDATE_INT, ["optio
     $errors[] = "Invalid userPoints : " . $userPoints;
 }
 // plus de validation !
+//if($userPoints !== $userPointsPreviously + $pointsEarned ){
+//    $errors[] = "Invalid userPoints : " . $userPointsPreviously . " + ". $pointsEarned . " != " . $userPoints;
+//}
+// ne sert à rien, les deux valeurs seront synchronisées par javascript juste après le quiz...
+
 
 if (!isset($userStreak) || !filter_var($userStreak, FILTER_VALIDATE_INT, ["options" => ["min_range" => 0, "max_range" => 10000]])) {
     $errors[] = "Invalid UserStreak : " . $userStreak;
