@@ -16,6 +16,8 @@ try {
         UserName,
         UserAreaCode, 
         UserPoints,
+        UserCombo,
+        UserStreak,
         PointsEarned
     FROM 
         FinishedQuizzes
@@ -34,19 +36,21 @@ try {
     $medal = "";
     $dep = "";
     $userName = "";
-    $text = "<table width='100%'><tbody>\n";
+    $text = "<table width='100%'>\n";
+    $text .= "<thead><tr style='font-weight:900;'><th></th><th align='left'>Joueur</th><th align='right'>Streak</th><th align='right'>Combo</th><th align='right'>Pts</th></tr></thead>";
+    $text .= "<tbody>\n";
 
     // Affichage des résultats
     $i=1;
     foreach ($highscores as $row) {
 
-        if($row['UserAreaCode']==="AUTRE" || trim($row['UserAreaCode'])==="") $dep="";
-        else $dep = "(".$row['UserAreaCode'].")";
+        //if($row['UserAreaCode']==="AUTRE" || trim($row['UserAreaCode'])==="") $dep="";
+        //else $dep = "(".$row['UserAreaCode'].")";
 
         if(trim($row['UserName']) === "") $userName = "(" . $row['UserId'] . ")";
         else $userName = $row['UserName'];
 
-        $text .= "<tr><td align='right' style='width:2ch'></td><td>".$userName."</td><td>".$dep."</td><td align='right'>+".$row['PointsEarned']." pts</td></tr>\n";
+        $text .= "<tr><td align='right' style='width:2ch'></td><td align='left'>".$userName."</td><td align='right'>".$row['UserStreak']."j</td><td align='right'>".$row['UserCombo']."</td><td align='right'>+".$row['PointsEarned']."</td></tr>\n";
         $i++;
     }
         $text .= "</tbody></table>";
