@@ -9,7 +9,7 @@ window.addEventListener("load", () => {
 
   render(); //rendu des points ? Mais il sont pas encore récupérés du storage
 
-  // 4. GETSCRIPT MATHJAX : si on le met en async dans le body il commence trop tôt ?
+  //  GETSCRIPT MATHJAX : si on le met en async dans le body il commence trop tôt ?
   getScript("js/-async-initMathJax.js", () => {
     console.log("Callback de getScript MathJax");
   });
@@ -32,27 +32,16 @@ function initUpdateStatsThemes() {
       questionsSuccessfulLastTwoTimes: 0,
     };
   }
-  // synchro statsThemes avec storage
-  try {
-    if (window.localStorage.getItem("statsThemes") !== null) {
-      loadedStatsThemes = JSON.parse(
-        window.localStorage.getItem("statsThemes")
-      );
-      console.log("statsThemes : data exists in storage. Loaded.");
+  // synchro statsThemes avec loaded object from storage
 
-      for (themeId in statsThemes) {
-        if (themeId in loadedStatsThemes) {
-          for (prop in statsThemes[themeId]) {
-            if (loadedStatsThemes[themeId][prop] !== undefined)
-              statsThemes[themeId][prop] = loadedStatsThemes[themeId][prop];
-          }
-        }
-      }
+  for (themeId in statsThemes) {
+    if (!(themeId in loadedStatsThemes)) continue;
 
-      console.log("statsThemes updated");
+    for (prop in statsThemes[themeId]) {
+      if (loadedStatsThemes[themeId][prop] !== undefined)
+        statsThemes[themeId][prop] = loadedStatsThemes[themeId][prop];
     }
-  } catch (e) {
-    console.log("localStorage disabled : could not load statistics");
+    console.log("statsThemes initialized and updated");
   }
 }
 

@@ -21,7 +21,7 @@ function htmlButtonTheme(i, j) {
                 --progression:0;
                 background-color: var(--c-secondary-40);
                 text-align: center;" 
-			class="btn btn-small" 
+			class="btn btn-small ${statsThemes[id].isLocked ? "btn-disabled" : ""}" 
 			id="boutonTheme_${i}_${j}" 
 			onclick="gotoTheme('${id}')">
 			<div style="

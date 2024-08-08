@@ -7,6 +7,7 @@ const MAX_QUIZ_LENGTH = 10;
 const MAX_POINTS_PER_QUESTION = 10; //maximum de pts que l'on peut gagner à chaque question
 const BOOST_PROBABILITY = 0.2;
 const BOOST_DURATION = 10 * 60 * 1000; // 10 minutes
+const LOCK_LIMIT = 5; // limite au delà de la quelle on bloque temporairement un thème
 
 // deprecated :
 const SHARE_ENCODED_MESSAGE = encodeURIComponent(
@@ -74,6 +75,11 @@ let finishedQuizzesHistory = [];
 let statsQuestions = [];
 let statsThemes = {}; //quest. vues, réussies, ratées, sautées, double-réussies
 
+// objets pour les données difficiles à merger à partir du localstorage
+let loadedUser = {};
+let loadedStatsQuestions = {};
+let loadedStatsThemes = {};
+
 // - - - - - - - - - - - - - - - - - - - - - - - -
 //  - - - - - - - -  / FIN DECLARATION VARIABLES
 // - - - - - - - - - - - - - - - - - - - - - - - -
@@ -86,12 +92,13 @@ try {
   if (window.localStorage.getItem("user") !== null) {
     console.log("user already exists in storage");
     // on écrase, à partir de ce qu'il y a dans le storage, attention.
-    let loadedUser = JSON.parse(window.localStorage.getItem("user"));
+    loadedUser = JSON.parse(window.localStorage.getItem("user"));
     for (let key in loadedUser) {
       user[key] = loadedUser[key];
     }
     console.log("User updated");
   }
+
   if (window.localStorage.getItem("finishedQuizzesHistory") !== null) {
     console.log("Quiz history exists in storage");
     // on écrase :
@@ -100,6 +107,7 @@ try {
     );
     console.log("Quiz history updated");
   }
+
   if (window.localStorage.getItem("pointsDiffHistory") !== null) {
     console.log("Points history exists in storage");
     // on écrase :
@@ -108,23 +116,30 @@ try {
     );
     console.log("Points history updated");
   }
+
   if (user.points > 0 && pointsDiffHistory.length == 0) {
     // initialisation en cas de nouvelle version de l'appli
     pointsDiffHistory.push(user.points);
   }
+
+  if (window.localStorage.getItem("statsThemes") !== null) {
+    loadedStatsThemes = JSON.parse(window.localStorage.getItem("statsThemes"));
+    console.log(
+      Object.keys(loadedStatsThemes).length +
+        " themes have data in storage. Loaded in temporary object."
+    );
+  }
+  // la synchronisation aura lieu plus tard, une fois que les thèmes seront chargés.
+
+  // UPDATE STATS QUESTIONS attention les questions ne sont pas encore chargées ?
   if (window.localStorage.getItem("statsQuestions") !== null) {
-    let loadedStatsQuestions = JSON.parse(
+    loadedStatsQuestions = JSON.parse(
       window.localStorage.getItem("statsQuestions")
     );
     console.log(
-      "Questions possédant des stats dans le storage : " +
-        loadedStatsQuestions.length
+      loadedStatsQuestions.length +
+        " questions have data in storage. Loaded in temporary object."
     );
-    // ceci contient des valeurs non nulles,
-    //mais peut-être moins de clés que statsQuestions si des questions ont été traitées entre-temps.
-    for (let i = 0; i < loadedStatsQuestions.length; i++) {
-      statsQuestions[i] = loadedStatsQuestions[i]; // on écrase quand il existe une valeur dans le storage
-    }
   }
 } catch (e) {
   alert(
@@ -226,17 +241,6 @@ function computeThemeStats(themeId) {
   statsThemes[themeId].questionsSuccessfulLastTime = 0;
   statsThemes[themeId].questionsSuccessfulLastTwoTimes = 0;
   themes[themeId].questions.forEach((n) => {
-    // initialisation des stats de la question si inexistant :
-    statsQuestions[n] ??= {
-      viewed: 0,
-      failed: 0,
-      skipped: 0,
-      successful: 0,
-      lastResult: 0,
-      penultimateResult: 0,
-      successfulLastTime: false,
-      successfulLastTwoTimes: false,
-    };
     if (statsQuestions[n].viewed > 0)
       statsThemes[themeId].questionsAlreadySeen++;
     if (statsQuestions[n].successfulLastTime)

@@ -66,3 +66,15 @@
   width: 2rem;
   height: 2rem;
 }
+
+.btn-disabled {
+  pointer-events: none;
+  opacity: 30%;
+  position: relative;
+}
+
+.btn-disabled:after {
+  content: "🚫";
+  position: absolute;
+  transform: translate(0, -1.2rem) scale(1.8);
+}

@@ -8,6 +8,7 @@ const MAX_QUIZ_LENGTH = 10;
 const MAX_POINTS_PER_QUESTION = 10; //maximum de pts que l'on peut gagner à chaque question
 const BOOST_PROBABILITY = 0.2;
 const BOOST_DURATION = 10 * 60 * 1000; // 10 minutes
+const LOCK_LIMIT = 5; // limite au delà de la quelle on bloque temporairement un thème
 
 // deprecated :
 const SHARE_ENCODED_MESSAGE = encodeURIComponent(
@@ -75,6 +76,11 @@ let finishedQuizzesHistory = [];
 let statsQuestions = [];
 let statsThemes = {}; //quest. vues, réussies, ratées, sautées, double-réussies
 
+// objets pour les données difficiles à merger à partir du localstorage
+let loadedUser = {};
+let loadedStatsQuestions = {};
+let loadedStatsThemes = {};
+
 // - - - - - - - - - - - - - - - - - - - - - - - -
 //  - - - - - - - -  / FIN DECLARATION VARIABLES
 // - - - - - - - - - - - - - - - - - - - - - - - -
@@ -87,12 +93,13 @@ try {
   if (window.localStorage.getItem("user") !== null) {
     console.log("user already exists in storage");
     // on écrase, à partir de ce qu'il y a dans le storage, attention.
-    let loadedUser = JSON.parse(window.localStorage.getItem("user"));
+    loadedUser = JSON.parse(window.localStorage.getItem("user"));
     for (let key in loadedUser) {
       user[key] = loadedUser[key];
     }
     console.log("User updated");
   }
+
   if (window.localStorage.getItem("finishedQuizzesHistory") !== null) {
     console.log("Quiz history exists in storage");
     // on écrase :
@@ -101,6 +108,7 @@ try {
     );
     console.log("Quiz history updated");
   }
+
   if (window.localStorage.getItem("pointsDiffHistory") !== null) {
     console.log("Points history exists in storage");
     // on écrase :
@@ -109,23 +117,30 @@ try {
     );
     console.log("Points history updated");
   }
+
   if (user.points > 0 && pointsDiffHistory.length == 0) {
     // initialisation en cas de nouvelle version de l'appli
     pointsDiffHistory.push(user.points);
   }
+
+  if (window.localStorage.getItem("statsThemes") !== null) {
+    loadedStatsThemes = JSON.parse(window.localStorage.getItem("statsThemes"));
+    console.log(
+      Object.keys(loadedStatsThemes).length +
+        " themes have data in storage. Loaded in temporary object."
+    );
+  }
+  // la synchronisation aura lieu plus tard, une fois que les thèmes seront chargés.
+
+  // UPDATE STATS QUESTIONS attention les questions ne sont pas encore chargées ?
   if (window.localStorage.getItem("statsQuestions") !== null) {
-    let loadedStatsQuestions = JSON.parse(
+    loadedStatsQuestions = JSON.parse(
       window.localStorage.getItem("statsQuestions")
     );
     console.log(
-      "Questions possédant des stats dans le storage : " +
-        loadedStatsQuestions.length
+      loadedStatsQuestions.length +
+        " questions have data in storage. Loaded in temporary object."
     );
-    // ceci contient des valeurs non nulles,
-    //mais peut-être moins de clés que statsQuestions si des questions ont été traitées entre-temps.
-    for (let i = 0; i < loadedStatsQuestions.length; i++) {
-      statsQuestions[i] = loadedStatsQuestions[i]; // on écrase quand il existe une valeur dans le storage
-    }
   }
 } catch (e) {
   alert(
@@ -227,17 +242,6 @@ function computeThemeStats(themeId) {
   statsThemes[themeId].questionsSuccessfulLastTime = 0;
   statsThemes[themeId].questionsSuccessfulLastTwoTimes = 0;
   themes[themeId].questions.forEach((n) => {
-    // initialisation des stats de la question si inexistant :
-    statsQuestions[n] ??= {
-      viewed: 0,
-      failed: 0,
-      skipped: 0,
-      successful: 0,
-      lastResult: 0,
-      penultimateResult: 0,
-      successfulLastTime: false,
-      successfulLastTwoTimes: false,
-    };
     if (statsQuestions[n].viewed > 0)
       statsThemes[themeId].questionsAlreadySeen++;
     if (statsQuestions[n].successfulLastTime)
@@ -672,7 +676,7 @@ function htmlButtonTheme(i, j) {
                 --progression:0;
                 background-color: var(--c-secondary-40);
                 text-align: center;" 
-			class="btn btn-small" 
+			class="btn btn-small ${statsThemes[id].isLocked ? "btn-disabled" : ""}" 
 			id="boutonTheme_${i}_${j}" 
 			onclick="gotoTheme('${id}')">
 			<div style="
@@ -828,7 +832,7 @@ window.addEventListener("load", () => {
 
   render(); //rendu des points ? Mais il sont pas encore récupérés du storage
 
-  // 4. GETSCRIPT MATHJAX : si on le met en async dans le body il commence trop tôt ?
+  //  GETSCRIPT MATHJAX : si on le met en async dans le body il commence trop tôt ?
   getScript("js/-async-initMathJax.js", () => {
     console.log("Callback de getScript MathJax");
   });
@@ -851,27 +855,16 @@ function initUpdateStatsThemes() {
       questionsSuccessfulLastTwoTimes: 0,
     };
   }
-  // synchro statsThemes avec storage
-  try {
-    if (window.localStorage.getItem("statsThemes") !== null) {
-      loadedStatsThemes = JSON.parse(
-        window.localStorage.getItem("statsThemes")
-      );
-      console.log("statsThemes : data exists in storage. Loaded.");
+  // synchro statsThemes avec loaded object from storage
 
-      for (themeId in statsThemes) {
-        if (themeId in loadedStatsThemes) {
-          for (prop in statsThemes[themeId]) {
-            if (loadedStatsThemes[themeId][prop] !== undefined)
-              statsThemes[themeId][prop] = loadedStatsThemes[themeId][prop];
-          }
-        }
-      }
+  for (themeId in statsThemes) {
+    if (!(themeId in loadedStatsThemes)) continue;
 
-      console.log("statsThemes updated");
+    for (prop in statsThemes[themeId]) {
+      if (loadedStatsThemes[themeId][prop] !== undefined)
+        statsThemes[themeId][prop] = loadedStatsThemes[themeId][prop];
     }
-  } catch (e) {
-    console.log("localStorage disabled : could not load statistics");
+    console.log("statsThemes initialized and updated");
   }
 }
 
@@ -899,6 +892,35 @@ window.addEventListener("load", () => {
       questions = json;
       console.log("Questions loaded from json : " + json.length);
       questionsLoaded = true;
+
+      // initialisation une fois qu'on sait combien il y a de questions.
+      for (let i = 0; i < questions.length; i++) {
+        statsQuestions[i] = {
+          viewed: 0,
+          failed: 0,
+          skipped: 0,
+          successful: 0,
+          lastResult: 0,
+          penultimateResult: 0,
+          successfulLastTime: false,
+          successfulLastTwoTimes: false,
+          feedbackSent: false,
+        };
+      }
+
+      //update from storage :
+
+      for (let i = 0; i < loadedStatsQuestions.length; i++) {
+        // sparse array attention. Les entrées manquantes sont null
+        if (loadedStatsQuestions[i] === null) continue;
+
+        for (key in statsQuestions[i]) {
+          if (loadedStatsQuestions[i][key] !== undefined)
+            statsQuestions[i][key] = loadedStatsQuestions[i][key]; // on écrase quand il existe une valeur dans le storage
+        }
+      }
+
+      console.log("Question statistics initialized and updated");
     });
 });
 
@@ -1159,18 +1181,45 @@ function showQuizResults() {
 
   // LOCK theme trop utilisé ? et UNLOCK all themes sinon !
 
+  if (haveToLockTheme()) {
+    statsThemes[theme.id].isLocked = true;
+    theme.isLocked = true;
+    console.log("theme locked! Finish a quiz in another theme to unlock");
+  } else {
+    console.log("unlock all");
+    theme.isLocked = false;
+    for (themeId in statsThemes) {
+      statsThemes[themeId].isLocked = false;
+    }
+  }
+
   user.lastActiveTime = Date.now();
 
   saveToLocalStorage();
 
   setState("End");
   render(); // equiv goto('End') ?
+  // lors du render, le bouton "rejouer" va être désactivé si le thème est locked
 
   sendStatistics();
   // console log bilan du quiz
   consoleLogQuizRecap();
 
   MathJax.typeset(); //pour l'affichage des corrections
+}
+
+function haveToLockTheme() {
+  if (finishedQuizzesHistory.length < LOCK_LIMIT) return false;
+
+  // on prend les 10 dernières entrées ( ou tout si moins de 10 entrées)
+  let recentHistory = finishedQuizzesHistory.slice(
+    finishedQuizzesHistory.length - LOCK_LIMIT
+  );
+
+  for (let i = 0; i < LOCK_LIMIT; i++) {
+    if (recentHistory[i].themeId != theme.id) return false;
+  }
+  return true;
 }
 
 function giveBoost() {
@@ -1210,9 +1259,8 @@ function giveBoost() {
 
 function unstack(targetName) {
   // appelé en sortie d'écran de fin
-  getHighscores(); // pour que les scores s'actualisent
-  /* appelé lorsque le joueur sort de l'écran de fin : il faut afficher tous les messages empilés */
-  /* provisoire */
+
+  window.setTimeout(getHighscores, 1000); // php est en train d'écrire les fichiers texte
 
   giveBoost();
 
@@ -1272,12 +1320,12 @@ function htmlQuizProgress() {
 
 function htmlSolutions() {
   // affiche les solutions du quiz en cours, qui vient d'être fini.
-  let s = "<details style='opacity:70%;' open><summary>Correction:</summary>";
+  let s = "<div style='opacity:70%;' open><p>Correction:</p>";
 
   quiz.history.forEach((e) => {
     s += htmlSolutionElement(e);
   });
-  s += "</details>";
+  s += "</div>";
   return s;
 }
 

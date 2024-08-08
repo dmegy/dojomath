@@ -255,18 +255,45 @@ function showQuizResults() {
 
   // LOCK theme trop utilisé ? et UNLOCK all themes sinon !
 
+  if (haveToLockTheme()) {
+    statsThemes[theme.id].isLocked = true;
+    theme.isLocked = true;
+    console.log("theme locked! Finish a quiz in another theme to unlock");
+  } else {
+    console.log("unlock all");
+    theme.isLocked = false;
+    for (themeId in statsThemes) {
+      statsThemes[themeId].isLocked = false;
+    }
+  }
+
   user.lastActiveTime = Date.now();
 
   saveToLocalStorage();
 
   setState("End");
   render(); // equiv goto('End') ?
+  // lors du render, le bouton "rejouer" va être désactivé si le thème est locked
 
   sendStatistics();
   // console log bilan du quiz
   consoleLogQuizRecap();
 
   MathJax.typeset(); //pour l'affichage des corrections
+}
+
+function haveToLockTheme() {
+  if (finishedQuizzesHistory.length < LOCK_LIMIT) return false;
+
+  // on prend les 10 dernières entrées ( ou tout si moins de 10 entrées)
+  let recentHistory = finishedQuizzesHistory.slice(
+    finishedQuizzesHistory.length - LOCK_LIMIT
+  );
+
+  for (let i = 0; i < LOCK_LIMIT; i++) {
+    if (recentHistory[i].themeId != theme.id) return false;
+  }
+  return true;
 }
 
 function giveBoost() {
@@ -306,9 +333,8 @@ function giveBoost() {
 
 function unstack(targetName) {
   // appelé en sortie d'écran de fin
-  getHighscores(); // pour que les scores s'actualisent
-  /* appelé lorsque le joueur sort de l'écran de fin : il faut afficher tous les messages empilés */
-  /* provisoire */
+
+  window.setTimeout(getHighscores, 1000); // php est en train d'écrire les fichiers texte
 
   giveBoost();
 
@@ -368,12 +394,12 @@ function htmlQuizProgress() {
 
 function htmlSolutions() {
   // affiche les solutions du quiz en cours, qui vient d'être fini.
-  let s = "<details style='opacity:70%;' open><summary>Correction:</summary>";
+  let s = "<div style='opacity:70%;' open><p>Correction:</p>";
 
   quiz.history.forEach((e) => {
     s += htmlSolutionElement(e);
   });
-  s += "</details>";
+  s += "</div>";
   return s;
 }
 
