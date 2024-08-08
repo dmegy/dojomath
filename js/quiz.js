@@ -236,9 +236,14 @@ function showQuizResults() {
   pointsDiffHistory.push(quiz.points);
   finishedQuizzesHistory.push({
     date: Date.now(),
+    themeId: theme.id,
     details: quiz.history,
     pointsEarned: quiz.points,
   });
+  // todo :  maintenance pour ne garder l'historique que des 1000 derniers éléments ?
+  // pour éviter de saturer la mémoire du storage ?
+  // par exemple:
+  // while(finishedQuizzesHistory.length>1000) finishedQuizzesHistory.shift();
 
   // message de félicitations tous les 10 quiz terminés
   if (user.nbQuizFinished % 10 == 0) {
@@ -247,6 +252,8 @@ function showQuizResults() {
       "oklch(70% 100% var(--hue-accent))"
     );
   }
+
+  // LOCK theme trop utilisé ? et UNLOCK all themes sinon !
 
   user.lastActiveTime = Date.now();
 

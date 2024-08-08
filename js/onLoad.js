@@ -17,9 +17,11 @@ window.addEventListener("load", () => {
 
 function initUpdateStatsThemes() {
   // initialisation statsThemes (doit tourner *après* chargement thèmes. actuellement dans onLoad)
-  // ceci pourrait
+  // ceci pourrait être géré simplement en s'assurant que le code est inliné après app.js et themes.js ...
+  // auparavant, c'était garanti avec des prefixes de noms de fichiers...pas génial
   for (let themeId in themes) {
-    statsThemes[themeId] ??= {
+    statsThemes[themeId] = {
+      isLocked: false,
       nbQuestionsViewed: 0,
       nbQuestionsSuccessful: 0,
       nbQuestionsFailed: 0,
@@ -38,10 +40,12 @@ function initUpdateStatsThemes() {
       );
       console.log("statsThemes : data exists in storage. Loaded.");
 
-      for (themeId in themes) {
-        statsThemes[themeId] = {};
+      for (themeId in statsThemes) {
         if (themeId in loadedStatsThemes) {
-          statsThemes[themeId] = loadedStatsThemes[themeId];
+          for (prop in statsThemes[themeId]) {
+            if (loadedStatsThemes[themeId][prop] !== undefined)
+              statsThemes[themeId][prop] = loadedStatsThemes[themeId][prop];
+          }
         }
       }
 

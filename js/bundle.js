@@ -118,7 +118,7 @@ try {
       window.localStorage.getItem("statsQuestions")
     );
     console.log(
-      "Questions possédant des données dans le storage : " +
+      "Questions possédant des stats dans le storage : " +
         loadedStatsQuestions.length
     );
     // ceci contient des valeurs non nulles,
@@ -836,9 +836,11 @@ window.addEventListener("load", () => {
 
 function initUpdateStatsThemes() {
   // initialisation statsThemes (doit tourner *après* chargement thèmes. actuellement dans onLoad)
-  // ceci pourrait
+  // ceci pourrait être géré simplement en s'assurant que le code est inliné après app.js et themes.js ...
+  // auparavant, c'était garanti avec des prefixes de noms de fichiers...pas génial
   for (let themeId in themes) {
-    statsThemes[themeId] ??= {
+    statsThemes[themeId] = {
+      isLocked: false,
       nbQuestionsViewed: 0,
       nbQuestionsSuccessful: 0,
       nbQuestionsFailed: 0,
@@ -857,10 +859,12 @@ function initUpdateStatsThemes() {
       );
       console.log("statsThemes : data exists in storage. Loaded.");
 
-      for (themeId in themes) {
-        statsThemes[themeId] = {};
+      for (themeId in statsThemes) {
         if (themeId in loadedStatsThemes) {
-          statsThemes[themeId] = loadedStatsThemes[themeId];
+          for (prop in statsThemes[themeId]) {
+            if (loadedStatsThemes[themeId][prop] !== undefined)
+              statsThemes[themeId][prop] = loadedStatsThemes[themeId][prop];
+          }
         }
       }
 
@@ -1136,9 +1140,14 @@ function showQuizResults() {
   pointsDiffHistory.push(quiz.points);
   finishedQuizzesHistory.push({
     date: Date.now(),
+    themeId: theme.id,
     details: quiz.history,
     pointsEarned: quiz.points,
   });
+  // todo :  maintenance pour ne garder l'historique que des 1000 derniers éléments ?
+  // pour éviter de saturer la mémoire du storage ?
+  // par exemple:
+  // while(finishedQuizzesHistory.length>1000) finishedQuizzesHistory.shift();
 
   // message de félicitations tous les 10 quiz terminés
   if (user.nbQuizFinished % 10 == 0) {
@@ -1147,6 +1156,8 @@ function showQuizResults() {
       "oklch(70% 100% var(--hue-accent))"
     );
   }
+
+  // LOCK theme trop utilisé ? et UNLOCK all themes sinon !
 
   user.lastActiveTime = Date.now();
 

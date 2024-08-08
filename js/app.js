@@ -117,7 +117,7 @@ try {
       window.localStorage.getItem("statsQuestions")
     );
     console.log(
-      "Questions possédant des données dans le storage : " +
+      "Questions possédant des stats dans le storage : " +
         loadedStatsQuestions.length
     );
     // ceci contient des valeurs non nulles,
