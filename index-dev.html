@@ -249,17 +249,18 @@
           ></div>
 
           <!-- - - - S T A T S > > > S T R E A K S - - -->
-          <h3>🔥 Séries consécutives</h3>
+          <h3>Séries</h3>
 
           <div>
-            Journées de pratique :
-            <span x-html="getUserStreak()"></span> 🔥 (Record :
-            <span x-html="user.longestStreak"></span>)
+            <strong>🔥 Streak</strong> (jours consécutifs) :<br />
+            &emsp;&emsp;Série en cours :
+            <span x-html="getUserStreak()"></span>j. Record :
+            <span x-html="user.longestStreak"></span>j.
           </div>
           <div>
-            Réponses correctes :
-            <span x-html="user.combo"></span> 🔥 (Record :
-            <span x-html="user.longestCombo">??</span>)
+            <strong>⚡ Combo</strong> (succès consécutifs) :<br />
+            &emsp;&emsp;Série en cours : <span x-html="user.combo"></span>.
+            Record : <span x-html="user.longestCombo">??</span>.
           </div>
 
           <!-- - - - S T A T S > > > OBJECTIFS DU JOUR - - - -->
