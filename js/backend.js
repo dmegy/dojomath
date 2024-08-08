@@ -48,7 +48,7 @@ function getBestPlayers() {
     });
 }
 
-//deprecated
+// deprecated, not used anymore (check!)
 function getRecentPlayers() {
   console.log("Downloading Highscores (recent players)");
   document.getElementById("loadingHighscoresRecent").style.opacity = "20%";

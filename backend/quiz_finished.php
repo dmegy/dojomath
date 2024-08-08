@@ -111,7 +111,7 @@ if (!is_string($userName) || strlen($userName) > 16) {
     $errors[] = "Invalid userName : " . $userName ;
 }
 // validation numéro de département
-$validAreaCodes = ["AUCUN","","Autre","AEFE","986","987","988"];
+$validAreaCodes = ["Aucun","","Autre","AEFE","986","987","988"];
 // Boucle de 1 à 95 pour générer les codes d'aire au format "01", "02", ..., "95"
 for ($i = 1; $i <= 95; $i++) {
     $validAreaCodes[] = str_pad((string)$i, 2, '0', STR_PAD_LEFT);

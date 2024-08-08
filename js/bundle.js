@@ -69,11 +69,20 @@ let user = {
   lastBoostMultiplier: 1,
 };
 
+// historique et stats :
 let pointsDiffHistory = [];
-let finishedQuizzesHistory = []; // historique des quiz finis
+let finishedQuizzesHistory = [];
 let statsQuestions = [];
+let statsThemes = {}; //quest. vues, réussies, ratées, sautées, double-réussies
 
-// update from storage
+// - - - - - - - - - - - - - - - - - - - - - - - -
+//  - - - - - - - -  / FIN DECLARATION VARIABLES
+// - - - - - - - - - - - - - - - - - - - - - - - -
+
+// - - - - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - - - - -  S T O R A G E - - - - -
+// - - - - - - - - - - - - - - - - - - - - - - - -
+
 try {
   if (window.localStorage.getItem("user") !== null) {
     console.log("user already exists in storage");
@@ -124,10 +133,7 @@ try {
   );
   console.log("Localstorage disabled : could not load user data.");
 }
-
-let statsThemes = {}; //quest. vues, réussies, ratées, sautées, double-réussies
-
-// - - - - - - - - - -
+// - - - - /FIN UPDATE FROM STORAGE
 
 function saveToLocalStorage() {
   adjustPoints();
@@ -154,49 +160,28 @@ function saveToLocalStorage() {
   }
 }
 
-function getUserStreak() {
-  if (isStreakAlive) {
-    return user.lastStreak;
-  } else return 0;
+// - - - - - - - - - - - - - - - - - - -
+// - - - - - NAVIGATION - - - - - - - - -
+// - - - - - - - - - - - - - - - - - - -
+
+function gotoTheme(id) {
+  removeCircles();
+  console.log("appel de gotoTheme avec id " + id);
+  computeThemeStats(id);
+  setState("Theme");
+  theme = structuredClone(themes[id]);
+  theme.id = id; // on rajoute l'id sinon il n'est plus là...
+  // calculer theme.progress, theme.nbQuestionsSeens, nbQuestionsChecked, theme.nbQuestionsDbChecked
+  render();
 }
 
-function isStreakAlive() {
-  let today = Math.floor(Date.now() / (24 * 3600 * 1000));
-  let lastActiveDay = Math.floor(user.lastActiveTime / (24 * 3600 * 1000));
-  if (today - lastActiveDay <= 1) return true;
-  else return false;
+function goto(newState) {
+  //sauf End, Quiz et Theme
+  setState(newState);
+  removeCircles();
+  document.getElementById("navButton" + newState).classList.add("circled");
+  render();
 }
-
-function daysSinceLastActive() {
-  let today = Math.floor(Date.now() / (24 * 3600 * 1000));
-  let lastActiveDay = Math.floor(user.lastActiveTime / (24 * 3600 * 1000));
-  return today - lastActiveDay;
-}
-
-function getPointsToday() {
-  return daysSinceLastActive() == 0 ? user.pointsToday : 0;
-}
-
-function getPerfectsToday() {
-  return daysSinceLastActive() == 0 ? user.nbQuizPerfectToday : 0;
-}
-
-function getNbFinishedQuizzesToday() {
-  return daysSinceLastActive() == 0 ? user.nbQuizFinishedToday : 0;
-}
-
-function isUserTrusted() {
-  // check rudimentaire :  points == somme des points gagnés
-  let sum = pointsDiffHistory.reduce((acc, el) => acc + el, 0);
-  return user.points == sum;
-}
-
-function adjustPoints() {
-  user.points = pointsDiffHistory.reduce((acc, el) => acc + el, 0);
-}
-
-// fonction liées à l'affichage - - - - -
-
 function removeCircles() {
   document
     .querySelectorAll("svg")
@@ -209,12 +194,29 @@ function setState(s) {
   //window.localStorage.setItem("state", state);
 }
 
-function goto(newState) {
-  //sauf End, Quiz et Theme
-  setState(newState);
-  removeCircles();
-  document.getElementById("navButton" + newState).classList.add("circled");
+function startQuiz() {
+  /* ou gotoQuiz ?*/
+  setState("Quiz");
   render();
+}
+
+function isUserTrusted() {
+  // check rudimentaire :  points == somme des points gagnés
+  let sum = pointsDiffHistory.reduce((acc, el) => acc + el, 0);
+  return user.points == sum;
+}
+
+function adjustPoints() {
+  user.points = pointsDiffHistory.reduce((acc, el) => acc + el, 0);
+}
+
+// - - - - - - - - - - - - - - - - - - -
+
+function computeAllThemeStats() {
+  for (let themeId in statsThemes) {
+    console.log("calcul des stats du thèm : " + themeId);
+    computeThemeStats(themeId);
+  }
 }
 
 function computeThemeStats(themeId) {
@@ -247,28 +249,39 @@ function computeThemeStats(themeId) {
   console.log("thème " + themeId + " : stats calculées");
 }
 
-function computeAllThemeStats() {
-  for (let themeId in statsThemes) {
-    console.log("calcul des stats du thèm : " + themeId);
-    computeThemeStats(themeId);
-  }
+// - - - - - - - - - - - - -
+// fonctions de récupération infos (pour affichage)
+// - - - - - - - - - - - -
+
+function getUserStreak() {
+  if (isStreakAlive) {
+    return user.lastStreak;
+  } else return 0;
 }
 
-function gotoTheme(id) {
-  removeCircles();
-  console.log("appel de gotoTheme avec id " + id);
-  computeThemeStats(id);
-  setState("Theme");
-  theme = structuredClone(themes[id]);
-  theme.id = id; // on rajoute l'id sinon il n'est plus là...
-  // calculer theme.progress, theme.nbQuestionsSeens, nbQuestionsChecked, theme.nbQuestionsDbChecked
-  render();
+function isStreakAlive() {
+  let today = Math.floor(Date.now() / (24 * 3600 * 1000));
+  let lastActiveDay = Math.floor(user.lastActiveTime / (24 * 3600 * 1000));
+  if (today - lastActiveDay <= 1) return true;
+  else return false;
 }
 
-function startQuiz() {
-  /* ou gotoQuiz ?*/
-  setState("Quiz");
-  render();
+function daysSinceLastActive() {
+  let today = Math.floor(Date.now() / (24 * 3600 * 1000));
+  let lastActiveDay = Math.floor(user.lastActiveTime / (24 * 3600 * 1000));
+  return today - lastActiveDay;
+}
+
+function getPointsToday() {
+  return daysSinceLastActive() == 0 ? user.pointsToday : 0;
+}
+
+function getPerfectsToday() {
+  return daysSinceLastActive() == 0 ? user.nbQuizPerfectToday : 0;
+}
+
+function getNbFinishedQuizzesToday() {
+  return daysSinceLastActive() == 0 ? user.nbQuizFinishedToday : 0;
 }
 
 function level(points) {
@@ -283,30 +296,18 @@ function nextLevelThreshold(points) {
   return 10 * 2 ** (level(points) + 1);
 }
 
+function percentage(t) {
+  // input : 1<= t <=1, output : integer 0<=p<=100
+  if (t < 0 || t > 1) throw new Error();
+  return Math.floor(100 * t);
+}
+
 function getUserSvgPath(pts) {
   if (user.points > 20000) return "svgPathFasRobot";
   if (user.points > 10000) return "svgPathFasUserAstronaut";
   if (user.points > 5000) return "svgPathFasUserNinja";
   if (user.points > 1000) return "svgPathFasUserGraduate";
   return "svgPathFasUserLarge";
-}
-
-// transformation nombres en b64
-
-function toB64(x) {
-  let digit =
-    "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_";
-  return x
-    .toString(2)
-    .split(/(?=(?:.{6})+(?!.))/g)
-    .map((v) => digit[parseInt(v, 2)])
-    .join("");
-}
-
-function fromB64(x) {
-  let digit =
-    "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_";
-  return x.split("").reduce((s, v) => s * 64 + digit.indexOf(v), 0);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -339,7 +340,7 @@ function xHtml() {
 // éventuellement coder le x-for pour le composant de références de thèmes, avec liste de liens à afficher...
 
 function render() {
-  adjustPoints();
+  adjustPoints(); // vérification rudimentaire des points et correction systématique
   xShow();
   xHtml();
 
@@ -360,10 +361,22 @@ function render() {
     });
 }
 
-function percentage(t) {
-  // input : 1<= t <=1, output : integer 0<=p<=100
-  if (t < 0 || t > 1) throw new Error();
-  return Math.floor(100 * t);
+// - - - - - - - -- D I V E R S - - - - - - - -
+
+function toB64(x) {
+  let digit =
+    "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_";
+  return x
+    .toString(2)
+    .split(/(?=(?:.{6})+(?!.))/g)
+    .map((v) => digit[parseInt(v, 2)])
+    .join("");
+}
+
+function fromB64(x) {
+  let digit =
+    "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_";
+  return x.split("").reduce((s, v) => s * 64 + digit.indexOf(v), 0);
 }
 
 const URL_QUIZ_FINISHED = "backend/quiz_finished.php";
@@ -416,7 +429,7 @@ function getBestPlayers() {
     });
 }
 
-//deprecated
+// deprecated, not used anymore (check!)
 function getRecentPlayers() {
   console.log("Downloading Highscores (recent players)");
   document.getElementById("loadingHighscoresRecent").style.opacity = "20%";
@@ -911,7 +924,7 @@ function startQuiz() {
   quiz.history = [];
   quiz.result = 0;
   quiz.points = 0;
-  quiz.initialCombo = user.combo;
+  //quiz.initialCombo = user.combo;
   quiz.bonus = 0;
   quiz.finalGrade = 0;
   if (!quiz.maxPointsPerQuestion)
@@ -1098,7 +1111,7 @@ function showQuizResults() {
     if (user.nbQuizPerfect % 10 == 0) {
       toast(
         `${user.nbQuizPerfect}ème perfect !`,
-        "oklch(70%,100% var(--c-accent)"
+        "oklch(70% 100% var(--hue-accent)"
       );
     }
   }
@@ -1109,6 +1122,10 @@ function showQuizResults() {
   console.log("boost multiplier : " + getBoost());
   console.log("points après booster : " + quiz.points);
   // faire apparaître le boost pendant tout le quiz en haut ?
+
+  // test levelup :
+  if (level(user.points + quiz.points) > level(user.points))
+    toast(`LEVEL UP !`, "oklch(70% 100% var(--hue-accent)");
 
   user.points += quiz.points;
   user.pointsToday += quiz.points;

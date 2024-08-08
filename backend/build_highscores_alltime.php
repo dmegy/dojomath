@@ -53,7 +53,7 @@ try {
         else if($i===3) $medal="🥉";
         else $medal= "";
 
-        if($row['UserAreaCode']==="AUTRE" || trim($row['UserAreaCode'])==="") $dep="";
+        if($row['UserAreaCode']==="Autre" || trim($row['UserAreaCode'])==="Aucun" || trim($row['UserAreaCode'])==="") $dep="";
         else $dep = "(".$row['UserAreaCode'].")";
 
         if(trim($row['UserName']) === "") $userName = "(" . $row['UserId'] . ")";

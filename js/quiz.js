@@ -24,7 +24,7 @@ function startQuiz() {
   quiz.history = [];
   quiz.result = 0;
   quiz.points = 0;
-  quiz.initialCombo = user.combo;
+  //quiz.initialCombo = user.combo;
   quiz.bonus = 0;
   quiz.finalGrade = 0;
   if (!quiz.maxPointsPerQuestion)
@@ -211,7 +211,7 @@ function showQuizResults() {
     if (user.nbQuizPerfect % 10 == 0) {
       toast(
         `${user.nbQuizPerfect}ème perfect !`,
-        "oklch(70%,100% var(--c-accent)"
+        "oklch(70% 100% var(--hue-accent)"
       );
     }
   }
@@ -222,6 +222,10 @@ function showQuizResults() {
   console.log("boost multiplier : " + getBoost());
   console.log("points après booster : " + quiz.points);
   // faire apparaître le boost pendant tout le quiz en haut ?
+
+  // test levelup :
+  if (level(user.points + quiz.points) > level(user.points))
+    toast(`LEVEL UP !`, "oklch(70% 100% var(--hue-accent)");
 
   user.points += quiz.points;
   user.pointsToday += quiz.points;
