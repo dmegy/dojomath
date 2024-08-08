@@ -430,8 +430,28 @@ function htmlSolutionElement({ questionNumber, submittedAnswer, result }) {
     </div>
     <div style="margin-bottom:1rem">${questions[questionNumber].statement}</div>
     ${answerDiv}
+    ${htmlFeedbackElement(questionNumber)}
   </div>`;
   return s;
+}
+
+function htmlFeedbackElement(questionNumber) {
+  if (statsQuestions[questionNumber].feedbackSent)
+    return "<p>Feedback envoyé, merci !</p>";
+
+  return `<details>
+    <summary style="font-weight:400;font-size:1rem">Envoyer du feedback</summary>
+    <div style="display:flex;justify-content:space-between" id="feedbackDiv${questionNumber}">
+      <div class="btn" 
+        onclick="sendFeedback(${questionNumber},'like')">
+        ❤️ <u>Aimer</u>
+      </div>
+      <div  class="btn"  
+        onclick="sendFeedback(${questionNumber},'reportProblem')">
+        ⁉️ <u>Signaler un problème</u>
+      </div>
+    </div>
+  </details>`;
 }
 
 // - - - - - - - - - N O T I F S  /  T O A S T / A F F I C H A G E

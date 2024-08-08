@@ -2,6 +2,7 @@ const URL_QUIZ_FINISHED = "backend/quiz_finished.php";
 const URL_HIGHSCORES_ALLTIME = "backend/highscores_alltime.html.txt";
 const URL_HIGHSCORES_RECENT = "backend/highscores_recent.html.txt";
 const URL_HIGHSCORES_RECENT_GAMES = "backend/highscores_recent_games.html.txt";
+const URL_FEEDBACK_QUESTIONS = "backend/feedback_questions.php";
 
 function sendStatistics() {
   adjustPoints();
@@ -72,4 +73,29 @@ function getRecentGames() {
         "100%";
       console.log("Recent score : ok");
     });
+}
+
+function sendFeedback(questionNumber, feedbackType) {
+  console.log("Send feedback : " + questionNumber + ", " + feedbackType);
+  statsQuestions[questionNumber].feedbackSent = true;
+
+  document.getElementById("feedbackDiv" + questionNumber).innerHTML =
+    "Feedback envoyé, merci !";
+
+  let requestBody = {
+    question: questionNumber,
+    feedbackType: feedbackType,
+  };
+
+  console.log("Envoi du feedback au serveur");
+  fetch(URL_FEEDBACK_QUESTIONS, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(requestBody),
+  }).catch((error) => {
+    console.log(error);
+  });
 }

@@ -387,6 +387,7 @@ const URL_QUIZ_FINISHED = "backend/quiz_finished.php";
 const URL_HIGHSCORES_ALLTIME = "backend/highscores_alltime.html.txt";
 const URL_HIGHSCORES_RECENT = "backend/highscores_recent.html.txt";
 const URL_HIGHSCORES_RECENT_GAMES = "backend/highscores_recent_games.html.txt";
+const URL_FEEDBACK_QUESTIONS = "backend/feedback_questions.php";
 
 function sendStatistics() {
   adjustPoints();
@@ -457,6 +458,31 @@ function getRecentGames() {
         "100%";
       console.log("Recent score : ok");
     });
+}
+
+function sendFeedback(questionNumber, feedbackType) {
+  console.log("Send feedback : " + questionNumber + ", " + feedbackType);
+  statsQuestions[questionNumber].feedbackSent = true;
+
+  document.getElementById("feedbackDiv" + questionNumber).innerHTML =
+    "Feedback envoyé, merci !";
+
+  let requestBody = {
+    question: questionNumber,
+    feedbackType: feedbackType,
+  };
+
+  console.log("Envoi du feedback au serveur");
+  fetch(URL_FEEDBACK_QUESTIONS, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(requestBody),
+  }).catch((error) => {
+    console.log(error);
+  });
 }
 
 // - - - - - - - - - - - - - - - - - - - - -
@@ -1356,8 +1382,28 @@ function htmlSolutionElement({ questionNumber, submittedAnswer, result }) {
     </div>
     <div style="margin-bottom:1rem">${questions[questionNumber].statement}</div>
     ${answerDiv}
+    ${htmlFeedbackElement(questionNumber)}
   </div>`;
   return s;
+}
+
+function htmlFeedbackElement(questionNumber) {
+  if (statsQuestions[questionNumber].feedbackSent)
+    return "<p>Feedback envoyé, merci !</p>";
+
+  return `<details>
+    <summary style="font-weight:400;font-size:1rem">Envoyer du feedback</summary>
+    <div style="display:flex;justify-content:space-between" id="feedbackDiv${questionNumber}">
+      <div class="btn" 
+        onclick="sendFeedback(${questionNumber},'like')">
+        ❤️ <u>Aimer</u>
+      </div>
+      <div  class="btn"  
+        onclick="sendFeedback(${questionNumber},'reportProblem')">
+        ⁉️ <u>Signaler un problème</u>
+      </div>
+    </div>
+  </details>`;
 }
 
 // - - - - - - - - - N O T I F S  /  T O A S T / A F F I C H A G E
