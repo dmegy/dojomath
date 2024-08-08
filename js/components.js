@@ -157,11 +157,11 @@ function htmlShare(msg) {
                 >𝕏</a
               > | 
               <a
-                href="javascript:(()=>{window.open('mailto:?subject=DojoMath.fr&body=${message}');})();"
+                href="mailto:?subject=DojoMath.fr&body=${message}"
                 >Email</a
               > | 
               <a
-                href="javascript:(()=>{window.open('sms:?&body=${message}');})();"
+                href="sms:?&body=${message}"
                 >SMS</a
               >`;
 }

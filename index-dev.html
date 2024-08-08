@@ -287,12 +287,12 @@
             <div style="display: flex; gap: 0.5rem; align-items: center">
               <div
                 style="width: 1rem; flex-shrink: 0; text-align: center"
-                x-html="htmlCheckbox(getNbFinishedQuizToday()>=5)"
+                x-html="htmlCheckbox(getNbFinishedQuizzesToday()>=5)"
               ></div>
               <div style="flex-shrink: 0">Finir 5 parties :</div>
               <div
                 style="height: 0.5rem; flex-grow: 1"
-                x-html="htmlProgress(getNbFinishedQuizToday(),5)"
+                x-html="htmlProgress(getNbFinishedQuizzesToday(),5)"
               ></div>
             </div>
 

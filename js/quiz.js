@@ -24,6 +24,7 @@ function startQuiz() {
   quiz.history = [];
   quiz.result = 0;
   quiz.points = 0;
+  quiz.initialCombo = user.combo;
   quiz.bonus = 0;
   quiz.finalGrade = 0;
   if (!quiz.maxPointsPerQuestion)
@@ -57,7 +58,8 @@ function nextQuestion() {
 }
 
 function submitAnswer(answer) {
-  //called by button
+  // étape inutile ?
+  // appelé par action utilisateur sur les trois boutons
   question.submittedAnswer = answer;
   validateAnswer();
 }
@@ -95,12 +97,12 @@ function validateAnswer() {
 
     // toast success
     let congratulationsMessage = "";
-    if (user.combo > 1) congratulationsMessage += user.combo + " D'AFFILÉE !\n";
-
+    if (user.combo > 1) {
+      congratulationsMessage += user.combo + " D'AFFILÉE !\n";
+    }
     congratulationsMessage +=
       "+" + question.points + " pt" + (question.points > 1 ? "s" : "");
     toast(congratulationsMessage, "var(--c-success)");
-    //toast Combo:
   } else {
     // FAIL
     question.result = -1;
@@ -155,9 +157,7 @@ function validateAnswer() {
     result: question.result,
   });
 
-  /* gestion des combos, éventuellement affichage de messages (combo etc)*/
-  // type "10 d'affilée etc ? mais déjà affiché dans le toast"
-  // ou alors : "100ème question réussie"
+  // TODO éventuellement Toast ici "100N - ème question réussie !"
 
   saveToLocalStorage();
 
@@ -227,11 +227,11 @@ function showQuizResults() {
   user.pointsToday += quiz.points;
   user.nbQuizFinished++;
   user.nbQuizFinishedToday++;
-
   statsThemes[theme.id].nbQuizFinished++;
 
-  finishedQuizHistory.push({
-    date: new Date(),
+  pointsDiffHistory.push(quiz.points);
+  finishedQuizzesHistory.push({
+    date: Date.now(),
     details: quiz.history,
     pointsEarned: quiz.points,
   });
@@ -244,17 +244,18 @@ function showQuizResults() {
     );
   }
 
-  // - - - - update lastActive - - - -
   user.lastActiveTime = Date.now();
 
   saveToLocalStorage();
 
   setState("End");
-  render();
+  render(); // equiv goto('End') ?
 
-  sendStatistics(); // au serveur
+  sendStatistics();
+  // console log bilan du quiz
+  consoleLogQuizRecap();
 
-  MathJax.typeset(); //solutions
+  MathJax.typeset(); //pour l'affichage des corrections
 }
 
 function giveBoost() {
@@ -293,6 +294,7 @@ function giveBoost() {
 }
 
 function unstack(targetName) {
+  // appelé en sortie d'écran de fin
   getHighscores(); // pour que les scores s'actualisent
   /* appelé lorsque le joueur sort de l'écran de fin : il faut afficher tous les messages empilés */
   /* provisoire */
@@ -308,7 +310,9 @@ function getBoost() {
   else return 1;
 }
 
-// - - - COMPOSANTS - - - --
+// - - - - - - - - - - - - - - - - - -
+// - - - C O M P O S A N T S - - - - -
+// - - - - - - - - - - - - - - - - - -
 
 function glyphResult(note) {
   // écran de fin de quiz
@@ -393,7 +397,13 @@ function htmlSolutionElement({ questionNumber, submittedAnswer, result }) {
   return s;
 }
 
-// - - - - - - - - - N O T I F S  /  T O A S T
+// - - - - - - - - - N O T I F S  /  T O A S T / A F F I C H A G E
+// - - - - - - - - - - - - - - - - - - - - - - -
+
+function consoleLogQuizRecap() {
+  console.log(`Total Points gagnés : +${quiz.points}pts`);
+  // ici on pourrait faire un recap plus détaillé dans la console si on veut
+}
 
 function toast(message, color) {
   Toastify({

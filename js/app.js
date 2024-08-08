@@ -45,7 +45,7 @@ let user = {
   userId: toB64(t0),
   userName: toB64(t0),
   areaCode: "" /* numéro de département, STRING car "AEFE" etc" */,
-  countryCode: "FR",
+  countryCode: "",
   combo: 0,
   longestCombo: 0,
   points: 0,
@@ -68,7 +68,8 @@ let user = {
   lastBoostMultiplier: 1,
 };
 
-let finishedQuizHistory = []; // historique des quiz finis
+let pointsDiffHistory = [];
+let finishedQuizzesHistory = []; // historique des quiz finis
 let statsQuestions = [];
 
 // update from storage
@@ -82,15 +83,26 @@ try {
     }
     console.log("User updated");
   }
-  if (window.localStorage.getItem("finishedQuizHistory") !== null) {
+  if (window.localStorage.getItem("finishedQuizzesHistory") !== null) {
     console.log("Quiz history exists in storage");
     // on écrase :
-    finishedQuizHistory = JSON.parse(
-      window.localStorage.getItem("finishedQuizHistory")
+    finishedQuizzesHistory = JSON.parse(
+      window.localStorage.getItem("finishedQuizzesHistory")
     );
     console.log("Quiz history updated");
   }
-  // 2. update from storage
+  if (window.localStorage.getItem("pointsDiffHistory") !== null) {
+    console.log("Points history exists in storage");
+    // on écrase :
+    pointsDiffHistory = JSON.parse(
+      window.localStorage.getItem("pointsDiffHistory")
+    );
+    console.log("Points history updated");
+  }
+  if (user.points > 0 && pointsDiffHistory.length == 0) {
+    // initialisation en cas de nouvelle version de l'appli
+    pointsDiffHistory.push(user.points);
+  }
   if (window.localStorage.getItem("statsQuestions") !== null) {
     let loadedStatsQuestions = JSON.parse(
       window.localStorage.getItem("statsQuestions")
@@ -117,6 +129,7 @@ let statsThemes = {}; //quest. vues, réussies, ratées, sautées, double-réuss
 // - - - - - - - - - -
 
 function saveToLocalStorage() {
+  adjustPoints();
   // à mettre dans app.js et pas dans quiz.js
   // En effet : modifications/enregistrement de user dans la page de profil
   try {
@@ -126,6 +139,14 @@ function saveToLocalStorage() {
     );
     window.localStorage.setItem("statsThemes", JSON.stringify(statsThemes));
     window.localStorage.setItem("user", JSON.stringify(user));
+    window.localStorage.setItem(
+      "pointsDiffHistory",
+      JSON.stringify(pointsDiffHistory)
+    );
+    window.localStorage.setItem(
+      "finishedQuizzesHistory",
+      JSON.stringify(finishedQuizzesHistory)
+    );
     console.log("Saved data to localStorage");
   } catch (e) {
     console.log("localStorage disabled : could not save data");
@@ -159,9 +180,21 @@ function getPerfectsToday() {
   return daysSinceLastActive() == 0 ? user.nbQuizPerfectToday : 0;
 }
 
-function getNbFinishedQuizToday() {
+function getNbFinishedQuizzesToday() {
   return daysSinceLastActive() == 0 ? user.nbQuizFinishedToday : 0;
 }
+
+function isUserTrusted() {
+  // check rudimentaire :  points == somme des points gagnés
+  let sum = pointsDiffHistory.reduce((acc, el) => acc + el, 0);
+  return user.points == sum;
+}
+
+function adjustPoints() {
+  user.points = pointsDiffHistory.reduce((acc, el) => acc + el, 0);
+}
+
+// fonction liées à l'affichage - - - - -
 
 function removeCircles() {
   document
@@ -176,8 +209,8 @@ function setState(s) {
 }
 
 function goto(newState) {
+  //sauf End, Quiz et Theme
   setState(newState);
-
   removeCircles();
   document.getElementById("navButton" + newState).classList.add("circled");
   render();
@@ -305,6 +338,7 @@ function xHtml() {
 // éventuellement coder le x-for pour le composant de références de thèmes, avec liste de liens à afficher...
 
 function render() {
+  adjustPoints();
   xShow();
   xHtml();
 

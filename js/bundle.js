@@ -46,7 +46,7 @@ let user = {
   userId: toB64(t0),
   userName: toB64(t0),
   areaCode: "" /* numéro de département, STRING car "AEFE" etc" */,
-  countryCode: "FR",
+  countryCode: "",
   combo: 0,
   longestCombo: 0,
   points: 0,
@@ -69,7 +69,8 @@ let user = {
   lastBoostMultiplier: 1,
 };
 
-let finishedQuizHistory = []; // historique des quiz finis
+let pointsDiffHistory = [];
+let finishedQuizzesHistory = []; // historique des quiz finis
 let statsQuestions = [];
 
 // update from storage
@@ -83,15 +84,26 @@ try {
     }
     console.log("User updated");
   }
-  if (window.localStorage.getItem("finishedQuizHistory") !== null) {
+  if (window.localStorage.getItem("finishedQuizzesHistory") !== null) {
     console.log("Quiz history exists in storage");
     // on écrase :
-    finishedQuizHistory = JSON.parse(
-      window.localStorage.getItem("finishedQuizHistory")
+    finishedQuizzesHistory = JSON.parse(
+      window.localStorage.getItem("finishedQuizzesHistory")
     );
     console.log("Quiz history updated");
   }
-  // 2. update from storage
+  if (window.localStorage.getItem("pointsDiffHistory") !== null) {
+    console.log("Points history exists in storage");
+    // on écrase :
+    pointsDiffHistory = JSON.parse(
+      window.localStorage.getItem("pointsDiffHistory")
+    );
+    console.log("Points history updated");
+  }
+  if (user.points > 0 && pointsDiffHistory.length == 0) {
+    // initialisation en cas de nouvelle version de l'appli
+    pointsDiffHistory.push(user.points);
+  }
   if (window.localStorage.getItem("statsQuestions") !== null) {
     let loadedStatsQuestions = JSON.parse(
       window.localStorage.getItem("statsQuestions")
@@ -118,6 +130,7 @@ let statsThemes = {}; //quest. vues, réussies, ratées, sautées, double-réuss
 // - - - - - - - - - -
 
 function saveToLocalStorage() {
+  adjustPoints();
   // à mettre dans app.js et pas dans quiz.js
   // En effet : modifications/enregistrement de user dans la page de profil
   try {
@@ -127,6 +140,14 @@ function saveToLocalStorage() {
     );
     window.localStorage.setItem("statsThemes", JSON.stringify(statsThemes));
     window.localStorage.setItem("user", JSON.stringify(user));
+    window.localStorage.setItem(
+      "pointsDiffHistory",
+      JSON.stringify(pointsDiffHistory)
+    );
+    window.localStorage.setItem(
+      "finishedQuizzesHistory",
+      JSON.stringify(finishedQuizzesHistory)
+    );
     console.log("Saved data to localStorage");
   } catch (e) {
     console.log("localStorage disabled : could not save data");
@@ -160,9 +181,21 @@ function getPerfectsToday() {
   return daysSinceLastActive() == 0 ? user.nbQuizPerfectToday : 0;
 }
 
-function getNbFinishedQuizToday() {
+function getNbFinishedQuizzesToday() {
   return daysSinceLastActive() == 0 ? user.nbQuizFinishedToday : 0;
 }
+
+function isUserTrusted() {
+  // check rudimentaire :  points == somme des points gagnés
+  let sum = pointsDiffHistory.reduce((acc, el) => acc + el, 0);
+  return user.points == sum;
+}
+
+function adjustPoints() {
+  user.points = pointsDiffHistory.reduce((acc, el) => acc + el, 0);
+}
+
+// fonction liées à l'affichage - - - - -
 
 function removeCircles() {
   document
@@ -177,8 +210,8 @@ function setState(s) {
 }
 
 function goto(newState) {
+  //sauf End, Quiz et Theme
   setState(newState);
-
   removeCircles();
   document.getElementById("navButton" + newState).classList.add("circled");
   render();
@@ -306,6 +339,7 @@ function xHtml() {
 // éventuellement coder le x-for pour le composant de références de thèmes, avec liste de liens à afficher...
 
 function render() {
+  adjustPoints();
   xShow();
   xHtml();
 
@@ -338,11 +372,14 @@ const URL_HIGHSCORES_RECENT = "backend/highscores_recent.html.txt";
 const URL_HIGHSCORES_RECENT_GAMES = "backend/highscores_recent_games.html.txt";
 
 function sendStatistics() {
+  adjustPoints();
+
   let requestBody = {
     user: JSON.stringify(user),
     quiz: JSON.stringify(quiz),
   };
 
+  console.log("Envoi des points au serveur");
   fetch(URL_QUIZ_FINISHED, {
     method: "POST",
     headers: {
@@ -350,9 +387,9 @@ function sendStatistics() {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(requestBody),
+  }).catch((error) => {
+    console.log(error);
   });
-
-  console.log("Points envoyés");
 }
 
 window.addEventListener("DOMContentLoaded", () => {
@@ -758,11 +795,11 @@ function htmlShare(msg) {
                 >𝕏</a
               > | 
               <a
-                href="javascript:(()=>{window.open('mailto:?subject=DojoMath.fr&body=${message}');})();"
+                href="mailto:?subject=DojoMath.fr&body=${message}"
                 >Email</a
               > | 
               <a
-                href="javascript:(()=>{window.open('sms:?&body=${message}');})();"
+                href="sms:?&body=${message}"
                 >SMS</a
               >`;
 }
@@ -874,6 +911,7 @@ function startQuiz() {
   quiz.history = [];
   quiz.result = 0;
   quiz.points = 0;
+  quiz.initialCombo = user.combo;
   quiz.bonus = 0;
   quiz.finalGrade = 0;
   if (!quiz.maxPointsPerQuestion)
@@ -907,7 +945,8 @@ function nextQuestion() {
 }
 
 function submitAnswer(answer) {
-  //called by button
+  // étape inutile ?
+  // appelé par action utilisateur sur les trois boutons
   question.submittedAnswer = answer;
   validateAnswer();
 }
@@ -945,12 +984,12 @@ function validateAnswer() {
 
     // toast success
     let congratulationsMessage = "";
-    if (user.combo > 1) congratulationsMessage += user.combo + " D'AFFILÉE !\n";
-
+    if (user.combo > 1) {
+      congratulationsMessage += user.combo + " D'AFFILÉE !\n";
+    }
     congratulationsMessage +=
       "+" + question.points + " pt" + (question.points > 1 ? "s" : "");
     toast(congratulationsMessage, "var(--c-success)");
-    //toast Combo:
   } else {
     // FAIL
     question.result = -1;
@@ -1005,9 +1044,7 @@ function validateAnswer() {
     result: question.result,
   });
 
-  /* gestion des combos, éventuellement affichage de messages (combo etc)*/
-  // type "10 d'affilée etc ? mais déjà affiché dans le toast"
-  // ou alors : "100ème question réussie"
+  // TODO éventuellement Toast ici "100N - ème question réussie !"
 
   saveToLocalStorage();
 
@@ -1077,11 +1114,11 @@ function showQuizResults() {
   user.pointsToday += quiz.points;
   user.nbQuizFinished++;
   user.nbQuizFinishedToday++;
-
   statsThemes[theme.id].nbQuizFinished++;
 
-  finishedQuizHistory.push({
-    date: new Date(),
+  pointsDiffHistory.push(quiz.points);
+  finishedQuizzesHistory.push({
+    date: Date.now(),
     details: quiz.history,
     pointsEarned: quiz.points,
   });
@@ -1094,17 +1131,18 @@ function showQuizResults() {
     );
   }
 
-  // - - - - update lastActive - - - -
   user.lastActiveTime = Date.now();
 
   saveToLocalStorage();
 
   setState("End");
-  render();
+  render(); // equiv goto('End') ?
 
-  sendStatistics(); // au serveur
+  sendStatistics();
+  // console log bilan du quiz
+  consoleLogQuizRecap();
 
-  MathJax.typeset(); //solutions
+  MathJax.typeset(); //pour l'affichage des corrections
 }
 
 function giveBoost() {
@@ -1143,6 +1181,7 @@ function giveBoost() {
 }
 
 function unstack(targetName) {
+  // appelé en sortie d'écran de fin
   getHighscores(); // pour que les scores s'actualisent
   /* appelé lorsque le joueur sort de l'écran de fin : il faut afficher tous les messages empilés */
   /* provisoire */
@@ -1158,7 +1197,9 @@ function getBoost() {
   else return 1;
 }
 
-// - - - COMPOSANTS - - - --
+// - - - - - - - - - - - - - - - - - -
+// - - - C O M P O S A N T S - - - - -
+// - - - - - - - - - - - - - - - - - -
 
 function glyphResult(note) {
   // écran de fin de quiz
@@ -1243,7 +1284,13 @@ function htmlSolutionElement({ questionNumber, submittedAnswer, result }) {
   return s;
 }
 
-// - - - - - - - - - N O T I F S  /  T O A S T
+// - - - - - - - - - N O T I F S  /  T O A S T / A F F I C H A G E
+// - - - - - - - - - - - - - - - - - - - - - - -
+
+function consoleLogQuizRecap() {
+  console.log(`Total Points gagnés : +${quiz.points}pts`);
+  // ici on pourrait faire un recap plus détaillé dans la console si on veut
+}
 
 function toast(message, color) {
   Toastify({

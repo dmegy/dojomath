@@ -4,11 +4,14 @@ const URL_HIGHSCORES_RECENT = "backend/highscores_recent.html.txt";
 const URL_HIGHSCORES_RECENT_GAMES = "backend/highscores_recent_games.html.txt";
 
 function sendStatistics() {
+  adjustPoints();
+
   let requestBody = {
     user: JSON.stringify(user),
     quiz: JSON.stringify(quiz),
   };
 
+  console.log("Envoi des points au serveur");
   fetch(URL_QUIZ_FINISHED, {
     method: "POST",
     headers: {
@@ -16,9 +19,9 @@ function sendStatistics() {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(requestBody),
+  }).catch((error) => {
+    console.log(error);
   });
-
-  console.log("Points envoyés");
 }
 
 window.addEventListener("DOMContentLoaded", () => {
