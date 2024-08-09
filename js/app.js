@@ -8,11 +8,15 @@ const MAX_POINTS_PER_QUESTION = 10; //maximum de pts que l'on peut gagner à cha
 const BOOST_PROBABILITY = 0.2;
 const BOOST_DURATION = 10 * 60 * 1000; // 10 minutes
 const LOCK_LIMIT = 5; // limite au delà de la quelle on bloque temporairement un thème
+const NB_QUESTIONS = 2440; // pour la validation des quiz custom.
+const QUESTION_SEPARATOR = ",";
 
 // deprecated :
 const SHARE_ENCODED_MESSAGE = encodeURIComponent(
   "Quiz de maths sur https://www.dojomath.fr/"
 );
+
+let custom = false; //sera mis à true par le router si c'est un quiz custom. Controle certains affichages custom
 
 let happyHourList = [
   [6, 8],

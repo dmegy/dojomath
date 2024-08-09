@@ -1,7 +1,11 @@
 function gotoTheme(id) {
+  if (!isThemeIdValid(id)) {
+    goto("Chapters");
+    return;
+  }
   removeCircles();
   console.log("appel de gotoTheme avec id " + id);
-  history.pushState({}, "", "?section=Theme&t=" + id);
+  history.pushState({}, "", "?section=Theme&id=" + id);
   initTheme(id); // initialisation de 'theme',  statsThemes, calcul stats etc
   setState("Theme");
   render();
@@ -33,17 +37,33 @@ function goto(newState) {
 
 function gotoQuiz() {
   /* ou gotoQuiz ?*/
-  history.pushState({}, "", "?section=Quiz&t=" + theme.id);
+  history.pushState({}, "", "?section=Quiz&id=" + theme.id);
   setState("Quiz");
   startQuiz(); // va appeler nextQUestion qui va appeler  render
+}
+
+function isThemeIdValid(id) {
+  return id in themes;
+}
+
+function isQuestionArrayValid(arr) {
+  // vérifie si le tableau est composé de nombres
+  // les éléments de l'array ont été transformés en nombres auparavant
+
+  // retourne false si des éléments sont NaN
+  for (let i = 0; i < arr.length; i++) {
+    if (!arr[i]) return false;
+    if (arr[i] < 1 || arr[i] > NB_QUESTIONS) return false;
+  }
+  console.log("valid array : " + arr);
+  return true;
 }
 
 function processURL() {
   let queryString = window.location.search;
   let urlParams = new URLSearchParams(queryString);
   let s = urlParams.get("section");
-  let t = urlParams.get("t"); // themeId
-  let isThemeValid = t in themes;
+  let id = urlParams.get("id"); // themeId, ou alors "1278+23+6+19+209+11"
   if (
     s == "Home" ||
     s == "Profile" ||
@@ -57,20 +77,33 @@ function processURL() {
     setState(s);
     render();
   } else if (s == "Theme") {
-    if (!isThemeValid) {
+    if (!isThemeIdValid(id)) {
       // invalid theme: goto Chapters
-      console.log("wrong theme request : " + t + ", goto Chapters");
+      console.log("wrong theme request : " + id + ", goto Chapters");
       goto("Chapters"); // inclus pushstate
     } else {
-      initTheme(t);
+      initTheme(id);
       setState("Theme");
       render();
     }
-  } else if (s == "Quiz" && isThemeValid) {
-    initTheme(t);
+  } else if (s == "Quiz" && isThemeIdValid(id)) {
+    initTheme(id);
     setState("Quiz");
     startQuiz(); // va appeler nextQUestion qui va appeler  render
+  } else if (s == "Quiz" && id != null) {
+    let arrayFromId = id.split(QUESTION_SEPARATOR).map((e) => Number(e));
+    if (isQuestionArrayValid(arrayFromId)) {
+      // - - - - - ! CUSTOM QUIZ ! - - - - - -
+      custom = true;
+      initCustomTheme(id, arrayFromId);
+      setState("Quiz");
+      startQuiz();
+    } else {
+      console.log(id + " : Bad Id. Goto Home");
+      goto("Home");
+    }
   } else {
+    console.log("No Id. Goto Home");
     goto("Home");
   }
 }
@@ -83,4 +116,15 @@ window.addEventListener("popstate", (event) => {
 function setState(s) {
   oldState = state;
   state = s;
+}
+
+function initCustomTheme(id, questions) {
+  console.log(" init custom theme, id=" + id + ", questions : " + questions);
+  theme = {
+    id: id,
+    title: "Thème personnalisé",
+    info: "",
+    questions: questions,
+  };
+  statsThemes[id] = {};
 }

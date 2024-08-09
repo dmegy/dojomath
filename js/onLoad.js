@@ -3,16 +3,16 @@
 // - - - - - - - - - - - - - - - - - - - - - - -
 
 window.addEventListener("load", () => {
+  //  GETSCRIPT MATHJAX : si on le met en async dans le body il commence trop tôt ?
+  // getScript("https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js", () => {
+  //  testMathJax();
+  //});
+  console.log("- - - - L O A D - - - - - -");
   initUpdateStatsThemes(); // a besoin que les thèmes soient loadés avant !
 
   initUpdateStatsQuestions(); /// idem, a besoin des questions, mais c'est inliné
 
   processURL(); // contient setState adéquat et render()
-
-  //  GETSCRIPT MATHJAX : si on le met en async dans le body il commence trop tôt ?
-  getScript("js/-async-initMathJax.js", () => {
-    console.log("Callback de getScript MathJax");
-  });
 }); // fin du listener sur onLoad
 
 function initUpdateStatsThemes() {
@@ -77,6 +77,7 @@ function initUpdateStatsQuestions() {
 }
 
 function getScript(scriptUrl, callback) {
+  console.log("hello from loadScript");
   const script = document.createElement("script");
   script.src = scriptUrl + "?unique=" + Math.random();
   script.defer = true;

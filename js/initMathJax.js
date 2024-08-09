@@ -26,11 +26,6 @@ MathJax = {
   },
 };
 
-getScript("https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js", () => {
-  console.log("MathJax téléchargé");
-  testMathJax();
-});
-
 function testMathJax() {
   let s = "<div id='testMathJax'>";
   s += "$(a+b)^n = \\sum_{k=0}^{n} \\binom{n}{k}a^{k}b^{n-k}$.";

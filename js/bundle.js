@@ -9,11 +9,15 @@ const MAX_POINTS_PER_QUESTION = 10; //maximum de pts que l'on peut gagner à cha
 const BOOST_PROBABILITY = 0.2;
 const BOOST_DURATION = 10 * 60 * 1000; // 10 minutes
 const LOCK_LIMIT = 5; // limite au delà de la quelle on bloque temporairement un thème
+const NB_QUESTIONS = 2440; // pour la validation des quiz custom.
+const QUESTION_SEPARATOR = ",";
 
 // deprecated :
 const SHARE_ENCODED_MESSAGE = encodeURIComponent(
   "Quiz de maths sur https://www.dojomath.fr/"
 );
+
+let custom = false; //sera mis à true par le router si c'est un quiz custom. Controle certains affichages custom
 
 let happyHourList = [
   [6, 8],
@@ -819,21 +823,60 @@ function htmlShare(msg) {
               >`;
 }
 
+MathJax = {
+  tex: {
+    inlineMath: [
+      ["$", "$"],
+      ["\\(", "\\)"],
+    ],
+    macros: {
+      N: "{\\mathbb{N}}",
+      Z: "{\\mathbb{Z}}",
+      Q: "{\\mathbb{Q}}",
+      R: "{\\mathbb{R}}",
+      C: "{\\mathbb{C}}",
+      U: "{\\mathbb{U}}",
+      P: "{\\mathbb{P}}",
+      llbracket: "{[\\![}",
+      rrbracket: "{]\\!]}",
+      tr: "{\\mathrm{tr}}",
+      rg: "{\\mathrm{rg}}",
+      im: "{\\mathrm{im}}",
+      id: "{\\mathrm{id}}",
+      Mat: "{\\mathrm{Mat}}",
+    },
+    svg: {
+      fontCache: "global",
+    },
+  },
+};
+
+function testMathJax() {
+  let s = "<div id='testMathJax'>";
+  s += "$(a+b)^n = \\sum_{k=0}^{n} \\binom{n}{k}a^{k}b^{n-k}$.";
+  s += `$(2+3)\\times \\left(4^{123456789}\\right)^7 = \\left(\\frac{\\sqrt 2+\\sqrt{2^2}}{\\pi}\\right)$`;
+  s += `$\\N \\Z \\Q \\R \\C \\U$`;
+  s += "$\\frac{\\partial f}{\\partial \\overline z}$";
+  s += "</div>";
+  document.body.innerHTML += s;
+  /* composé automatiquement normalement, MathJax watch le contenu*/
+}
+
 // - - - - - - - - - - - - - - - - - - - - - - -
 // - - - - LISTENER ONLOAD and getScript, Mathjax etc
 // - - - - - - - - - - - - - - - - - - - - - - -
 
 window.addEventListener("load", () => {
+  //  GETSCRIPT MATHJAX : si on le met en async dans le body il commence trop tôt ?
+  // getScript("https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js", () => {
+  //  testMathJax();
+  //});
+  console.log("- - - - L O A D - - - - - -");
   initUpdateStatsThemes(); // a besoin que les thèmes soient loadés avant !
 
   initUpdateStatsQuestions(); /// idem, a besoin des questions, mais c'est inliné
 
   processURL(); // contient setState adéquat et render()
-
-  //  GETSCRIPT MATHJAX : si on le met en async dans le body il commence trop tôt ?
-  getScript("js/-async-initMathJax.js", () => {
-    console.log("Callback de getScript MathJax");
-  });
 }); // fin du listener sur onLoad
 
 function initUpdateStatsThemes() {
@@ -898,6 +941,7 @@ function initUpdateStatsQuestions() {
 }
 
 function getScript(scriptUrl, callback) {
+  console.log("hello from loadScript");
   const script = document.createElement("script");
   script.src = scriptUrl + "?unique=" + Math.random();
   script.defer = true;
@@ -3884,9 +3928,13 @@ function alertGameover() {
 }
 
 function gotoTheme(id) {
+  if (!isThemeIdValid(id)) {
+    goto("Chapters");
+    return;
+  }
   removeCircles();
   console.log("appel de gotoTheme avec id " + id);
-  history.pushState({}, "", "?section=Theme&t=" + id);
+  history.pushState({}, "", "?section=Theme&id=" + id);
   initTheme(id); // initialisation de 'theme',  statsThemes, calcul stats etc
   setState("Theme");
   render();
@@ -3918,17 +3966,33 @@ function goto(newState) {
 
 function gotoQuiz() {
   /* ou gotoQuiz ?*/
-  history.pushState({}, "", "?section=Quiz&t=" + theme.id);
+  history.pushState({}, "", "?section=Quiz&id=" + theme.id);
   setState("Quiz");
   startQuiz(); // va appeler nextQUestion qui va appeler  render
+}
+
+function isThemeIdValid(id) {
+  return id in themes;
+}
+
+function isQuestionArrayValid(arr) {
+  // vérifie si le tableau est composé de nombres
+  // les éléments de l'array ont été transformés en nombres auparavant
+
+  // retourne false si des éléments sont NaN
+  for (let i = 0; i < arr.length; i++) {
+    if (!arr[i]) return false;
+    if (arr[i] < 1 || arr[i] > NB_QUESTIONS) return false;
+  }
+  console.log("valid array : " + arr);
+  return true;
 }
 
 function processURL() {
   let queryString = window.location.search;
   let urlParams = new URLSearchParams(queryString);
   let s = urlParams.get("section");
-  let t = urlParams.get("t"); // themeId
-  let isThemeValid = t in themes;
+  let id = urlParams.get("id"); // themeId, ou alors "1278+23+6+19+209+11"
   if (
     s == "Home" ||
     s == "Profile" ||
@@ -3942,20 +4006,33 @@ function processURL() {
     setState(s);
     render();
   } else if (s == "Theme") {
-    if (!isThemeValid) {
+    if (!isThemeIdValid(id)) {
       // invalid theme: goto Chapters
-      console.log("wrong theme request : " + t + ", goto Chapters");
+      console.log("wrong theme request : " + id + ", goto Chapters");
       goto("Chapters"); // inclus pushstate
     } else {
-      initTheme(t);
+      initTheme(id);
       setState("Theme");
       render();
     }
-  } else if (s == "Quiz" && isThemeValid) {
-    initTheme(t);
+  } else if (s == "Quiz" && isThemeIdValid(id)) {
+    initTheme(id);
     setState("Quiz");
     startQuiz(); // va appeler nextQUestion qui va appeler  render
+  } else if (s == "Quiz" && id != null) {
+    let arrayFromId = id.split(QUESTION_SEPARATOR).map((e) => Number(e));
+    if (isQuestionArrayValid(arrayFromId)) {
+      // - - - - - ! CUSTOM QUIZ ! - - - - - -
+      custom = true;
+      initCustomTheme(id, arrayFromId);
+      setState("Quiz");
+      startQuiz();
+    } else {
+      console.log(id + " : Bad Id. Goto Home");
+      goto("Home");
+    }
   } else {
+    console.log("No Id. Goto Home");
     goto("Home");
   }
 }
@@ -3968,6 +4045,17 @@ window.addEventListener("popstate", (event) => {
 function setState(s) {
   oldState = state;
   state = s;
+}
+
+function initCustomTheme(id, questions) {
+  console.log(" init custom theme, id=" + id + ", questions : " + questions);
+  theme = {
+    id: id,
+    title: "Thème personnalisé",
+    info: "",
+    questions: questions,
+  };
+  statsThemes[id] = {};
 }
 
 // ATTENTION? UTILISER 'VAR' ET NON 'LET'
