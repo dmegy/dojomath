@@ -5,9 +5,9 @@
 window.addEventListener("load", () => {
   initUpdateStatsThemes(); // a besoin que les thèmes soient loadés avant !
 
-  setState("Home"); // todo : sauvegarder state dans le storage pour les refreshs ?
+  initUpdateStatsQuestions(); /// idem, a besoin des questions, mais c'est inliné
 
-  render(); //rendu des points ? Mais il sont pas encore récupérés du storage
+  processURL(); // contient setState adéquat et render()
 
   //  GETSCRIPT MATHJAX : si on le met en async dans le body il commence trop tôt ?
   getScript("js/-async-initMathJax.js", () => {
@@ -43,6 +43,37 @@ function initUpdateStatsThemes() {
     }
     console.log("statsThemes initialized and updated");
   }
+}
+
+function initUpdateStatsQuestions() {
+  // initialisation une fois qu'on sait combien il y a de questions.
+  for (let i = 0; i < questions.length; i++) {
+    statsQuestions[i] = {
+      viewed: 0,
+      failed: 0,
+      skipped: 0,
+      successful: 0,
+      lastResult: 0,
+      penultimateResult: 0,
+      successfulLastTime: false,
+      successfulLastTwoTimes: false,
+      feedbackSent: false,
+    };
+  }
+
+  //update from storage :
+
+  for (let i = 0; i < loadedStatsQuestions.length; i++) {
+    // sparse array attention. Les entrées manquantes sont null
+    if (loadedStatsQuestions[i] === null) continue;
+
+    for (key in statsQuestions[i]) {
+      if (loadedStatsQuestions[i][key] !== undefined)
+        statsQuestions[i][key] = loadedStatsQuestions[i][key]; // on écrase quand il existe une valeur dans le storage
+    }
+  }
+
+  console.log("Question statistics initialized and updated");
 }
 
 function getScript(scriptUrl, callback) {

@@ -1,17 +1,13 @@
 <?php
 
-include_once 'database/db_config.php';
 
 //ini_set('display_errors', 1);
 //ini_set('display_startup_errors', 1);
 //error_reporting(E_ALL);
 
-// Définir le header pour la réponse JSON
-header("Content-Type: application/json");
+//header("Content-Type: application/json");
 
-// récupération de l'heure courante
-//$dateTime = date("Y-m-d H:i:s");
-$dateTime = round(microtime(true) * 1000);
+
 
 // récupération de l'adresse IP du client (on cherche d'abord à savoir si il est derrière un proxy)
 if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
@@ -26,42 +22,35 @@ $referer = $_SERVER['HTTP_REFERER'];
 $bon_referer = (strpos($referer, 'dojomath.fr') !== false);
 
 if ( !$bon_referer ){
-    echo "lol gtfo.";
+    echo "lol gtfo!";
     exit;
 }
 
-// Récupérer les données brutes de la requête
 $rawData = file_get_contents("php://input");
 
-// Si on ne peut pas lire les données brutes
 if ($rawData === false) {
     echo "Unable to read data.";
     exit;
 }
 
-// Décoder le JSON reçu
 $data = json_decode($rawData, true);
 
-// Vérifier les erreurs de décodage JSON
 if (json_last_error() !== JSON_ERROR_NONE) {
     echo "Invalid json.";
     exit;
 }
 
-// Vérifier la présence des clés 'questionNumber' et 'feedbackType'
 if (!isset($data['userId']) || !isset($data['userName']) || !isset($data['questionNumber']) || !isset($data['feedbackType'])) {
     echo "Missing data.";
     exit;
 }
 
-// Décoder les données 'user' et 'quiz'
 $questionNumber = $data['questionNumber'];
 $feedbackType = $data['feedbackType'];
 $userName = $data['userName'];
 $userId = $data['userId'];
 
-// Vérifier la validité des données décodées
-if (!is_int($questionNumber) || !is_string($feedbackType)) {
+if (!is_int($questionNumber) || !is_string($feedbackType)|| !is_string($userName)|| !is_string($userId)) {
     echo "Invalid data type.";
     exit;
 }
@@ -71,10 +60,24 @@ if (!is_int($questionNumber) || !is_string($feedbackType)) {
 
 
 // validation des valeurs
-$isDataValid = $questionNumber>0 && $questionNumber < 2500 && ($feedbackType === "like" || $feedbackType === "reportProblem");
+
+$isQuestionNumberValid = $questionNumber>0 && $questionNumber < 3000 ;
+$isFeedbackValid = $feedbackType === "like" || $feedbackType === "reportProblem" ;
+$isUserIdValid =  strlen($userId) < 16;
+$isUserNameValid =  strlen($userName) < 16;
+$isDataValid =  $isQuestionNumberValid && $isFeedbackValid && $isUserIdValid && $isUserNameValid;
 if(!$isDataValid){
     echo "Invalid data.";
     exit;
+}
+
+
+
+try {
+    $pdo = new PDO('sqlite:database/db_questions_feedback.db');
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+    die("Erreur de connexion à la base de données: " . $e->getMessage());
 }
 
 $columnToUpdate = ($feedbackType === 'like') ? 'Liked' : 'ProblemReported';
@@ -82,33 +85,25 @@ $columnToUpdate = ($feedbackType === 'like') ? 'Liked' : 'ProblemReported';
 
 
 
-// Connexion à la base de données
 try {
-    $pdo = new PDO('sqlite:database/questionsFeedback.db');
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-    die("Erreur de connexion à la base de données: " . $e->getMessage());
-}
-
-
-
-
-try {
-    // Début de la transaction
     $pdo->beginTransaction();
 
     // Requête SQL pour mettre à jour les colonnes appropriées
     $stmt = $pdo->prepare("
         UPDATE QuestionsFeedback 
         SET $columnToUpdate = $columnToUpdate + 1, 
-            LastContributor = :userId, 
-            LastUpdated = :timestamp 
+            LastContributorId = :userId, 
+            LastContributorName = :userName,
+            LastModified = :fullDate,
+            LastModifiedSec = :timestamp 
         WHERE Id = :questionNumber
     ");
 
     // Liaison des paramètres
     $stmt->bindParam(':userId', $userId, PDO::PARAM_STR);
+    $stmt->bindParam(':userName', $userName, PDO::PARAM_STR);
     $stmt->bindParam(':timestamp', time(), PDO::PARAM_INT);
+    $stmt->bindParam(':fullDate', date("Y-m-d H:i:s"), PDO::PARAM_STR);
     $stmt->bindParam(':questionNumber', $questionNumber, PDO::PARAM_INT);
 
     // Exécution de la requête

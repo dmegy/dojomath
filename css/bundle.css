@@ -453,6 +453,13 @@ summary {
   place-items: center;
 }
 
+.btn-feedback {
+  padding: 0.5rem 1rem;
+  margin: 0 0.5rem;
+  border-radius: 2rem;
+  border: 1px solid white;
+}
+
 select,
 input {
   font-size: 1rem;

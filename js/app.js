@@ -178,40 +178,10 @@ function saveToLocalStorage() {
 // - - - - - NAVIGATION - - - - - - - - -
 // - - - - - - - - - - - - - - - - - - -
 
-function gotoTheme(id) {
-  removeCircles();
-  console.log("appel de gotoTheme avec id " + id);
-  computeThemeStats(id);
-  setState("Theme");
-  theme = structuredClone(themes[id]);
-  theme.id = id; // on rajoute l'id sinon il n'est plus là...
-  // calculer theme.progress, theme.nbQuestionsSeens, nbQuestionsChecked, theme.nbQuestionsDbChecked
-  render();
-}
-
-function goto(newState) {
-  //sauf End, Quiz et Theme
-  setState(newState);
-  removeCircles();
-  document.getElementById("navButton" + newState).classList.add("circled");
-  render();
-}
 function removeCircles() {
   document
     .querySelectorAll("svg")
     .forEach((el) => el.classList.remove("circled"));
-}
-
-function setState(s) {
-  oldState = state;
-  state = s;
-  //window.localStorage.setItem("state", state);
-}
-
-function startQuiz() {
-  /* ou gotoQuiz ?*/
-  setState("Quiz");
-  render();
 }
 
 function isUserTrusted() {
@@ -227,8 +197,8 @@ function adjustPoints() {
 // - - - - - - - - - - - - - - - - - - -
 
 function computeAllThemeStats() {
+  console.log("compoute all theme stats");
   for (let themeId in statsThemes) {
-    console.log("calcul des stats du thèm : " + themeId);
     computeThemeStats(themeId);
   }
 }

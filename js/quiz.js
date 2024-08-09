@@ -7,7 +7,7 @@ function shuffleArray(array) {
 }
 
 function startQuiz() {
-  console.log("startQuiz() sur le thème " + theme.id);
+  console.log("initQuiz() sur le thème " + theme.id);
 
   // construction du quiz
   // Éventuellement, changer méthode pour garantir au moins un V et un F.
@@ -49,7 +49,6 @@ function nextQuestion() {
   question = structuredClone(questions[questionNumber]);
   question.num = questionNumber; // on rajoute dans l'objet
   question.points = 0;
-  setState("Quiz");
   render();
   MathJax.typeset();
   statsQuestions[question.num].viewed += 1;
@@ -271,8 +270,8 @@ function showQuizResults() {
 
   saveToLocalStorage();
 
-  setState("End");
-  render(); // equiv goto('End') ?
+  gotoEnd();
+
   // lors du render, le bouton "rejouer" va être désactivé si le thème est locked
 
   sendStatistics();
@@ -339,7 +338,7 @@ function unstack(targetName) {
   giveBoost();
 
   if (targetName == "Chapters") goto("Chapters");
-  else if (targetName == "Quiz") startQuiz();
+  else if (targetName == "Quiz") gotoQuiz();
 }
 
 function getBoost() {
@@ -440,15 +439,15 @@ function htmlFeedbackElement(questionNumber) {
     return "<p>Feedback envoyé, merci !</p>";
 
   return `<details>
-    <summary style="font-weight:400;font-size:1rem">Envoyer du feedback</summary>
+    <summary style="font-weight:400;font-size:1rem">Réagir à cette question</summary>
     <div style="display:flex;justify-content:space-between" id="feedbackDiv${questionNumber}">
-      <div class="btn" 
+      <div class="btn btn-feedback" 
         onclick="sendFeedback(${questionNumber},'like')">
-        ❤️ <u>Aimer</u>
+        ❤️ 
       </div>
-      <div  class="btn"  
+      <div  class="btn btn-feedback"  
         onclick="sendFeedback(${questionNumber},'reportProblem')">
-        ⁉️ <u>Signaler un problème</u>
+        ⁉️ Signaler un problème
       </div>
     </div>
   </details>`;
