@@ -47,7 +47,7 @@ function htmlThemeReferences() {
   for (let i = 0; i < list.length; i++) {
     s += `<li><a target="_blank" href="${list[i].URL}">${list[i].title}</a></li>`;
   }
-  s += "</ul>(Les liens s'ouvrent dans une nouvelle fenêtre.)";
+  s += "</ul>";
   return s;
 }
 

@@ -2,7 +2,7 @@ const URL_QUIZ_FINISHED = "backend/quiz_finished.php";
 const URL_HIGHSCORES_ALLTIME = "backend/highscores_alltime.html.txt";
 const URL_HIGHSCORES_RECENT = "backend/highscores_recent.html.txt";
 const URL_HIGHSCORES_RECENT_GAMES = "backend/highscores_recent_games.html.txt";
-const URL_FEEDBACK_QUESTIONS = "backend/feedback_questions.php";
+const URL_FEEDBACK_QUESTIONS = "backend/feedback_question.php";
 
 function sendStatistics() {
   adjustPoints();
@@ -83,7 +83,9 @@ function sendFeedback(questionNumber, feedbackType) {
     "Feedback envoyé, merci !";
 
   let requestBody = {
-    question: questionNumber,
+    userId: user.userId,
+    userName: user.userName,
+    questionNumber: questionNumber,
     feedbackType: feedbackType,
   };
 
