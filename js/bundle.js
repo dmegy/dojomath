@@ -4061,6 +4061,9 @@ function processURL() {
       console.log(id + " : Bad Id. Goto Home");
       goto("Home");
     }
+  } else if (state == "Loading") {
+    state = "Home";
+    render(); // pour afficher les points en haut. Pas de push state sinon on bloque l'utilisateur sur la page !
   } else {
     console.log("No Id. Goto Home");
     goto("Home");
