@@ -107,7 +107,10 @@ $errors = [];
 if (!isset($userId) || !is_string($userId) || strlen($userId) > 16) {
     $errors[] = "Invalid userId : " . $userId;
 }
-if (!is_string($userName) || strlen($userName) > 16) {
+if (!is_string($userName) || strlen($userName) > 60) {
+    // normalement 10 caractères mais on autorise 5 emojis.
+    // or un émoji est potentiellement composé de deux caractères unicode:
+    // exemple : \mathbb T qui est  \ud835\udd4b
     $errors[] = "Invalid userName : " . $userName ;
 }
 // validation numéro de département
