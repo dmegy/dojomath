@@ -1,0 +1,20 @@
+.nowrap {
+  max-width: 100%;
+  white-space: nowrap;
+}
+td,
+th {
+  padding: 0.4rem;
+}
+th,
+tr:nth-child(even) {
+  background-color: var(--c-primary-10-desat);
+}
+
+body,
+.body-container {
+  overflow: auto;
+}
+main {
+  padding: 1rem;
+}

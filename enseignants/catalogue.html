@@ -10,78 +10,68 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta
       name="description"
-      content="Consolidation en  mathématiques: catalogue"
+      content="DojoMath.fr : catalogue de toutes les questions, classées par numéro"
     />
     <meta name="author" content="Damien Mégy" />
     <title>DojoMath.fr : Catalogue complet des questions</title>
 
-    <link
+    <!--<link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.css"
+    />-->
+
+    <link rel="stylesheet" href="../css/bundle.min.css" />
+    <link rel="stylesheet" href="styles-enseignants.css" />
+    <script src="../js/questions.js"></script>
+    <link
+      rel="icon"
+      href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 110 100'><text y='0.9em' font-size='90'>🏆</text></svg>"
     />
-
-    <script type="text/javascript" src="../questions.json"></script>
-
-    <style>
-      .nowrap {
-        max-width: 100%;
-        white-space: nowrap;
-      }
-      body {
-        margin: 0;
-        padding: 1rem;
-      }
-    </style>
   </head>
 
   <body>
-    <h2>DojoMath.fr : catalogue général des questions</h2>
-    <p>
-      Cette page affiche toutes les questions (classés par identifiant donc par
-      ordre d'ajout, pas par ordre thématique) de l'application. Ceci permet de
-      faire des listes de questions (et de vérifier les questions). Utilisation
-      : faire une recherche avec Cmd+F pour trouver des exos sur les mots-clés
-      voulus.
-    </p>
-    <p>
-      (Avertissement : il y a plusieurs milliers de questions, MathJax met
-      plusieurs secondes à mettre tout ça en forme.)
-    </p>
-    <div id="mainDiv">Chargement...</div>
+    <div class="body-container">
+      <div style="padding: 1rem">
+        <h1>DojoMath > Enseignants</h1>
+        <h3>Catalogue général des questions</h3>
+        <p>
+          Cette page affiche toutes les questions (classés par identifiant donc
+          par ordre d'ajout, pas par ordre thématique) de l'application. Ceci
+          permet de faire des listes de questions (et de vérifier les
+          questions). Utilisation : faire une recherche avec Cmd+F pour trouver
+          des exos sur les mots-clés voulus.
+        </p>
+        <p>
+          (Avertissement : il y a plusieurs milliers de questions, MathJax met
+          plusieurs secondes à mettre tout ça en forme.)
+        </p>
+        <div id="mainDiv">Chargement...</div>
+      </div>
+    </div>
 
-    <script type="text/javascript">
-      questions = [];
-      fetch("../questions.json?again=" + Math.random())
-        .then((response) => response.json())
-        .then((json) => {
-          questions = json;
-          console.log("Questions loaded from json");
-          createTable();
-        });
-
-      function createTable() {
-        let s = `<table id="mainTable" class="table table-striped table-bordered table-sm">
-        <thead><tr>
-            <th>Quest°</th>
-            <th>V/F</th>
-            <th>Énoncé</th>
-        </tr>
-        </thead>
-        <tbody>`;
-        for (let i = 0; i < questions.length; i++) {
-          // _questions est un tableau
-          let question = questions[i];
-          let ligne = `
-					<tr>
-						<td>${i}</td>
-						<td>${questions[i].answer ? "V" : "F"}</td>
-						<td>${questions[i].statement}</td>
-					</tr>`;
-          s += ligne;
-        }
-        s += "</tbody></table>";
-        document.getElementById("mainDiv").innerHTML = s;
+    <script>
+      // création de la table (questions déjà chargées en synchrone)
+      let s = `<table id="mainTable">
+         <thead><tr>
+             <th>N°</th>
+             <th style="width:2rem">V/F</th>
+             <th style="text-align:left;">Énoncé</th>
+         </tr>
+         </thead>
+         <tbody>`;
+      for (let i = 0; i < questions.length; i++) {
+        // _questions est un tableau
+        let question = questions[i];
+        let ligne = `
+      <tr>
+      	<td>${i}</td>
+      	<td>${questions[i].answer ? "V" : "F"}</td>
+      	<td>${questions[i].statement}</td>
+      </tr>`;
+        s += ligne;
       }
+      s += "</tbody></table>";
+      document.getElementById("mainDiv").innerHTML = s;
     </script>
     <script>
       MathJax = {
