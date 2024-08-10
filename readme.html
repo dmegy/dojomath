@@ -3,40 +3,45 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>🧑‍🏫 DojoMath Enseignants</title>
-    <link href="../css/bundle.min.css" rel="stylesheet" />
+    <title>DojoMath - Informations générales</title>
+    <link href="css/bundle.min.css" rel="stylesheet" />
   </head>
   <body>
     <div class="body-container">
-      <header class="glow">DojoMath.fr > Enseignants</header>
+      <header class="glow">DojoMath.fr  - Informations générales</header>
       <main>
-          <section>
-          <h1>DojoMath pour enseignants</h1>
-          <h3>Fonctionnalités de base</h3>
-          <p>Il est possible d'envoyer directement les élèves à :
+        <section>
+          <h3>Présentation de DojoMath</h3>
+          <p>
+            <a href="https://www.dojomath.fr/" target="_blank">DojoMath.fr</a>
+            est un site de quiz mathématiques de type vrai ou faux. Il propose
+            de nombreux thèmes, de niveau collège, lycée et
+            supérieur.</p>
+            
+          <h3>Accès rapides aux sections</h3>
+          <p>Il est possible d'accéder directement à certaines parties de l'application, sans devoir naviguer dans les menus. On peut par exemple accéder directement à :
             <ul>
               <li>la liste des chapitres : 
                 <a href="https://www.dojomath.fr/?section=Chapters" target="_blank">https://www.dojomath.fr/?section=Chapters</a>,
               </li>
-              <li>un chapitre en particulier :
+              <li>un chapitre en particulier, par exemple
                 <a href="https://www.dojomath.fr/?section=Theme&id=quadrilateres" target="_blank">https://www.dojomath.fr/?section=Theme&id=quadrilateres</a>,</li>
-              <li>voire même de lancer automatiquement un Quiz sur un thème choisi :
+              <li>voire même de lancer automatiquement un Quiz sur un thème choisi, par exemple
                 <a href="https://www.dojomath.fr/?section=Quiz&id=quadrilateres" target="_blank">https://www.dojomath.fr/?section=Quiz&id=quadrilateres</a>.</li>
             </ul>
           
-         <h3>Personnalisation des questionnaires</h3>
+         <h3>DojoMath pour les enseignants</h3>
+         Les enseignants disposent de fonctionnalités supplémentaires à l'adresse 
+         <a href="enseignants/index.html" target="_blank">dojomath.fr/enseignants</a> :
           <ul>
             <li>
               Création de <u>questionnaires personnalisés</u> à partir du
-              catalogue général de questions. [EN CONSTRUCTION]
+              catalogue général de questions. 
             </li>
             <li>Le questionnaire peut alors être
-              envoyé aux élèves au moyen d'un QR Code ou d'un lien, par exemple 
-            <a target="_blank" href="https://www.dojomath.fr/?section=Quiz&id=1,78,267,2360,13">https://www.dojomath.fr/?section=Quiz&id=1,78,267,2360,13</a>.
-          Ce lien lance automatiquement un quiz sur les questions 1,78,267,2360,13, en les permutant.</li>
+              envoyé aux élèves au moyen d'un QR Code ou d'un lien.</li>
             <li>
-              Visualisation des résultats des élèves sur la page
-              <a href="resultats.php"></a>, en fournissant l'identifiant du
+              Visualisation des résultats des élèves en fournissant l'identifiant du
               questionnaire créé à l'étape précédente.
             </li>
           </ul>
@@ -64,10 +69,22 @@
             Maxime Bourrigan, Pierre-Emmanuel Chaput, Auguste Hébert, Clémence
             Karmann, Régine Marchand, Philippe Le Bezvoët, Youssef Sedrati.
           </p>
-          <p>Si vous avez été oublié, signalez-vous ! (Et désolé!)</p>
+          <p>Si vous avez été oublié, signalez-vous !</p>
+          <h3>Remerciements</h3>
+          Les élèves du Club Mathématique de Nancy qui ont testé d'anciennes versions, 
+          les contributeurs aux questions qui sont souvent également des bêta-testeurs, 
+          Romain Coustel, Erwan André, Gwendal Kervern, Robert Mégy.
         </section>
       </main>
-      <footer></footer>
+      <footer>
+        <div
+            class="btn btn-big btn-primary"
+            onclick="javascript:location.href='index.html'"
+            style="width: 100%"
+          >
+            Accéder à DojoMath
+          </div>
+      </footer>
     </div>
   </body>
 </html>
