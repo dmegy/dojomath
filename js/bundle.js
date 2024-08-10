@@ -1,28 +1,25 @@
  
 let t0 = performance.timeOrigin + performance.now();
 
-const MIN_QUIZ_RESULT = 2; // attention certains quiz peuvent faire moins de 2 questions ?
-const MAX_ERRORS_ALLOWED = 5; // inutilisé, on utilisé la constante précédente
-// (le but est d'empecher de cliquer sur 'passer' et que ça compte comme un quiz fini)
+const MIN_QUIZ_RESULT = 2; // result \in [-10,10] attention certains quiz peuvent faire moins de 2 questions ?
 const MAX_QUIZ_LENGTH = 10;
 const MAX_POINTS_PER_QUESTION = 10; //maximum de pts que l'on peut gagner à chaque question
-const BOOST_PROBABILITY = 0.2;
-const BOOST_DURATION = 10 * 60 * 1000; // 10 minutes
+const BOOST_PROBABILITY = 0.1; // proba de looter un boost à la fin d'un quiz
+const BOOST_DURATION_MS = 5 * 60 * 1000; // 5 minutes
 const LOCK_LIMIT = 5; // limite au delà de la quelle on bloque temporairement un thème
 const NB_QUESTIONS = 2440; // pour la validation des quiz custom.
 const QUESTION_SEPARATOR = ","; // pour les custom quiz
+const HAPPY_HOUR_LIST = [
+  [6, 8],
+  [12, 14],
+  [18, 20],
+]; // pour les points doublés :
 
 // - - - - - FAUSSE CONSTANTES, pouvant être changées par exemple dans la console.
 
 let SHOW_HIDDEN_THEMES = false;
 let SHOW_HIDDEN_CHAPTERS = false;
 let custom = false; //sera mis à true par le router si c'est un quiz custom. Controle certains affichages custom
-
-let happyHourList = [
-  [6, 8],
-  [12, 14],
-  [18, 20],
-];
 
 let questions = []; // Pour json. Commenter si questions loadées depuis js.
 
@@ -3721,17 +3718,17 @@ function giveBoost() {
   let thisDate = new Date();
   let thisHour = thisDate.getHours();
 
-  for (let i = 0; i < happyHourList.length; i++) {
-    if (happyHourList[i][0] <= thisHour && thisHour < happyHourList[i][1]) {
+  for (let i = 0; i < HAPPY_HOUR_LIST.length; i++) {
+    if (HAPPY_HOUR_LIST[i][0] <= thisHour && thisHour < HAPPY_HOUR_LIST[i][1]) {
       user.lastBoostMultiplier = 2;
       user.lastBoostEnd = new Date(
         thisDate.getFullYear(),
         thisDate.getMonth(),
         thisDate.getDate(),
-        happyHourList[i][1]
+        HAPPY_HOUR_LIST[i][1]
       ).getTime();
       notification(
-        "HAPPY HOUR :\nPoints doublés jusqu'à " + happyHourList[i][1] + "h",
+        "HAPPY HOUR :\nPoints doublés jusqu'à " + HAPPY_HOUR_LIST[i][1] + "h",
         "oklch(70% 100% var(--hue-accent)"
       );
       return;
@@ -3740,10 +3737,10 @@ function giveBoost() {
 
   if (Math.random() < BOOST_PROBABILITY) {
     user.lastBoostMultiplier = 2;
-    user.lastBoostEnd = Date.now() + BOOST_DURATION;
+    user.lastBoostEnd = Date.now() + BOOST_DURATION_MS;
     notification(
       "BOOST !\nPoints doublés pendant " +
-        BOOST_DURATION / (60 * 1000) +
+        BOOST_DURATION_MS / (60 * 1000) +
         " minutes !",
       "oklch(70% 100% var(--hue-accent)"
     );

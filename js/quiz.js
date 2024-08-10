@@ -302,17 +302,17 @@ function giveBoost() {
   let thisDate = new Date();
   let thisHour = thisDate.getHours();
 
-  for (let i = 0; i < happyHourList.length; i++) {
-    if (happyHourList[i][0] <= thisHour && thisHour < happyHourList[i][1]) {
+  for (let i = 0; i < HAPPY_HOUR_LIST.length; i++) {
+    if (HAPPY_HOUR_LIST[i][0] <= thisHour && thisHour < HAPPY_HOUR_LIST[i][1]) {
       user.lastBoostMultiplier = 2;
       user.lastBoostEnd = new Date(
         thisDate.getFullYear(),
         thisDate.getMonth(),
         thisDate.getDate(),
-        happyHourList[i][1]
+        HAPPY_HOUR_LIST[i][1]
       ).getTime();
       notification(
-        "HAPPY HOUR :\nPoints doublés jusqu'à " + happyHourList[i][1] + "h",
+        "HAPPY HOUR :\nPoints doublés jusqu'à " + HAPPY_HOUR_LIST[i][1] + "h",
         "oklch(70% 100% var(--hue-accent)"
       );
       return;
@@ -321,10 +321,10 @@ function giveBoost() {
 
   if (Math.random() < BOOST_PROBABILITY) {
     user.lastBoostMultiplier = 2;
-    user.lastBoostEnd = Date.now() + BOOST_DURATION;
+    user.lastBoostEnd = Date.now() + BOOST_DURATION_MS;
     notification(
       "BOOST !\nPoints doublés pendant " +
-        BOOST_DURATION / (60 * 1000) +
+        BOOST_DURATION_MS / (60 * 1000) +
         " minutes !",
       "oklch(70% 100% var(--hue-accent)"
     );
