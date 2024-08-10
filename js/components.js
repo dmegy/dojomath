@@ -3,10 +3,13 @@
 function htmlChapters() {
   let s = "";
   for (let i = 0; i < chapters.length; i++) {
+    if (chapters[i].isHidden && !SHOW_HIDDEN_CHAPTERS) continue;
+
     s += `<details open>
 			<summary>${chapters[i].name}</summary>
 			<div id='chapter_${i}'>`;
     for (let j = 0; j < chapters[i].themes.length; j++) {
+      if (chapters[i]["themes"][j].isHidden && !SHOW_HIDDEN_THEMES) continue;
       s += htmlButtonTheme(i, j);
     }
     s += `</div></details>`;
@@ -16,6 +19,7 @@ function htmlChapters() {
 function htmlButtonTheme(i, j) {
   let label = chapters[i]["themes"][j].label;
   let id = chapters[i]["themes"][j].id;
+
   return `
 		<div style="
                 --progression:0;

@@ -158,9 +158,14 @@ let chapters = [
     ],
   },
   {
+    isHidden: true,
     name: "Probabilités",
     themes: [
-      { label: "Esp. probabilisés finis", id: "espaces_probabilises_finis" },
+      {
+        isHidden: true,
+        label: "Esp. probabilisés finis",
+        id: "espaces_probabilises_finis",
+      },
       { label: "Var. aléatoires finies", id: "variables_aleatoires_finies" },
     ],
   },
