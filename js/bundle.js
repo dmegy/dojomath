@@ -42,6 +42,7 @@ let sectionLabels = {
   Theme: "Thème choisi",
   Quiz: "",
   End: "Partie terminée!",
+  Gameover: "",
 };
 let theme = {}; // thème courant, celui affiché lorsqu'on clique sur un thème dans la page des chapitres.
 let quiz = {}; // quiz courant
@@ -202,7 +203,7 @@ function adjustPoints() {
 // - - - - - - - - - - - - - - - - - - -
 
 function computeAllThemeStats() {
-  console.log("compoute all theme stats");
+  console.log("compute all theme stats");
   for (let themeId in statsThemes) {
     computeThemeStats(themeId);
   }
@@ -866,12 +867,13 @@ function testMathJax() {
 // - - - - LISTENER ONLOAD and getScript, Mathjax etc
 // - - - - - - - - - - - - - - - - - - - - - - -
 
-window.addEventListener("load", () => {
+document.addEventListener("DOMContentLoaded", () => {
   //  GETSCRIPT MATHJAX : si on le met en async dans le body il commence trop tôt ?
   // getScript("https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js", () => {
   //  testMathJax();
   //});
-  console.log("- - - - L O A D - - - - - -");
+  // actuellement chargé en async
+  console.log("- - - -   D O M   C o n t e n t   L o a d e d   - - - - - -");
   initUpdateStatsThemes(); // a besoin que les thèmes soient loadés avant !
 
   initUpdateStatsQuestions(); /// idem, a besoin des questions, mais c'est inliné
@@ -3539,16 +3541,14 @@ function validateAnswer() {
 
   // CHECK GAMEOVER ??
   let maxAchievableResult = quiz.result + quiz.questions.length;
-  let isGameover = maxAchievableResult < MIN_QUIZ_RESULT;
+  let isGameover = maxAchievableResult < MIN_QUIZ_RESULT; // attention changer en cas de quiz custom ?
   if (isGameover) {
-    //alert(
-    //  "=========\nGAMEOVER\n=========\n\nTrop de questions ratées ou sautées"
-    //);
-
-    alertGameover();
-
     user.nbQuizGameover++;
-    gotoTheme(theme.id);
+
+    // avant il y avait le toast et on allait au thème.
+    //alertGameover();
+    //gotoTheme(theme.id);
+    gotoGameover();
     return;
   }
 
@@ -3573,15 +3573,18 @@ function validateAnswer() {
   else showQuizResults(); // quiz terminé !
 }
 
+// n'est plus utilisée ?
 function confirmQuit() {
-  //apelée par bouton "quitter"
   let text =
     "=======================\nDEMANDE DE CONFIRMATION\n=======================\n\nSouhaites-tu vraiment quitter la partie en cours ?\n\n(Attention, les points de la partie en cours ne seront pas sauvegardés.)";
   if (confirm(text) == true) {
-    user.nbQuizAborted++;
-
-    gotoTheme(theme.id); // ou alors faire une fonction abortQuiz ?
+    abortQuiz();
   }
+}
+
+function abortQuiz() {
+  user.nbQuizAborted++;
+  gotoTheme(theme.id);
 }
 
 function showQuizResults() {
@@ -3908,6 +3911,7 @@ function notification(message, color) {
   }).showToast();
 }
 
+// deprecated, écran gameover à la place
 function alertGameover() {
   Toastify({
     text: "GAMEOVER\n\n Trop de questions sautées ou ratées !",
@@ -3927,33 +3931,6 @@ function alertGameover() {
   }).showToast();
 }
 
-function gotoTheme(id) {
-  if (!isThemeIdValid(id)) {
-    goto("Chapters");
-    return;
-  }
-  removeCircles();
-  console.log("appel de gotoTheme avec id " + id);
-  history.pushState({}, "", "?section=Theme&id=" + id);
-  initTheme(id); // initialisation de 'theme',  statsThemes, calcul stats etc
-  setState("Theme");
-  render();
-}
-
-function initTheme(id) {
-  console.log("from init theme : " + id);
-  initUpdateStatsThemes(id);
-  computeThemeStats(id);
-  theme = structuredClone(themes[id]);
-  theme.id = id; // on rajoute l'id sinon il n'est plus là...
-}
-
-function gotoEnd() {
-  history.pushState({}, "", "?section=End");
-  setState("End");
-  render();
-}
-
 function goto(newState) {
   //sauf End, Quiz et Theme ?
   removeCircles();
@@ -3964,11 +3941,56 @@ function goto(newState) {
   render();
 }
 
+function gotoTheme(id) {
+  // deprecated maintenant il y a un écran de gameover
+  //if (!isThemeIdValid(id)) {
+  //  // on est arrivé ici par un gameover de custom quiz, ou après avoir terminé un custom quiz en cliquant
+  //  goto("Chapters");
+  //  return;
+  //}
+  removeCircles();
+  console.log("appel de gotoTheme avec id " + id);
+  history.pushState({}, "", "?section=Theme&id=" + id);
+  initTheme(id); // initialisation de 'theme',  statsThemes, calcul stats etc
+  setState("Theme");
+  render();
+}
+
+function initTheme(id) {
+  initUpdateStatsThemes(id);
+  computeThemeStats(id);
+  theme = structuredClone(themes[id]);
+  theme.id = id; // on rajoute l'id sinon il n'est plus là...
+}
+
+function initCustomTheme(id, questions) {
+  // id : string, questions : array(int)
+  theme = {
+    id: id,
+    title: "Thème personnalisé",
+    info: "",
+    questions: questions,
+  };
+  statsThemes[id] = {};
+}
+
 function gotoQuiz() {
-  /* ou gotoQuiz ?*/
+  // theme doit être initialisé.
   history.pushState({}, "", "?section=Quiz&id=" + theme.id);
   setState("Quiz");
-  startQuiz(); // va appeler nextQUestion qui va appeler  render
+  startQuiz(); // va construire le quiz, appeler nextQUestion qui va appeler  render
+}
+
+function gotoEnd() {
+  history.pushState({}, "", "?section=End");
+  setState("End");
+  render();
+}
+
+function gotoGameover() {
+  history.pushState({}, "", "?section=Gameover");
+  setState("Gameover");
+  render();
 }
 
 function isThemeIdValid(id) {
@@ -4038,24 +4060,17 @@ function processURL() {
 }
 
 window.addEventListener("popstate", (event) => {
-  console.log("popstate");
+  if (state == "Quiz") {
+    // on va interrompre le quiz.
+    user.nbQuizAborted++;
+    // éventuellement remplacer par un preventdefault, puis un confirmQuit ou équivalent ?
+  }
   processURL();
 });
 
 function setState(s) {
   oldState = state;
   state = s;
-}
-
-function initCustomTheme(id, questions) {
-  console.log(" init custom theme, id=" + id + ", questions : " + questions);
-  theme = {
-    id: id,
-    title: "Thème personnalisé",
-    info: "",
-    questions: questions,
-  };
-  statsThemes[id] = {};
 }
 
 // ATTENTION? UTILISER 'VAR' ET NON 'LET'

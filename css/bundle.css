@@ -112,7 +112,7 @@
 
 :root {
   --header-height: 3.5rem;
-  --max-width: 500px;
+  --max-width: 900px;
   --footer-height: 5rem;
 
   --margin: 1rem; /* marge à gauche et à droite de l'écran*/
@@ -458,6 +458,21 @@ summary {
   margin: 0 0.5rem;
   border-radius: 2rem;
   border: 1px solid white;
+}
+
+.gameover-title {
+  font-size: 2rem;
+  font-weight: 900;
+  color: #eeeeee;
+  margin: 4rem 0;
+  padding: 3rem;
+  border-radius: 2rem;
+  background-color: oklch(50% 50% var(--hue-danger));
+  text-align: center;
+}
+
+.gameover-msg {
+  text-align: center;
 }
 
 select,

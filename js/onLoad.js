@@ -2,12 +2,13 @@
 // - - - - LISTENER ONLOAD and getScript, Mathjax etc
 // - - - - - - - - - - - - - - - - - - - - - - -
 
-window.addEventListener("load", () => {
+document.addEventListener("DOMContentLoaded", () => {
   //  GETSCRIPT MATHJAX : si on le met en async dans le body il commence trop tôt ?
   // getScript("https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js", () => {
   //  testMathJax();
   //});
-  console.log("- - - - L O A D - - - - - -");
+  // actuellement chargé en async
+  console.log("- - - -   D O M   C o n t e n t   L o a d e d   - - - - - -");
   initUpdateStatsThemes(); // a besoin que les thèmes soient loadés avant !
 
   initUpdateStatsQuestions(); /// idem, a besoin des questions, mais c'est inliné

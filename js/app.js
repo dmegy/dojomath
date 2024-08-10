@@ -41,6 +41,7 @@ let sectionLabels = {
   Theme: "Thème choisi",
   Quiz: "",
   End: "Partie terminée!",
+  Gameover: "",
 };
 let theme = {}; // thème courant, celui affiché lorsqu'on clique sur un thème dans la page des chapitres.
 let quiz = {}; // quiz courant
@@ -201,7 +202,7 @@ function adjustPoints() {
 // - - - - - - - - - - - - - - - - - - -
 
 function computeAllThemeStats() {
-  console.log("compoute all theme stats");
+  console.log("compute all theme stats");
   for (let themeId in statsThemes) {
     computeThemeStats(themeId);
   }

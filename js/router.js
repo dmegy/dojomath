@@ -1,30 +1,3 @@
-function gotoTheme(id) {
-  if (!isThemeIdValid(id)) {
-    goto("Chapters");
-    return;
-  }
-  removeCircles();
-  console.log("appel de gotoTheme avec id " + id);
-  history.pushState({}, "", "?section=Theme&id=" + id);
-  initTheme(id); // initialisation de 'theme',  statsThemes, calcul stats etc
-  setState("Theme");
-  render();
-}
-
-function initTheme(id) {
-  console.log("from init theme : " + id);
-  initUpdateStatsThemes(id);
-  computeThemeStats(id);
-  theme = structuredClone(themes[id]);
-  theme.id = id; // on rajoute l'id sinon il n'est plus là...
-}
-
-function gotoEnd() {
-  history.pushState({}, "", "?section=End");
-  setState("End");
-  render();
-}
-
 function goto(newState) {
   //sauf End, Quiz et Theme ?
   removeCircles();
@@ -35,11 +8,56 @@ function goto(newState) {
   render();
 }
 
+function gotoTheme(id) {
+  // deprecated maintenant il y a un écran de gameover
+  //if (!isThemeIdValid(id)) {
+  //  // on est arrivé ici par un gameover de custom quiz, ou après avoir terminé un custom quiz en cliquant
+  //  goto("Chapters");
+  //  return;
+  //}
+  removeCircles();
+  console.log("appel de gotoTheme avec id " + id);
+  history.pushState({}, "", "?section=Theme&id=" + id);
+  initTheme(id); // initialisation de 'theme',  statsThemes, calcul stats etc
+  setState("Theme");
+  render();
+}
+
+function initTheme(id) {
+  initUpdateStatsThemes(id);
+  computeThemeStats(id);
+  theme = structuredClone(themes[id]);
+  theme.id = id; // on rajoute l'id sinon il n'est plus là...
+}
+
+function initCustomTheme(id, questions) {
+  // id : string, questions : array(int)
+  theme = {
+    id: id,
+    title: "Thème personnalisé",
+    info: "",
+    questions: questions,
+  };
+  statsThemes[id] = {};
+}
+
 function gotoQuiz() {
-  /* ou gotoQuiz ?*/
+  // theme doit être initialisé.
   history.pushState({}, "", "?section=Quiz&id=" + theme.id);
   setState("Quiz");
-  startQuiz(); // va appeler nextQUestion qui va appeler  render
+  startQuiz(); // va construire le quiz, appeler nextQUestion qui va appeler  render
+}
+
+function gotoEnd() {
+  history.pushState({}, "", "?section=End");
+  setState("End");
+  render();
+}
+
+function gotoGameover() {
+  history.pushState({}, "", "?section=Gameover");
+  setState("Gameover");
+  render();
 }
 
 function isThemeIdValid(id) {
@@ -109,22 +127,15 @@ function processURL() {
 }
 
 window.addEventListener("popstate", (event) => {
-  console.log("popstate");
+  if (state == "Quiz") {
+    // on va interrompre le quiz.
+    user.nbQuizAborted++;
+    // éventuellement remplacer par un preventdefault, puis un confirmQuit ou équivalent ?
+  }
   processURL();
 });
 
 function setState(s) {
   oldState = state;
   state = s;
-}
-
-function initCustomTheme(id, questions) {
-  console.log(" init custom theme, id=" + id + ", questions : " + questions);
-  theme = {
-    id: id,
-    title: "Thème personnalisé",
-    info: "",
-    questions: questions,
-  };
-  statsThemes[id] = {};
 }

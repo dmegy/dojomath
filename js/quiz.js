@@ -130,16 +130,14 @@ function validateAnswer() {
 
   // CHECK GAMEOVER ??
   let maxAchievableResult = quiz.result + quiz.questions.length;
-  let isGameover = maxAchievableResult < MIN_QUIZ_RESULT;
+  let isGameover = maxAchievableResult < MIN_QUIZ_RESULT; // attention changer en cas de quiz custom ?
   if (isGameover) {
-    //alert(
-    //  "=========\nGAMEOVER\n=========\n\nTrop de questions ratées ou sautées"
-    //);
-
-    alertGameover();
-
     user.nbQuizGameover++;
-    gotoTheme(theme.id);
+
+    // avant il y avait le toast et on allait au thème.
+    //alertGameover();
+    //gotoTheme(theme.id);
+    gotoGameover();
     return;
   }
 
@@ -164,15 +162,18 @@ function validateAnswer() {
   else showQuizResults(); // quiz terminé !
 }
 
+// n'est plus utilisée ?
 function confirmQuit() {
-  //apelée par bouton "quitter"
   let text =
     "=======================\nDEMANDE DE CONFIRMATION\n=======================\n\nSouhaites-tu vraiment quitter la partie en cours ?\n\n(Attention, les points de la partie en cours ne seront pas sauvegardés.)";
   if (confirm(text) == true) {
-    user.nbQuizAborted++;
-
-    gotoTheme(theme.id); // ou alors faire une fonction abortQuiz ?
+    abortQuiz();
   }
+}
+
+function abortQuiz() {
+  user.nbQuizAborted++;
+  gotoTheme(theme.id);
 }
 
 function showQuizResults() {
@@ -499,6 +500,7 @@ function notification(message, color) {
   }).showToast();
 }
 
+// deprecated, écran gameover à la place
 function alertGameover() {
   Toastify({
     text: "GAMEOVER\n\n Trop de questions sautées ou ratées !",

@@ -67,7 +67,7 @@
         </div>
 
         <div
-          x-show="state=='Quiz'"
+          x-show="state=='Quiz' && isThemeIdValid(theme?.id)"
           style="
             display: none;
             cursor: pointer;
@@ -543,6 +543,22 @@
             ></div>
           </div>
         </section>
+        <!-- - - - - - G A M E O V E R   - - - - - -->
+        <section
+          id="section-gameover"
+          x-show="(state=='Gameover')"
+          style="display: none"
+        >
+          <div class="gameover-title">GAME OVER</div>
+          <div class="gameover-msg">(Trop de questions ratées ou sautées.)</div>
+          <div
+            class="btn btn-big btn-primary"
+            onclick="gotoQuiz()"
+            style="width: 100%; box-shadow: 0 0 10px black; margin: 3rem 0"
+          >
+            Redémarrer la partie ❯❯
+          </div>
+        </section>
 
         <!-- - - - - - E N D  / Q U I Z  T E R M I N É  - - - - - -->
         <section id="section-end" x-show="(state=='End')" style="display: none">
@@ -725,6 +741,7 @@
             </div>
           </nav>
         </div>
+
         <!-- - - - - -  F O O T E R    Q U I Z  - - - - - - - --->
         <div class="quiz-answer" x-show="state=='Quiz'" style="display: none">
           <div
