@@ -31,6 +31,13 @@ let chapters = [
     ],
   },
   {
+    name: "Combinatoire élémentaire",
+    themes: [
+      { label: "Anagrammes", id: "anagrammes1" },
+      { label: "Plus d'anagrammes", id: "anagrammes2" },
+    ],
+  },
+  {
     name: "Calcul littéral",
     themes: [
       { label: "Fractions", id: "fractions1" },

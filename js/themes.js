@@ -6,6 +6,18 @@ const range = (start, stop) =>
   Array.from({ length: stop - start + 1 }, (_, i) => start + i);
 
 let themes = {
+  anagrammes2: {
+    title: "Anagrammes, bis",
+    info: "Mots plus longs, factorielles.",
+    questions: range(2497,2524),
+    maxPointsPerQuestion: 5,
+  },
+  anagrammes1: {
+    title: "Anagrammes",
+    info: "Mots courts, sans factorielles.",
+    questions: range(2458,2496),
+    maxPointsPerQuestion: 5,
+  },
   additions_2chiffres: {
     title: "Additions à deux chiffres",
     info: "Calculs du type 19+57.",
@@ -22,6 +34,7 @@ let themes = {
     title: "Additions de multiplications",
     info: "Calculs du type 9x7+8x6.",
     questions: range(2384, 2417),
+    maxPointsPerQuestion: 5,
   },
   valeurs_cosinus: {
     title: "Cosinus d'un angle aigu",
