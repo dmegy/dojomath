@@ -4208,42 +4208,42 @@ let themes = {
   groupes_operant: {
     title: "Opérations de groupes",
     info: "Groupes opérant sur un ensemble.",
-    questions: [...range(1849, 1852)],
+    questions: range(1849, 1852),
   },
   groupes: {
     title: "Groupes (et morphismes)",
     info: "Groupes, morphismes de groupes.",
-    questions: [...range(1837, 1848)],
+    questions: range(1837, 1848),
   },
   groupes_ab_finis: {
     title: "Groupes abéliens (finis)",
     info: "Groupes abéliens finis, groupes cycliques.",
-    questions: [...range(1785, 1836)],
+    questions: range(1785, 1836),
   },
   arithmetique_Z: {
     title: "Arithmétique dans Z",
     info: "Divisibilité, division euclidienne, pgcd, équations diophantiennes simples.",
-    questions: [...range(1754, 1784)],
+    questions: range(1754, 1784),
   },
   tables_parentheses1: {
     title: "Tables de multiplication et parenthèses",
     info: "Calcul mental, multiplications avec parenthèses.",
-    questions: [...range(1714, 1753)],
+    questions: range(1714, 1753),
   },
   suites_arithmetiques_variations: {
     title: "Variation des suites arithmétiques",
     info: "Questions sur les suites arithmétiques et leurs variations : croissante, monotonie, caractère borné, majoré etc.",
-    questions: [...range(1660, 1713)],
+    questions: range(1660, 1713),
   },
   suites_arithmetiques: {
     title: "Suites arithmétiques, Généralités",
     info: "Questions sur les suites arithmétiques.",
-    questions: [...range(1586, 1659)],
+    questions: range(1586, 1659),
   },
   sommes_arithmetiques: {
     title: "Sommes arithmétiques",
     info: "Quelques sommes de termes consécutifs de suites arithmétiques. ",
-    questions: [...range(1555, 1585)],
+    questions: range(1555, 1585),
   },
   quadrilateres: {
     title: "Quadrilatères",
@@ -4263,12 +4263,12 @@ let themes = {
   symetries: {
     title: "Symétries des polygones",
     info: "Axes et centres de symétrie des polygones du plan. Attention aux cas particuliers. Par exemple, un carré est un cas particulier de rectangle (ou de losange).",
-    questions: [...range(1274, 1304)],
+    questions: range(1274, 1304),
   },
   fonctions_affines: {
     title: "Fonctions affines",
     info: "Fonctions linéaires et affines, images, antécédents, coefficients directeurs, ordonnée à l'origine...",
-    questions: [...range(1467, 1514)],
+    questions: range(1467, 1514),
   },
   abs1: {
     title: "Valeur absolue",

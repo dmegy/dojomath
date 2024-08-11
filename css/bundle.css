@@ -193,6 +193,55 @@
 }
 
 /* - - - - - - - - - - - - - - - -
+- - - - - - HEADINGS & LINKS   - - - - - 
+- - - - - - - - - - - - - - - - */
+
+h1,
+h2,
+h3,
+h4 {
+  margin: 0;
+  margin-bottom: 1rem;
+  font-weight: 900;
+}
+
+h3 {
+  color: var(--c-secondary-60);
+  margin-bottom: 0.4rem;
+  margin-top: 1rem;
+}
+
+h1 {
+  font-size: 2.4rem;
+}
+h2 {
+  font-size: 2rem;
+}
+h3 {
+  font-size: 1.5rem;
+}
+h4 {
+  font-size: 1.2rem;
+}
+
+a,
+a:active,
+a:hover,
+a:after {
+  color: oklch(70% 20% var(--hue-primary));
+}
+
+.glow {
+  text-shadow: 0 0 0.5em var(--c-text);
+}
+.glow-more {
+  filter: drop-shadow(0 0 0.2rem var(--c-text));
+  text-shadow: 0 0 1em var(--c-text);
+}
+
+
+
+/* - - - - - - - - - - - - - - - -
 - - - - - - M A I N   - - - - - 
 - - - - - - - - - - - - - - - - */
 
@@ -269,48 +318,6 @@ nav {
   justify-content: space-between;
 }
 
-h1,
-h2,
-h3,
-h4 {
-  margin: 0;
-  margin-bottom: 1rem;
-  font-weight: 900;
-}
-
-h3 {
-  color: var(--c-secondary-60);
-  margin-bottom: 0.4rem;
-  margin-top: 1rem;
-}
-
-h1 {
-  font-size: 2.4rem;
-}
-h2 {
-  font-size: 2rem;
-}
-h3 {
-  font-size: 1.5rem;
-}
-h4 {
-  font-size: 1.2rem;
-}
-
-a,
-a:active,
-a:hover,
-a:after {
-  color: oklch(70% 20% var(--hue-primary));
-}
-
-.glow {
-  text-shadow: 0 0 0.5em var(--c-text);
-}
-.glow-more {
-  filter: drop-shadow(0 0 0.2rem var(--c-text));
-  text-shadow: 0 0 1em var(--c-text);
-}
 summary {
   cursor: pointer;
   margin: 0.6em 0;

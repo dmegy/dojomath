@@ -20,7 +20,6 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.css"
     />-->
 
-    <link rel="stylesheet" href="../css/bundle.min.css" />
     <link rel="stylesheet" href="styles-enseignants.css" />
     <script src="../js/questions.js"></script>
     <link
@@ -31,9 +30,10 @@
 
   <body>
     <div class="body-container">
-      <div style="padding: 1rem">
-        <h1>DojoMath > Enseignants</h1>
-        <h3>Catalogue général des questions</h3>
+      <header>
+          <h2>DojoMath > Enseignants</h2>
+      </header>
+      <main>
         <p>
           Cette page affiche toutes les questions (classés par identifiant donc
           par ordre d'ajout, pas par ordre thématique) de l'application. Ceci
@@ -45,14 +45,13 @@
           (Avertissement : il y a plusieurs milliers de questions, MathJax met
           plusieurs secondes à mettre tout ça en forme.)
         </p>
-        <div id="mainDiv">Chargement...</div>
-      </div>
+        <table id="mainTable"></table>
+      </main>
     </div>
 
     <script>
       // création de la table (questions déjà chargées en synchrone)
-      let s = `<table id="mainTable">
-         <thead><tr>
+      let s = `<thead><tr>
              <th>N°</th>
              <th style="width:2rem">V/F</th>
              <th style="text-align:left;">Énoncé</th>
@@ -70,8 +69,8 @@
       </tr>`;
         s += ligne;
       }
-      s += "</tbody></table>";
-      document.getElementById("mainDiv").innerHTML = s;
+      s += "</tbody>";
+      document.getElementById("mainTable").innerHTML = s;
     </script>
     <script>
       MathJax = {
