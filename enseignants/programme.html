@@ -13,104 +13,121 @@
       content="Consolidation en  mathématiques: programme"
     />
     <meta name="author" content="Damien Mégy" />
-    <title>Consolidation maths : programme complet</title>
-
+    <title>DojoMath Enseignants : programme complet</title>
     <link
+      href="https://cdn.datatables.net/2.1.3/css/dataTables.dataTables.min.css"
       rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.css"
     />
 
-    <script type="text/javascript" src="../js/1themes.js"></script>
-    <script type="text/javascript" src="../js/1chapters.js"></script>
+    <link rel="stylesheet" href="styles-enseignants.css" />
 
-    <style>
-      .nowrap {
-        max-width: 100%;
-        white-space: nowrap;
-      }
-      body {
-        margin: 0;
-        padding: 1rem;
-      }
-    </style>
+    <script type="text/javascript" src="../js/chapters.js"></script>
+    <script type="text/javascript" src="../js/themes.js"></script>
+    <script type="text/javascript" src="../js/questions.js"></script>
   </head>
 
   <body>
-    <h2>DojoMath : Questions classées par chapitres et sous-chapitres</h2>
-    <p>
-      Cette page affiche toutes les questions de l'application classées par
-      chapitres puis thèmes. Ceci permet de vérifier ce qui est proposé par
-      l'appli, et éventuellement de suggérer l'ajout ou la suppression de
-      questions ou de thèmes.
-    </p>
-    <p>
-      (Avertissement : il y a plusieurs centaines de questions, MathJax met
-      plusieurs secondes à mettre tout ça en forme.)
-    </p>
-    <div id="mainDiv">Chargement...</div>
+    <div class="body-container">
+      <header>
+        <h2>DojoMath > Enseignants > Programme Complet</h2>
+      </header>
+      <main>
+        <p id="top">
+          Il est possible de trier les questions par chapitre, sous-chapitre et
+          numéro, croissant ou décroissant, et de les filtrer par mot(s)-clé.
+          Par défaut, les questions sont affichées dix par dix mais ceci est
+          modfiable. Le menu <a href="#bottom">en bas de page</a> permet
+          d'afficher les questions suivantes ou précédentes.
+        </p>
 
-    <script type="text/javascript">
-      questions = [];
-      fetch("../questions.json?again=" + Math.random())
-        .then((response) => response.json())
-        .then((json) => {
-          questions = json;
-          console.log("Questions loaded from json");
-          createTable();
-        });
-      //
-      function createTable() {
-        let s = `<table id="mainTable" class="table table-striped table-bordered table-sm">
-            <thead><tr>
-                <th>Chapitre > thème</th>
-                <th>Quest°</th>
-                <th>V/F</th>
-                <th>Énoncé</th>
-            </tr>
-            </thead>
-            <tbody>`;
-        for (let i = 0; i < chapters.length; i++) {
-          for (let j = 0; j < chapters[i].themes.length; j++) {
-            let themeId = chapters[i].themes[j].id;
-            let themeLabel = chapters[i].themes[j].label;
-            for (let k = 0; k < themes[themeId].questions.length; k++) {
-              let questNum = themes[themeId].questions[k];
-              let ligne = `<tr>
-        <td class="nowrap">${i}.${j} : ${themeId} > ${themeLabel}</td>
-        <td>${questNum}</td>
-        <td>${questions[questNum].answer ? "V" : "F"}</td>
-        <td>${questions[questNum].statement}</td>
-        </tr>`;
-              s += ligne;
-            }
+        <table id="mainTable"></table>
+        <p align="right" id="bottom">
+          Les boutons ci-dessus permettent d'afficher les questions suivantes ou
+          précédentes.<br />
+
+          <a href="#top">Remonter en haut de la page.</a>
+        </p>
+      </main>
+    </div>
+
+    <script>
+      let s = `<thead><tr>
+              <th>Chapitre</th>
+              <th>Sous-chap. (themeID)</th>
+              <th>N°</th>
+              <th>?</th>
+              <th>Énoncé</th>
+          </tr>
+          </thead>
+          <tbody>`;
+      for (let i = 0; i < chapters.length; i++) {
+        for (let j = 0; j < chapters[i].themes.length; j++) {
+          let themeId = chapters[i].themes[j].id;
+          let themeLabel = chapters[i].themes[j].label;
+          for (let k = 0; k < themes[themeId].questions.length; k++) {
+            let questNum = themes[themeId].questions[k];
+            let ligne = `<tr>
+              <td class="no-wrap">${i}. ${chapters[i].name}</td>
+              <td>${themeLabel} (${themeId})</td>
+              <td>${questNum}</td>
+              <td>${questions[questNum].answer ? "VRAI" : "FAUX"}</td>
+              <td>${questions[questNum].statement}</td>
+            </tr>`;
+            s += ligne;
           }
         }
-        s += "</tbody></table>";
-        document.getElementById("mainDiv").innerHTML = s;
       }
+      s += "</tbody>";
+      document.getElementById("mainTable").innerHTML = s;
     </script>
 
-    <script type="text/x-mathjax-config">
-      MathJax.Hub.Config({
-      	tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]},
-      	TeX: {
-        		Macros: {
-        			N: "{\\mathbb{N}}",
-        			Z: "{\\mathbb{Z}}",
-        			Q: "{\\mathbb{Q}}",
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [
+            ["$", "$"],
+            ["\\(", "\\)"],
+          ],
+          macros: {
+            N: "{\\mathbb{N}}",
+            Z: "{\\mathbb{Z}}",
+            Q: "{\\mathbb{Q}}",
             R: "{\\mathbb{R}}",
             C: "{\\mathbb{C}}",
             U: "{\\mathbb{U}}",
             P: "{\\mathbb{P}}",
             llbracket: "{[\\![}",
-            rrbracket: "{]\\!]}"
-          }
-        }
+            rrbracket: "{]\\!]}",
+            tr: "{\\mathrm{tr}}",
+            rg: "{\\mathrm{rg}}",
+            im: "{\\mathrm{im}}",
+            id: "{\\mathrm{id}}",
+            Mat: "{\\mathrm{Mat}}",
+          },
+          svg: {
+            fontCache: "global",
+          },
+        },
+      };
+    </script>
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <script src="https://cdn.datatables.net/2.1.3/js/dataTables.min.js"></script>
+    <script>
+      let table = new DataTable("#mainTable", {
+        pageLength: 10,
+        drawCallback: function (settings) {
+          if (MathJax.typeset) MathJax.typeset();
+          else
+            window.setTimeout(() => {
+              if (MathJax.typeset) MathJax.typeset();
+            }, 1000);
+        },
       });
     </script>
     <script
-      type="text/javascript"
-      src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-MML-AM_CHTML"
+      id="MathJax-script"
+      async
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"
     ></script>
   </body>
 </html>

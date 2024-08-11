@@ -15,10 +15,8 @@
     <meta name="author" content="Damien Mégy" />
     <title>DojoMath.fr : Catalogue complet des questions</title>
 
-    <!--<link
-      rel="stylesheet"
-      href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.css"
-    />-->
+
+    <link href="https://cdn.datatables.net/2.1.3/css/dataTables.dataTables.min.css" rel="stylesheet">
 
     <link rel="stylesheet" href="styles-enseignants.css" />
     <script src="../js/questions.js"></script>
@@ -31,20 +29,13 @@
   <body>
     <div class="body-container">
       <header>
-          <h2>DojoMath > Enseignants</h2>
+          <h2>DojoMath > Enseignants > Catalogue</h2>
       </header>
       <main>
         <p>
-          Cette page affiche toutes les questions (classés par identifiant donc
-          par ordre d'ajout, pas par ordre thématique) de l'application. Ceci
-          permet de faire des listes de questions (et de vérifier les
-          questions). Utilisation : faire une recherche avec Cmd+F pour trouver
-          des exos sur les mots-clés voulus.
+          Cette page affiche toutes les questions. Il est possible de les trier et de les filtrer par mot-clé.
         </p>
-        <p>
-          (Avertissement : il y a plusieurs milliers de questions, MathJax met
-          plusieurs secondes à mettre tout ça en forme.)
-        </p>
+
         <table id="mainTable"></table>
       </main>
     </div>
@@ -53,7 +44,7 @@
       // création de la table (questions déjà chargées en synchrone)
       let s = `<thead><tr>
              <th>N°</th>
-             <th style="width:2rem">V/F</th>
+             <th style="width:2rem">?</th>
              <th style="text-align:left;">Énoncé</th>
          </tr>
          </thead>
@@ -64,7 +55,7 @@
         let ligne = `
       <tr>
       	<td>${i}</td>
-      	<td>${questions[i].answer ? "V" : "F"}</td>
+      	<td>${questions[i].answer ? "VRAI" : "FAUX"}</td>
       	<td>${questions[i].statement}</td>
       </tr>`;
         s += ligne;
@@ -100,6 +91,19 @@
           },
         },
       };
+    </script>
+    <script src="https://code.jquery.com/jquery-3.7.1.js"></script>
+    <script src="https://cdn.datatables.net/2.1.3/js/dataTables.min.js"></script>
+    <script>
+      let table = new DataTable('#mainTable', {
+        pageLength: 20,
+        drawCallback: function (settings) {
+          if(MathJax.typeset) MathJax.typeset();
+          else window.setTimeout(() => {
+            if(MathJax.typeset) MathJax.typeset();
+          }, 1000);
+        }
+    });
     </script>
     <script
       id="MathJax-script"

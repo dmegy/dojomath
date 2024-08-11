@@ -17,7 +17,7 @@ body {
   position: relative;
   margin: auto;
   box-shadow: 0 0 40px var(--c-primary-20-desat);
-  width: min(100dvw, var(--max-width));
+  width: min(100dvw, 1200px);
   min-height: 100dvh;
 }
 
@@ -46,17 +46,23 @@ main {
   padding: 1rem;
 }
 
+/* overwrite : */
+h2 {
+  margin: 0;
+}
+
+/*
 .nowrap {
   max-width: 100%;
   white-space: nowrap;
-}
+}*/
 td,
 th {
   padding: 0.4rem;
 }
 th,
 tr:nth-child(even) {
-  background-color: var(--c-primary-10-desat);
+  background-color: oklch(10% 10% var(--hue-primary) / 30%);
 }
 
 .btn-submit {
@@ -67,4 +73,8 @@ tr:nth-child(even) {
   font-size: 1.2rem;
   font-family: Nunito, Arial;
   color: var(--c-text);
+}
+
+.no-wrap {
+  text-wrap: nowrap;
 }
