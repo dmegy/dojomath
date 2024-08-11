@@ -1,5 +1,5 @@
 let t0 = performance.timeOrigin + performance.now();
-
+const SITE_NAME = "DojoMath";
 const MIN_QUIZ_RESULT = 2; // result \in [-10,10] attention certains quiz peuvent faire moins de 2 questions ?
 const MAX_QUIZ_LENGTH = 10;
 const MAX_POINTS_PER_QUESTION = 10; //maximum de pts que l'on peut gagner à chaque question
@@ -28,8 +28,8 @@ let oldState = undefined;
 let state = "Loading";
 // les states ont "Loading", "Home", "Settings", "Statistics", "Chapters", "Theme", "Quiz" et "End"
 let sectionLabels = {
-  Loading: "DojoMath.fr",
-  Home: "DojoMath.fr",
+  Loading: SITE_NAME + ".fr",
+  Home: SITE_NAME + ".fr",
   Profile: "Préférences",
   Statistics: "Progression",
   Highscores: "Highscores",

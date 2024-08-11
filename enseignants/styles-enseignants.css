@@ -51,6 +51,13 @@ h2 {
   margin: 0;
 }
 
+a,
+a:active,
+a:hover,
+a:after {
+  color: oklch(95% 10% var(--hue-primary));
+}
+
 /*
 .nowrap {
   max-width: 100%;
@@ -63,6 +70,10 @@ th {
 th,
 tr:nth-child(even) {
   background-color: oklch(10% 10% var(--hue-primary) / 30%);
+}
+
+li {
+  margin: 0.2rem;
 }
 
 .btn-submit {

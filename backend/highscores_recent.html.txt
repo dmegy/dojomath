@@ -1,12 +1,12 @@
 <table width='100%'><tbody>
-<tr><td style='width:2ch'></td><td>Teddyℝ</td><td>(92)</td><td align='right'>29805 pts</td></tr>
-<tr><td style='width:2ch'></td><td>D Yun</td><td>(81)</td><td align='right'>4590 pts</td></tr>
+<tr><td style='width:2ch'></td><td>D Yun</td><td>(81)</td><td align='right'>28678 pts</td></tr>
+<tr><td style='width:2ch'></td><td>test</td><td>(12)</td><td align='right'>10542 pts</td></tr>
 <tr><td style='width:2ch'></td><td>Jjjjjjjjjj</td><td>(88)</td><td align='right'>4242 pts</td></tr>
-<tr><td style='width:2ch'></td><td>Teddyℝ</td><td></td><td align='right'>2846 pts</td></tr>
+<tr><td style='width:2ch'></td><td>chromeUser</td><td>(75)</td><td align='right'>969 pts</td></tr>
 <tr><td style='width:2ch'></td><td>o9N9c4Fvd</td><td></td><td align='right'>871 pts</td></tr>
-<tr><td style='width:2ch'></td><td>P4QncsR</td><td>(54)</td><td align='right'>669 pts</td></tr>
-<tr><td style='width:2ch'></td><td>chromeUser</td><td>(75)</td><td align='right'>574 pts</td></tr>
-<tr><td style='width:2ch'></td><td>firemob</td><td>(54)</td><td align='right'>507 pts</td></tr>
-<tr><td style='width:2ch'></td><td>Chromob</td><td>(01)</td><td align='right'>290 pts</td></tr>
-<tr><td style='width:2ch'></td><td>P4Zects</td><td></td><td align='right'>75 pts</td></tr>
+<tr><td style='width:2ch'></td><td>∫ᵧ dz/z ≠0</td><td>(04)</td><td align='right'>840 pts</td></tr>
+<tr><td style='width:2ch'></td><td>Ubaye🔥</td><td>(04)</td><td align='right'>604 pts</td></tr>
+<tr><td style='width:2ch'></td><td>MiaouK</td><td>(54)</td><td align='right'>341 pts</td></tr>
+<tr><td style='width:2ch'></td><td>𝕋𝔽𝕁𝕄²</td><td>(54)</td><td align='right'>260 pts</td></tr>
+<tr><td style='width:2ch'></td><td>riri138</td><td>(75)</td><td align='right'>206 pts</td></tr>
 </tbody></table>

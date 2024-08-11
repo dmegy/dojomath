@@ -28,9 +28,9 @@ if (isset($_SESSION["user_id"])) {
 </head>
 <body>
     <div class="body-container">
-        <header>
-            <h2>DojoMath > Enseignants</h2>
-        </header>
+    <header>
+          <h2><a target="_blank" href="https://www.dojomath.fr">DojoMath</a> > Enseignants </h2>
+      </header>
         <main>
         
         <?php if (!isset($user)): ?>
@@ -72,24 +72,37 @@ if (isset($_SESSION["user_id"])) {
             Se <a href="logout.php">déconnecter</a>.</p>
             <p>Attention, la page est en construction !</p>
             
-            <h3>Catalogues</h3>
+            <h3>Pour naviguer dans le contenu : catalogues</h3>
             <ul>
-                <li><a href="catalogue.php">Toutes les questions</a> en vrac. (Filtrage possible par mot-clé.)</li>
-              <li><a href="programme.php">Les questions triées par chapitre et thème</a>.</li>
+                
+              <li><a href="catalogue-questions-des-chapitres.php">Toutes les questions du site, triables et filtrables par chapitre et thème, numéro, mot(s)-clé.</a>.</li>
+              <li><a href="catalogue-questions.php">Toutes les questions</a> en vrac. 
+              Ceci inclut potentiellement des questions qui sont dans la base de données, mais qui ne sont pas utilisées dans les thèmes par défaut du site.</li>
+              <li>La liste de <a href="catalogue-themes.php">tous les thèmes</a> avec possibilité d'afficher/masquer la liste des questions de chaque thème.</li>
         </ul>
 
-            <h3>Liens directs</h3>
+            <h3>Pour envoyer aux élèves : liens directs vers chapitres, thèmes et quiz</h3>
             <ul>
-              <li>La liste des chapitres : 
-                <a href="https://www.dojomath.fr/?section=Chapters" target="_blank">https://www.dojomath.fr/?section=Chapters</a>,
+              <li>Lien envoyant directement vers la liste des chapitres et thèmes : 
+                <a href="https://www.dojomath.fr/?section=Chapters" target="_blank">https://www.dojomath.fr/?section=Chapters</a>.
               </li>
-              <li>Un chapitre en particulier :
-                <a href="https://www.dojomath.fr/?section=Theme&id=quadrilateres" target="_blank">https://www.dojomath.fr/?section=Theme&id=quadrilateres</a>,</li>
-              <li>Départ automatique de Quiz sur un thème choisi :
-                <a href="https://www.dojomath.fr/?section=Quiz&id=quadrilateres" target="_blank">https://www.dojomath.fr/?section=Quiz&id=quadrilateres</a>.</li>
+              <li>Lien vers un thème standard : https://www.dojomath.fr/?section=Theme&id=[themeId].<br>
+                Exemple :  <a href="https://www.dojomath.fr/?section=Theme&id=quadrilateres" target="_blank">https://www.dojomath.fr/?section=Theme&id=quadrilateres</a>.
+                Les identifiants des thèmes sont visibles dans les catalogues.</li>
+              <li>Lien vers un départ de quiz sur un thème standard : https://www.dojomath.fr/?section=Quiz&id=[themeId].<br>
+              Exemple :  <a href="https://www.dojomath.fr/?section=Quiz&id=quadrilateres" target="_blank">https://www.dojomath.fr/?section=Quiz&id=quadrilateres</a>.</li>
+              <li>Lien vers un départ de quiz sur un thème personnalisé : https://www.dojomath.fr/?section=Quiz&id=[customId].<br>
+                  Les ID personnalisés sont simplement des suites de numéros de questions séparés par des virgules.
+                  Exemple : <a href="https://www.dojomath.fr/?section=Quiz&id=1,2,30,1456,2178" target="_blank">https://www.dojomath.fr/?section=Quiz&id=1,2,30,1456,2178</a>
+              lance un Quiz sur les questions 1,2,30,1456,2178.</li>
             </ul>
 
-            <h3>Quiz personnalisés</h3>
+            <h3>Pour monitorer les résultats des élèves</h3>
+
+            <p>La page https://www.dojomath.fr/enseignants/resultats.php?id=IDENTIFIANT 
+          affiche la liste des personnes ayant fini un quiz sur le thème 'IDENTIFIANT', ou 'IDENTIFIANT' est l'identifiant personnalisé, par exemple '1,2,30,1456,2178'.
+        Par exemple, la page <a href="resultats.php?id=1,2,30,1456,2178" target="_blank">https://www.dojomath.fr/enseignants/resultats.php?id=1,2,30,1456,2178</a>
+         montre toutes les personnes ayant fini un quiz sur le thème personnalisé "1,2,30,1456,2178".</p>
 
         <?php endif; ?>
         </main>

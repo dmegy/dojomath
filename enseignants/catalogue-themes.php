@@ -1,3 +1,9 @@
+<?php
+session_start();
+
+include "gotoIndexIfNotConnected.php";
+
+?>
 <!doctype html>
 <html lang="fr">
   <head>
@@ -24,34 +30,30 @@
     <script type="text/javascript" src="../js/chapters.js"></script>
     <script type="text/javascript" src="../js/themes.js"></script>
     <script type="text/javascript" src="../js/questions.js"></script>
+    <style>
+      summary{margin:.2rem;font-size:1.2rem}
+    </style>
   </head>
 
   <body>
     <div class="body-container">
-      <header>
-        <h2>DojoMath > Enseignants > Programme Complet</h2>
+    <header>
+          <h2><a target="_blank" href="https://www.dojomath.fr">DojoMath</a> > <a href="https://www.dojomath.fr/enseignants/">Enseignants</a> > Catalogue des questions, chapitres et thèmes</h2>
       </header>
-      <main>
-        <p id="top">
-          Il est possible de trier les questions par chapitre, sous-chapitre et
-          numéro, croissant ou décroissant, et de les filtrer par mot(s)-clé.
-          Par défaut, les questions sont affichées dix par dix mais ceci est
-          modfiable. Le menu <a href="#bottom">en bas de page</a> permet
-          d'afficher les questions suivantes ou précédentes.
-        </p>
-
-        <table id="mainTable"></table>
-        <p align="right" id="bottom">
-          Les boutons ci-dessus permettent d'afficher les questions suivantes ou
-          précédentes.<br />
-
-          <a href="#top">Remonter en haut de la page.</a>
-        </p>
+      <main  id="main">
+        
       </main>
     </div>
 
     <script>
-      let s = `<thead><tr>
+      let s="";
+      for(let themeId in themes){
+        s+=`<details><summary>${themes[themeId].title} (id : '${themeId}')</summary>`;
+        s+=`<div>Lien direct vers l'accueil du thème : <a target="_blank" href="https://www.dojomath.fr/?section=Theme&id=${themeId}">https://www.dojomath.fr/?section=Theme&id=${themeId}</a>.</div>`;
+        s+=`<div>Lien direct vers un quiz de 10 questions sur ce thème : <a target="_blank" href="https://www.dojomath.fr/?section=Quiz&id=${themeId}">https://www.dojomath.fr/?section=Quiz&id=${themeId}</a>.</div>`;
+        s+="</details>";
+      }
+      /*s = `<thead><tr>
               <th>Chapitre</th>
               <th>Sous-chap. (themeID)</th>
               <th>N°</th>
@@ -77,8 +79,8 @@
           }
         }
       }
-      s += "</tbody>";
-      document.getElementById("mainTable").innerHTML = s;
+      s += "</tbody>";*/
+      document.getElementById("main").innerHTML = s;
     </script>
 
     <script>

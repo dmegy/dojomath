@@ -1,3 +1,7 @@
+<?php
+session_start();
+include "goto-index-if-not-connected.php";
+?>
 <!doctype html>
 <html lang="fr">
   <head>
@@ -29,11 +33,12 @@
   <body>
     <div class="body-container">
       <header>
-          <h2>DojoMath > Enseignants > Catalogue</h2>
+          <h2><a target="_blank" href="https://www.dojomath.fr">DojoMath</a> > <a href="https://www.dojomath.fr/enseignants/">Enseignants</a> > Catalogue des questions</h2>
       </header>
       <main>
         <p>
-          Cette page affiche toutes les questions. Il est possible de les trier et de les filtrer par mot-clé.
+          Cette page affiche toutes les questions de la base de données (en vrac, sans afficher leur appartenance à un chapitre ou thème particulier).
+          Il est possible de les trier et de les filtrer par mot-clé.
         </p>
 
         <table id="mainTable"></table>
