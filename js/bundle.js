@@ -4271,13 +4271,13 @@ function checkForUpdates() {
   let timeSinceUpdateCheck = Date.now() - lastUpdateCheckTime;
   if (timeSinceUpdateCheck < UPDATE_TIME) return;
 
+  if (state !== "Chapters") return;
+
   lastUpdateCheckTime = Date.now();
   if (!window.navigator.onLine) {
-    console.log("checking for updates : offline");
+    console.log("Cannot check for updates : offline");
     return;
   }
-
-  if (state == "Theme" || state == "Quiz" || state == "End") return;
 
   location.reload();
 }
