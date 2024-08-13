@@ -129,6 +129,21 @@ function processURL() {
   }
 }
 
+function checkForUpdates() {
+  let timeSinceUpdateCheck = Date.now() - lastUpdateCheckTime;
+  if (timeSinceUpdateCheck < UPDATE_TIME) return;
+
+  lastUpdateCheckTime = Date.now();
+  if (!window.navigator.onLine) {
+    console.log("checking for updates : offline");
+    return;
+  }
+
+  if (state == "Theme" || state == "Quiz" || state == "End") return;
+
+  location.reload();
+}
+
 window.addEventListener("popstate", (event) => {
   if (state == "Quiz") {
     // on va interrompre le quiz.

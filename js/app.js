@@ -1,4 +1,5 @@
-let t0 = performance.timeOrigin + performance.now();
+let t0 = performance.timeOrigin + performance.now(); // pour les ID
+let lastUpdateCheckTime = Date.now();
 const SITE_NAME = "DojoMath";
 const MIN_QUIZ_RESULT = 2; // result \in [-10,10] attention certains quiz peuvent faire moins de 2 questions ?
 const MAX_QUIZ_LENGTH = 10;
@@ -15,13 +16,13 @@ const HAPPY_HOUR_LIST = [
 ]; // pour les points doublés :
 
 // - - - - - FAUSSE CONSTANTES, pouvant être changées par exemple dans la console.
-
+let UPDATE_TIME = 1000 * 3600 * 24; // nb de millisec pour check updates et  essayer de refresh si online
 let SHOW_HIDDEN_THEMES = false;
 let SHOW_HIDDEN_CHAPTERS = false;
+
+// - - - -
 let custom = false; //sera mis à true par le router si c'est un quiz custom. Controle certains affichages custom
-
 let questions = []; // Pour json. Commenter si questions loadées depuis js.
-
 let questionNumber; // int, question courante
 let question; // question courante : object
 let oldState = undefined;
@@ -314,6 +315,7 @@ function xHtml() {
 // éventuellement coder le x-for pour le composant de références de thèmes, avec liste de liens à afficher...
 
 function render() {
+  checkForUpdates();
   adjustPoints(); // vérification rudimentaire des points et correction systématique
   xShow();
   xHtml();
