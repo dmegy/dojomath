@@ -6,16 +6,33 @@ const range = (start, stop) =>
   Array.from({ length: stop - start + 1 }, (_, i) => start + i);
 
 let themes = {
+  sophie_germain: {
+    title: "Sophie Germain",
+    info: "Vie et travaux de Sophie Germain, matématicienne.",
+    questions: range(2572,2594),
+    maxPointsPerQuestion: 3,
+  },
+  permutations_conditions: {
+    title: "Permutations avec conditions",
+    info: "Questions portant sur le nombre de façon de permuter les lettres d'un mot, mais avec des contraintes ou conditions supplémentaires : commencer par une consonne, commencer ou finir par une voyelle etc.",
+    questions: range(2543,2571),
+  },
+  permutations1: {
+    title: "Permutations",
+    info: "Questions portant sur le nombre de façon de permuter les lettres d'un mot par exemple.",
+    questions: range(2524,2542),
+    maxPointsPerQuestion: 5,
+  },
   anagrammes2: {
     title: "Anagrammes, bis",
     info: "Mots plus longs, factorielles.",
-    questions: range(2497,2524),
+    questions: range(2492,2523),
     maxPointsPerQuestion: 5,
   },
   anagrammes1: {
     title: "Anagrammes",
     info: "Mots courts, sans factorielles.",
-    questions: range(2458,2496),
+    questions: range(2458,2491),
     maxPointsPerQuestion: 5,
   },
   additions_2chiffres: {

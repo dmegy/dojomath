@@ -6,6 +6,12 @@
 
 let chapters = [
   {
+    name: "Histoire des maths",
+    themes: [
+      { label: "Sophie Germain", id: "sophie_germain" },
+    ],
+  },
+  {
     name: "Calcul mental",
     themes: [
       { label: "Additions", id: "additions_2chiffres" },
@@ -17,22 +23,24 @@ let chapters = [
     ],
   },
   {
-    name: "Géométrie élémentaire",
+    name: "Géométrie",
     themes: [
       { label: "Quadrilatères", id: "quadrilateres" },
       { label: "Symétries", id: "symetries" },
     ],
   },
   {
-    name: "Trigonométrie élémentaire",
+    name: "Trigonométrie",
     themes: [
       { label: "Cosinus", id: "valeurs_cosinus" },
       { label: "Comparaisons de cos", id: "comparaisons_cosinus" },
     ],
   },
   {
-    name: "Combinatoire élémentaire",
+    name: "Combinatoire",
     themes: [
+      { label: "Permutations", id: "permutations1" },
+      { label: "...avec conditions", id: "permutations_conditions" },
       { label: "Anagrammes", id: "anagrammes1" },
       { label: "Plus d'anagrammes", id: "anagrammes2" },
     ],

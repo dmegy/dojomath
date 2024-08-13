@@ -4,7 +4,7 @@ $is_invalid = false;
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     
-    include 'database.php';
+    include_once 'database.php';
 
     $email = $_POST['email'];
     
@@ -41,9 +41,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 </head>
 <body>
     <div class="body-container">
-        <header>
-            <h2>DojoMath > Enseignants</h2>
-        </header>
+        <?php include "header-body.php"; ?>
         <main>
             <h3>Connexion</h3>
             
@@ -61,6 +59,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 
                 <button>Log in</button>
             </form>
+            <p>Si vous ne possédez pas encore de compte enseignant, vous pouvez <a href="signup.html">en créer un</a>.</p>
+            <p>Il suffit de fournir un email professionnel d'académie, du type "nom@ac-???.fr", ou un email de l'université de Lorraine.</p>
         </main>
     </div>
 </body>

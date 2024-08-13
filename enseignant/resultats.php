@@ -1,3 +1,7 @@
+<?php
+session_start();
+include "gotoIndexIfNotConnected.php";
+?>
 <!doctype html>
 <html lang="fr">
   <head>
@@ -10,33 +14,21 @@
   </head>
   <body>
     <div class="body-container">
-    <header class="glow">DojoMath.fr > Enseignants > Résultats </header>
+    <?php include "header-body.php"; ?>
     <main>
         <section>
 <?php
 
 
-
-// Récupérer le paramètre 'id' depuis la requête GET
 $quizThemeId = $_GET['id'] ?? null;
 
-$message_accueil = "<h3>Présentation de DojoMath</h3>";
-$message_accueil .= "<p><a href='https://www.dojomath.fr/' target='_blank'>DojoMath.fr</a> est un site de quiz mathématiques de type vrai ou faux. Il propose de nombreux thèmes préselectionnés, de niveau collège, lycée et supérieur.</p>\n";
-$message_accueil .= "<h3>DojoMath pour enseignants</h3>";
-$message_accueil .= "<p>DojoMath offre également la possibilité aux enseignants de mettre au point leur propres questionnaires à partir d'un catalogue de questions. Le questionnaire peut ensuite être envoyé aux élèves au moyen d'un lien ou QRcode.</p>\n";
-$message_accueil .= "<h3>Fonctionnement de cette page</h3>";
-$message_accueil .= "<p>Cette page permet aux enseignant de visualiser les résultats de leurs élèves. Il faut pour cela entrer l'identifiant du quiz dans le formulaire ⤵️ en bas de page ⤵️.</p>\n";
-
-
-// Vérifier si 'id' est fourni, ou bien s'il est "vide"
 if ($quizThemeId === null || trim($quizThemeId) === "") {
     echo "<p>⚠️ Aucun identifiant fourni</p><hr>"; 
-    echo $message_accueil;
+    echo "<h3>Fonctionnement de cette page</h3>";
+    echo "<p>Cette page permet aux enseignant de visualiser les résultats de leurs élèves. Il faut pour cela entrer l'identifiant du quiz dans le formulaire ⤵️ en bas de page ⤵️.</p>\n";
     }
 
 else{
-
-    // Connexion à la base de données
     try {
         $pdo = new PDO('sqlite:../backend/database/database.db');
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
@@ -51,6 +43,8 @@ else{
             FROM FinishedQuizzes 
             WHERE QuizThemeId = :quizThemeId
         ");
+
+        // SI BESOIN DE PERFORMANCE : rajouter ORDER BY DateTime DESC LIMIT 100
 
         // Liaison des paramètres
         $stmt->bindParam(':quizThemeId', $quizThemeId, PDO::PARAM_STR);
@@ -67,7 +61,7 @@ else{
             echo $message_accueil;
         } else {
             // Afficher les résultats
-            echo "<h1>Résultats pour le Quiz '".$quizThemeId."'</h1>";
+            echo "<h4>Dernières parties terminées pour le theme d'identifiant «".$quizThemeId."»</h4>";
             echo "<p>En plus des notes obtenues lors du quiz, la page affiche également le nombre total de points du joueur (cumulés sur plusieurs parties), le 'Combo', c'est-à-dire le nombre de bonnes réponses consécutives actuelles, et le 'Streak' c'est-à-dire le nombre de jours consécutifs d'activité. </p>";
             echo "<table id='myTable'>";
             echo "<thead><tr><th>Date</th><th>User ID</th><th>Nom</th><th>Note</th><th>Points</th><th>Combo</th><th>Streak</th></tr></thead><tbody>";

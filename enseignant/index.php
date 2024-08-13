@@ -28,9 +28,7 @@ if (isset($_SESSION["user_id"])) {
 </head>
 <body>
     <div class="body-container">
-    <header>
-          <h2><a target="_blank" href="https://www.dojomath.fr">DojoMath</a> > Enseignants </h2>
-      </header>
+    <?php include "header-body.php"; ?>
         <main>
         
         <?php if (!isset($user)): ?>

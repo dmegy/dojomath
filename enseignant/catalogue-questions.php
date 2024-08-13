@@ -32,9 +32,7 @@ include "goto-index-if-not-connected.php";
 
   <body>
     <div class="body-container">
-      <header>
-          <h2><a target="_blank" href="https://www.dojomath.fr">DojoMath</a> > <a href="https://www.dojomath.fr/enseignants/">Enseignants</a> > Catalogue des questions</h2>
-      </header>
+      <?php include "header-body.php"; ?>
       <main>
         <p>
           Cette page affiche toutes les questions de la base de données (en vrac, sans afficher leur appartenance à un chapitre ou thème particulier).

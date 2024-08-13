@@ -120,7 +120,7 @@
             Des bonus sont octroyés pour des séries de bonnes réponses
             consécutives.
           </p>
-          <h3>Démarrage rapide</h3>
+          <h3>Pour commencer</h3>
           <p>
             Clique sur l'icône de loupe «
             <svg
@@ -128,7 +128,8 @@
               x-html="svgPathFasMagnifyingGlass"
               style="fill: var(--c-text); height: 1rem"
             ></svg>
-            » en bas à droite de l'écran.
+            » en bas à droite de l'écran, choisis un chapitre et lance une
+            partie !
           </p>
           <div style="padding: 2rem 0; opacity: 50%">
             <hr style="height: 1px; color: var(--c-text)" />
@@ -136,10 +137,9 @@
               DojoMath est une création du
               <a target="_blanck" href="https://dmegy.perso.math.cnrs.fr/club"
                 >Club Mathématique de Nancy</a
-              >. Page d'<a href="readme.html" target="_blank"
-                >informations générales</a
-              >
-              (dont infos pour enseignants).
+              >.<br />
+              <a href="readme.html" target="_blank">Informations générales</a>
+              -- <a href="enseignant/" target="_blank">Espace enseignant</a>
             </p>
 
             <p>
@@ -414,6 +414,10 @@
           style="--hue-current: var(--hue-secondary); display: none"
           x-show="(state=='Chapters')"
         >
+          <div>
+            <span x-html="questions.length"></span> questions dans
+            <span x-html="Object.keys(themes).length"></span> thèmes.
+          </div>
           <div x-html="htmlChapters()"></div>
         </section>
 
@@ -511,15 +515,27 @@
               ></div>
             </div>
             <div
-              class="btn btn-big btn-primary"
-              onclick="gotoQuiz()"
               style="
                 width: 100%;
-                box-shadow: 0 0 10px black;
                 margin-bottom: 1rem;
+                display: flex;
+                justify-content: space-between;
               "
             >
-              Démarrer une partie ❯❯
+              <div
+                class="btn btn-big btn-secondary"
+                onclick="goto('Chapters')"
+                style="width: calc(50% - 0.5rem)"
+              >
+                ❮❮ Retour
+              </div>
+              <div
+                class="btn btn-big btn-primary"
+                onclick="gotoQuiz()"
+                style="width: calc(50% - 0.5rem)"
+              >
+                Démarrer ❯❯
+              </div>
             </div>
           </div>
         </section>
