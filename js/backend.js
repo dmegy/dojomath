@@ -25,7 +25,7 @@ function sendStatistics() {
   });
 }
 
-window.addEventListener("DOMContentLoaded", () => {
+window.addEventListener("load", () => {
   getHighscores(); // fetch un fichier texte et inneHTML dans le div, qui doit donc exister
 });
 

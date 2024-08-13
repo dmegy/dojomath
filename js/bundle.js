@@ -381,7 +381,7 @@ function sendStatistics() {
   });
 }
 
-window.addEventListener("DOMContentLoaded", () => {
+window.addEventListener("load", () => {
   getHighscores(); // fetch un fichier texte et inneHTML dans le div, qui doit donc exister
 });
 
@@ -887,12 +887,12 @@ function testMathJax() {
 // - - - - LISTENER ONLOAD and getScript, Mathjax etc
 // - - - - - - - - - - - - - - - - - - - - - - -
 
-document.addEventListener("DOMContentLoaded", () => {
-  //  GETSCRIPT MATHJAX : si on le met en async dans le body il commence trop tôt ?
-  // getScript("https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js", () => {
-  //  testMathJax();
-  //});
-  // actuellement chargé en async
+window.addEventListener("load", () => {
+  //GETSCRIPT MATHJAX : si on le met en async dans le body il commence trop tôt ?
+  getScript("https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js", () => {
+    testMathJax();
+  });
+  // ou alors  charger en async mais ça repousse le temps officiel de load
   console.log("- - - -   D O M   C o n t e n t   L o a d e d   - - - - - -");
   initUpdateStatsThemes(); // a besoin que les thèmes soient loadés avant !
 
@@ -4277,7 +4277,7 @@ const range = (start, stop) =>
 let themes = {
   sophie_germain: {
     title: "Sophie Germain",
-    info: "Vie et travaux de Sophie Germain, matématicienne. Source pour les questions : Wikipédia.",
+    info: "Vie et travaux de Sophie Germain, mathématicienne. Source pour les questions : Wikipédia.",
     questions: range(2572,2594),
     maxPointsPerQuestion: 3,
   },

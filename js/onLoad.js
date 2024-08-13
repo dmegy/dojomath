@@ -2,12 +2,12 @@
 // - - - - LISTENER ONLOAD and getScript, Mathjax etc
 // - - - - - - - - - - - - - - - - - - - - - - -
 
-document.addEventListener("DOMContentLoaded", () => {
-  //  GETSCRIPT MATHJAX : si on le met en async dans le body il commence trop tôt ?
-  // getScript("https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js", () => {
-  //  testMathJax();
-  //});
-  // actuellement chargé en async
+window.addEventListener("load", () => {
+  //GETSCRIPT MATHJAX : si on le met en async dans le body il commence trop tôt ?
+  getScript("https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js", () => {
+    testMathJax();
+  });
+  // ou alors  charger en async mais ça repousse le temps officiel de load
   console.log("- - - -   D O M   C o n t e n t   L o a d e d   - - - - - -");
   initUpdateStatsThemes(); // a besoin que les thèmes soient loadés avant !
 
