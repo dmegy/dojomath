@@ -6,6 +6,18 @@ const range = (start, stop) =>
   Array.from({ length: stop - start + 1 }, (_, i) => start + i);
 
 let themes = {
+  dates_antiquite: {
+    title: "Dates - Antiquité",
+    info: "Questions pour situer les mathématiciens de l'antiquité les uns par rapport aux autres.",
+    questions: range(2595,2610),
+    maxPointsPerQuestion: 3,
+  },
+  elements_euclide: {
+    title: "Les Éléments d'Euclide",
+    info: "Questions sur le célèbre traité mathématique.",
+    questions: range(2611,2628),
+    maxPointsPerQuestion: 3,
+  },
   sophie_germain: {
     title: "Sophie Germain",
     info: "Vie et travaux de Sophie Germain, mathématicienne. Source pour les questions : Wikipédia.",

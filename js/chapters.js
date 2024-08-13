@@ -8,6 +8,8 @@ let chapters = [
   {
     name: "Histoire des maths",
     themes: [
+      { label: "Éléments", id: "elements_euclide" },
+      { label: "Dates: Antiquité", id: "dates_antiquite" },
       { label: "Sophie Germain", id: "sophie_germain" },
     ],
   },
