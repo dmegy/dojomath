@@ -115,7 +115,7 @@ function validateAnswer() {
     quiz.nbQuestionsFailed++;
     toast("-1 pt", "var(--c-danger)");
   }
-
+  sendQuestionResult(); //envoi serveur.
   console.log("Q" + question.num + ": " + questions[question.num].statement);
   console.log(
     "Submitted answer : " +

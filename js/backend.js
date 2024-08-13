@@ -1,4 +1,5 @@
 const URL_QUIZ_FINISHED = "backend/quiz_finished.php";
+const URL_QUESTION_FINISHED = "backend/question_finished.php";
 const URL_HIGHSCORES_ALLTIME = "backend/highscores_alltime.html.txt";
 const URL_HIGHSCORES_RECENT = "backend/highscores_recent.html.txt";
 const URL_HIGHSCORES_RECENT_GAMES = "backend/highscores_recent_games.html.txt";
@@ -91,6 +92,28 @@ function sendFeedback(questionNumber, feedbackType) {
 
   console.log("Envoi du feedback au serveur");
   fetch(URL_FEEDBACK_QUESTIONS, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(requestBody),
+  }).catch((error) => {
+    console.log(error);
+  });
+}
+
+function sendQuestionResult() {
+  let requestBody = {
+    userId: user.userId,
+    userName: user.userName,
+    questionNumber: question.num,
+    submittedAnswer: question.submittedAnswer,
+    result: question.result,
+  };
+
+  console.log("Envoi du résultat de la question au serveur");
+  fetch(URL_QUESTION_FINISHED, {
     method: "POST",
     headers: {
       Accept: "application/json",

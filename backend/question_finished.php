@@ -1,9 +1,9 @@
 <?php
 
 
-//ini_set('display_errors', 1);
-//ini_set('display_startup_errors', 1);
-//error_reporting(E_ALL);
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
 //header("Content-Type: application/json");
 
@@ -40,17 +40,17 @@ if (json_last_error() !== JSON_ERROR_NONE) {
     exit;
 }
 
-if (!isset($data['userId']) || !isset($data['userName']) || !isset($data['questionNumber']) || !isset($data['feedbackType'])) {
+if (!isset($data['userId']) || !isset($data['userName']) || !isset($data['questionNumber']) || !isset($data['result'])) {
     echo "Missing data.";
     exit;
 }
 
 $questionNumber = $data['questionNumber'];
-$feedbackType = $data['feedbackType'];
+$result = $data['result'];
 $userName = $data['userName'];
 $userId = $data['userId'];
 
-if (!is_int($questionNumber) || !is_string($feedbackType)|| !is_string($userName)|| !is_string($userId)) {
+if (!is_int($questionNumber) || !is_int($result)|| !is_string($userName)|| !is_string($userId)) {
     echo "Invalid data type.";
     exit;
 }
@@ -62,10 +62,10 @@ if (!is_int($questionNumber) || !is_string($feedbackType)|| !is_string($userName
 // validation des valeurs
 
 $isQuestionNumberValid = $questionNumber>0 && $questionNumber < 4000 ;
-$isFeedbackValid = $feedbackType === "like" || $feedbackType === "reportProblem" ;
+$isResultValid = $result === 1 || $result === 0 || $result === -1 ;
 $isUserIdValid =  strlen($userId) < 16;
-$isUserNameValid =  strlen($userName) < 50; // emojis...
-$isDataValid =  $isQuestionNumberValid && $isFeedbackValid && $isUserIdValid && $isUserNameValid;
+$isUserNameValid =  strlen($userName) < 60;
+$isDataValid =  $isQuestionNumberValid && $isResultValid && $isUserIdValid && $isUserNameValid;
 if(!$isDataValid){
     echo "Invalid data.";
     exit;
@@ -74,27 +74,24 @@ if(!$isDataValid){
 
 
 try {
-    $pdo = new PDO('sqlite:database/db_questions_feedback.db');
+    $pdo = new PDO('sqlite:database/db_questions.db');
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 } catch (PDOException $e) {
     die("Erreur de connexion à la base de données: " . $e->getMessage());
 }
 
-$columnToUpdate = ($feedbackType === 'like') ? 'Liked' : 'ProblemReported';
-
-
-
+$columnToUpdate = ($result === 1) ? 'Successful' : ($result===0? 'Skipped' : 'Failed');
 
 try {
     $pdo->beginTransaction();
 
     // Requête SQL pour mettre à jour les colonnes appropriées
     $stmt = $pdo->prepare("
-        UPDATE QuestionsFeedback 
-        SET $columnToUpdate = $columnToUpdate + 1, 
-            LastContributorId = :userId, 
-            LastContributorName = :userName,
-            LastModified = :fullDate
+        UPDATE Questions 
+        SET $columnToUpdate = $columnToUpdate + 1,
+        LastUserId = :userId, 
+        LastUserName = :userName,
+        LastModified = :fullDate 
         WHERE Id = :questionNumber
     ");
 
@@ -110,12 +107,12 @@ try {
     // Validation de la transaction
     $pdo->commit();
 
-    echo "Feedback updated successfully.";
+    echo "Données mises à jour avec succès.";
 
 } catch (Exception $e) {
     // Annuler la transaction en cas d'erreur
     $pdo->rollBack();
-    die("Erreur lors de la mise à jour du feedback: " . $e->getMessage());
+    die("Erreur lors de la mise à jour des données: " . $e->getMessage());
 }
 
 ?>

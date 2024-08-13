@@ -10,19 +10,19 @@ let themes = {
     title: "Dates - Antiquité",
     info: "Questions pour situer les mathématiciens de l'antiquité les uns par rapport aux autres. Détails et liens dans les corrections.",
     questions: range(2595,2610),
-    maxPointsPerQuestion: 3,
+    maxPointsPerQuestion: 1,
   },
   elements_euclide: {
     title: "Les Éléments d'Euclide",
     info: "Questions sur le célèbre traité mathématique. Commentaires dans les corrections.",
     questions: range(2611,2628),
-    maxPointsPerQuestion: 3,
+    maxPointsPerQuestion: 1,
   },
   sophie_germain: {
     title: "Sophie Germain",
     info: "Vie et travaux de Sophie Germain, mathématicienne. Commentaires dans les corrections. Source pour les questions : Wikipédia.",
     questions: range(2572,2594),
-    maxPointsPerQuestion: 3,
+    maxPointsPerQuestion: 1,
   },
   permutations_conditions: {
     title: "Permutations avec conditions",

@@ -357,6 +357,7 @@ function fromB64(x) {
 }
 
 const URL_QUIZ_FINISHED = "backend/quiz_finished.php";
+const URL_QUESTION_FINISHED = "backend/question_finished.php";
 const URL_HIGHSCORES_ALLTIME = "backend/highscores_alltime.html.txt";
 const URL_HIGHSCORES_RECENT = "backend/highscores_recent.html.txt";
 const URL_HIGHSCORES_RECENT_GAMES = "backend/highscores_recent_games.html.txt";
@@ -449,6 +450,28 @@ function sendFeedback(questionNumber, feedbackType) {
 
   console.log("Envoi du feedback au serveur");
   fetch(URL_FEEDBACK_QUESTIONS, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(requestBody),
+  }).catch((error) => {
+    console.log(error);
+  });
+}
+
+function sendQuestionResult() {
+  let requestBody = {
+    userId: user.userId,
+    userName: user.userName,
+    questionNumber: question.num,
+    submittedAnswer: question.submittedAnswer,
+    result: question.result,
+  };
+
+  console.log("Envoi du résultat de la question au serveur");
+  fetch(URL_QUESTION_FINISHED, {
     method: "POST",
     headers: {
       Accept: "application/json",
@@ -3569,22 +3592,22 @@ questions=[{"statement": "Tautologie.","answer":true},{"statement": "$|1-\\pi|>2
 {"statement": "Sophie Germain a donné son nom au bâtiment de mathématiques de l'université Paris 7.","answer":true,"comment":"C'est un des bâtiments du campus des Grands Moulins à Paris."},
 {"statement": "Sophie Germain est l'héroïne d'une bande dessinée.","answer":true,"comment":"Il s'agit de la bande dessinée «Les Oubliés de la science », de Camille Van Belle (Alisio Sciences, 2022)."},
 {"statement": "Sophie Germain a donné son nom à un prix mathématique.","answer":true,"comment":"Le prix Sophie-Germain de mathématiques, créé en 2003, est remis chaque année par la fondation Sophie Germain."},
-{"statement":"Thalès a vécu avant Platon.","answer":true,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Thal%C3%A8s'>Thalès de Milet (vers 624 av. J.-C. - vers 546 av. J.-C.). <a target='_blank' href='https://fr.wikipedia.org/wiki/Platon'>Platon</a> (vers 428/427 av. J.-C. - vers 348/347 av. J.-C.)"},
-{"statement":"Euclide a vécu avant Thalès.","answer":false,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Thal%C3%A8s'>Thalès de Milet (vers 624 av. J.-C. - vers 546 av. J.-C.). <a target='_blank' href='https://fr.wikipedia.org/wiki/Euclide'>Euclide</a> (vers 300 av. J.-C. - vers 275 av. J.-C.)"},
-{"statement":"Thalès a vécu avant Archimède.","answer":true,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Thal%C3%A8s'>Thalès de Milet (vers 624 av. J.-C. - vers 546 av. J.-C.). <a target='_blank' href='https://fr.wikipedia.org/wiki/Archim%C3%A8de'>Archimède de Syracuse</a> (vers 287 av. J.-C. - vers 212 av. J.-C.)"},
-{"statement":"Platon a vécu avant Pythagore.","answer":false,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Pythagore'>Pythagore de Samos</a> (vers 570 av. J.-C. - vers 495 av. J.-C.). <a target='_blank' href='https://fr.wikipedia.org/wiki/Platon'>Platon</a> (vers 428/427 av. J.-C. - vers 348/347 av. J.-C.)"},
-{"statement":"Pythagore a vécu avant Euclide.","answer":true,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Pythagore'>Pythagore de Samos</a> (vers 570 av. J.-C. - vers 495 av. J.-C.). <a target='_blank' href='https://fr.wikipedia.org/wiki/Euclide'>Euclide</a> (vers 300 av. J.-C. - vers 275 av. J.-C.)"},
-{"statement":"Archimède a vécu avant Pythagore.","answer":false,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Pythagore'>Pythagore de Samos</a> (vers 570 av. J.-C. - vers 495 av. J.-C.). <a target='_blank' href='https://fr.wikipedia.org/wiki/Archim%C3%A8de'>Archimède de Syracuse</a> (vers 287 av. J.-C. - vers 212 av. J.-C.)."},
-{"statement":"Zénon d'Élée a vécu avant Aristote.","answer":true,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Z%C3%A9non_d%27%C3%89l%C3%A9e'>Zénon d'Élée</a> (vers 490 av. J.-C. - vers 430 av. J.-C.). <a target='_blank' href='https://fr.wikipedia.org/wiki/Aristote'>Aristote</a> (384 av. J.-C. - 322 av. J.-C.)"},
-{"statement":"Ératosthène de Cyrène a vécu avant Zénon d'Élée.","answer":false,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Z%C3%A9non_d%27%C3%89l%C3%A9e'>Zénon d'Élée</a> (vers 490 av. J.-C. - vers 430 av. J.-C.). <a target='_blank' href='https://fr.wikipedia.org/wiki/%C3%89ratosth%C3%A8ne'>Ératosthène de Cyrène </a>(vers 276 av. J.-C. - vers 194 av. J.-C.)"},
-{"statement":"Hippocrate de Chios a vécu avant Aristote.","answer":true,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Hippocrate_de_Chios'>Hippocrate de Chios</a> (vers 470 av. J.-C. - vers 410 av. J.-C.). <a target='_blank' href='https://fr.wikipedia.org/wiki/Aristote'>Aristote</a> (384 av. J.-C. - 322 av. J.-C.)"},
-{"statement":"Euclide a vécu avant Platon.","answer":false,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Platon'>Platon</a> (vers 428/427 av. J.-C. - vers 348/347 av. J.-C.). <a target='_blank' href='https://fr.wikipedia.org/wiki/Euclide'>Euclide</a> (vers 300 av. J.-C. - vers 275 av. J.-C.)"},
-{"statement":"Platon a vécu avant Diophante d'Alexandrie.","answer":true,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Platon'>Platon</a> (vers 428/427 av. J.-C. - vers 348/347 av. J.-C.). <a target='_blank' href='https://fr.wikipedia.org/wiki/Diophante_d%27Alexandrie'>Diophante d'Alexandrie</a> (vers 200 apr. J.-C. - vers 284 apr. J.-C.)"},
-{"statement":"Hypatie d'Alexandrie a vécu avant Ératosthène de Cyrène.","answer":false,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/%C3%89ratosth%C3%A8ne'>Ératosthène de Cyrène </a>(vers 276 av. J.-C. - vers 194 av. J.-C.). <a target='_blank' href='https://fr.wikipedia.org/wiki/Hypatie'>Hypatie d'Alexandrie</a> (vers 355/370 apr. J.-C. - mars 415 apr. J.-C.) - Grèce/Rome"},
-{"statement":"Apollonius de Perga a vécu avant Ptolémée.","answer":true,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Apollonios_de_Perga'>Apollonius de Perga</a> (vers 262 av. J.-C. - vers 190 av. J.-C.). <a target='_blank' href='https://fr.wikipedia.org/wiki/Claude_Ptol%C3%A9m%C3%A9e'>Ptolémée</a> (vers 100 apr. J.-C. - vers 170 apr. J.-C.)"},
-{"statement":"Hypatie d'Alexandrie a vécu avant Héron d'Alexandrie.","answer":false,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/H%C3%A9ron_d%27Alexandrie'>Héron d'Alexandrie</a> (vers 10 apr. J.-C. - vers 70 apr. J.-C.). <a target='_blank' href='https://fr.wikipedia.org/wiki/Hypatie'>Hypatie d'Alexandrie</a> (vers 355/370 apr. J.-C. - mars 415 apr. J.-C.) - Grèce/Rome"},
-{"statement":"Diophante d'Alexandrie a vécu avant Ptolémée.","answer":false,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Claude_Ptol%C3%A9m%C3%A9e'>Ptolémée</a> (vers 100 apr. J.-C. - vers 170 apr. J.-C.). <a target='_blank' href='https://fr.wikipedia.org/wiki/Diophante_d%27Alexandrie'>Diophante d'Alexandrie</a> (vers 200 apr. J.-C. - vers 284 apr. J.-C.)"},
-{"statement":"Diophante d'Alexandrie a vécu avant Hypatie d'Alexandrie.","answer":true,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Diophante_d%27Alexandrie'>Diophante d'Alexandrie</a> (vers 200 apr. J.-C. - vers 284 apr. J.-C.). <a target='_blank' href='https://fr.wikipedia.org/wiki/Hypatie'>Hypatie d'Alexandrie</a> (vers 355/370 apr. J.-C. - mars 415 apr. J.-C.) - Grèce/Rome"},
+{"statement":"Thalès a vécu avant Platon.","answer":true,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Thal%C3%A8s'>Thalès de Milet (vers 624 av. J.-C. - vers 546 av. J.-C.).<br><a target='_blank' href='https://fr.wikipedia.org/wiki/Platon'>Platon</a> (vers 428/427 av. J.-C. - vers 348/347 av. J.-C.)"},
+{"statement":"Euclide a vécu avant Thalès.","answer":false,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Thal%C3%A8s'>Thalès de Milet</a> (vers 624 av. J.-C. - vers 546 av. J.-C.).<br><a target='_blank' href='https://fr.wikipedia.org/wiki/Euclide'>Euclide</a> (vers 300 av. J.-C. - vers 275 av. J.-C.)"},
+{"statement":"Thalès a vécu avant Archimède.","answer":true,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Thal%C3%A8s'>Thalès de Milet</a> (vers 624 av. J.-C. - vers 546 av. J.-C.).<br><a target='_blank' href='https://fr.wikipedia.org/wiki/Archim%C3%A8de'>Archimède de Syracuse</a> (vers 287 av. J.-C. - vers 212 av. J.-C.)"},
+{"statement":"Platon a vécu avant Pythagore.","answer":false,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Pythagore'>Pythagore de Samos</a> (vers 570 av. J.-C. - vers 495 av. J.-C.).<br><a target='_blank' href='https://fr.wikipedia.org/wiki/Platon'>Platon</a> (vers 428/427 av. J.-C. - vers 348/347 av. J.-C.)"},
+{"statement":"Pythagore a vécu avant Euclide.","answer":true,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Pythagore'>Pythagore de Samos</a> (vers 570 av. J.-C. - vers 495 av. J.-C.).<br><a target='_blank' href='https://fr.wikipedia.org/wiki/Euclide'>Euclide</a> (vers 300 av. J.-C. - vers 275 av. J.-C.)"},
+{"statement":"Archimède a vécu avant Pythagore.","answer":false,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Pythagore'>Pythagore de Samos</a> (vers 570 av. J.-C. - vers 495 av. J.-C.).<br><a target='_blank' href='https://fr.wikipedia.org/wiki/Archim%C3%A8de'>Archimède de Syracuse</a> (vers 287 av. J.-C. - vers 212 av. J.-C.)."},
+{"statement":"Zénon d'Élée a vécu avant Aristote.","answer":true,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Z%C3%A9non_d%27%C3%89l%C3%A9e'>Zénon d'Élée</a> (vers 490 av. J.-C. - vers 430 av. J.-C.).<br><a target='_blank' href='https://fr.wikipedia.org/wiki/Aristote'>Aristote</a> (384 av. J.-C. - 322 av. J.-C.)"},
+{"statement":"Ératosthène de Cyrène a vécu avant Zénon d'Élée.","answer":false,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Z%C3%A9non_d%27%C3%89l%C3%A9e'>Zénon d'Élée</a> (vers 490 av. J.-C. - vers 430 av. J.-C.).<br><a target='_blank' href='https://fr.wikipedia.org/wiki/%C3%89ratosth%C3%A8ne'>Ératosthène de Cyrène </a>(vers 276 av. J.-C. - vers 194 av. J.-C.)"},
+{"statement":"Hippocrate de Chios a vécu avant Aristote.","answer":true,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Hippocrate_de_Chios'>Hippocrate de Chios</a> (vers 470 av. J.-C. - vers 410 av. J.-C.).<br><a target='_blank' href='https://fr.wikipedia.org/wiki/Aristote'>Aristote</a> (384 av. J.-C. - 322 av. J.-C.)"},
+{"statement":"Euclide a vécu avant Platon.","answer":false,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Platon'>Platon</a> (vers 428/427 av. J.-C. - vers 348/347 av. J.-C.).<br><a target='_blank' href='https://fr.wikipedia.org/wiki/Euclide'>Euclide</a> (vers 300 av. J.-C. - vers 275 av. J.-C.)"},
+{"statement":"Platon a vécu avant Diophante d'Alexandrie.","answer":true,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Platon'>Platon</a> (vers 428/427 av. J.-C. - vers 348/347 av. J.-C.).<br><a target='_blank' href='https://fr.wikipedia.org/wiki/Diophante_d%27Alexandrie'>Diophante d'Alexandrie</a> (vers 200 apr. J.-C. - vers 284 apr. J.-C.)"},
+{"statement":"Hypatie d'Alexandrie a vécu avant Ératosthène de Cyrène.","answer":false,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/%C3%89ratosth%C3%A8ne'>Ératosthène de Cyrène</a> (vers 276 av. J.-C. - vers 194 av. J.-C.).<br><a target='_blank' href='https://fr.wikipedia.org/wiki/Hypatie'>Hypatie d'Alexandrie</a> (vers 355/370 apr. J.-C. - mars 415 apr. J.-C.) - Grèce/Rome"},
+{"statement":"Apollonius de Perga a vécu avant Ptolémée.","answer":true,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Apollonios_de_Perga'>Apollonius de Perga</a> (vers 262 av. J.-C. - vers 190 av. J.-C.).<br><a target='_blank' href='https://fr.wikipedia.org/wiki/Claude_Ptol%C3%A9m%C3%A9e'>Ptolémée</a> (vers 100 apr. J.-C. - vers 170 apr. J.-C.)"},
+{"statement":"Hypatie d'Alexandrie a vécu avant Héron d'Alexandrie.","answer":false,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/H%C3%A9ron_d%27Alexandrie'>Héron d'Alexandrie</a> (vers 10 apr. J.-C. - vers 70 apr. J.-C.).<br><a target='_blank' href='https://fr.wikipedia.org/wiki/Hypatie'>Hypatie d'Alexandrie</a> (vers 355/370 apr. J.-C. - mars 415 apr. J.-C.) - Grèce/Rome"},
+{"statement":"Diophante d'Alexandrie a vécu avant Ptolémée.","answer":false,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Claude_Ptol%C3%A9m%C3%A9e'>Ptolémée</a> (vers 100 apr. J.-C. - vers 170 apr. J.-C.).<br><a target='_blank' href='https://fr.wikipedia.org/wiki/Diophante_d%27Alexandrie'>Diophante d'Alexandrie</a> (vers 200 apr. J.-C. - vers 284 apr. J.-C.)"},
+{"statement":"Diophante d'Alexandrie a vécu avant Hypatie d'Alexandrie.","answer":true,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Diophante_d%27Alexandrie'>Diophante d'Alexandrie</a> (vers 200 apr. J.-C. - vers 284 apr. J.-C.).<br><a target='_blank' href='https://fr.wikipedia.org/wiki/Hypatie'>Hypatie d'Alexandrie</a> (vers 355/370 apr. J.-C. - mars 415 apr. J.-C.) - Grèce/Rome"},
 {"statement":"Les Élements ont été écrits vers l'an 300 de notre ère.","answer":false,"comment":"Vers 300 *avant* notre ère."},
 {"statement":"Les Élements traitent des fondements de la théorie des probabilités.","answer":false,"comment":"Les Éléments sont un traité d'arithmétique et de géométrie."},
 {"statement":"Il n'y a aucune erreur mathématique dans les Éléments.","answer":false,"comment":"Les Élements sont un ouvrage mathématique écrit avec une rigueur admirable pour l'époque, fondée sur des démonstrations logiques, mais il y a malgré tout quelques angles morts parfois subtils. L'étude de ces insuffisances, en particulier autour des questions d'existence d'intersections ou de l'indépendance du cinquième postulat, a mené à la découverte des géométries non euclidiennes et aux axiomatisations modernes de la géométrie par Hilbert, Birkhoff et d'autres mathématiciens au XXe siècle."},
@@ -3721,7 +3744,7 @@ function validateAnswer() {
     quiz.nbQuestionsFailed++;
     toast("-1 pt", "var(--c-danger)");
   }
-
+  sendQuestionResult(); //envoi serveur.
   console.log("Q" + question.num + ": " + questions[question.num].statement);
   console.log(
     "Submitted answer : " +
@@ -4332,19 +4355,19 @@ let themes = {
     title: "Dates - Antiquité",
     info: "Questions pour situer les mathématiciens de l'antiquité les uns par rapport aux autres. Détails et liens dans les corrections.",
     questions: range(2595,2610),
-    maxPointsPerQuestion: 3,
+    maxPointsPerQuestion: 1,
   },
   elements_euclide: {
     title: "Les Éléments d'Euclide",
     info: "Questions sur le célèbre traité mathématique. Commentaires dans les corrections.",
     questions: range(2611,2628),
-    maxPointsPerQuestion: 3,
+    maxPointsPerQuestion: 1,
   },
   sophie_germain: {
     title: "Sophie Germain",
     info: "Vie et travaux de Sophie Germain, mathématicienne. Commentaires dans les corrections. Source pour les questions : Wikipédia.",
     questions: range(2572,2594),
-    maxPointsPerQuestion: 3,
+    maxPointsPerQuestion: 1,
   },
   permutations_conditions: {
     title: "Permutations avec conditions",
