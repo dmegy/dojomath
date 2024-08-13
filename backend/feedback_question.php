@@ -62,7 +62,7 @@ if (!is_int($questionNumber) || !is_string($feedbackType)|| !is_string($userName
 // validation des valeurs
 
 $isQuestionNumberValid = $questionNumber>0 && $questionNumber < 4000 ;
-$isFeedbackValid = $feedbackType === "like" || $feedbackType === "reportProblem" ;
+$isFeedbackValid = $feedbackType === "like" || $feedbackType === "problem" || $feedbackType === "easy" || $feedbackType === "hard";
 $isUserIdValid =  strlen($userId) < 16;
 $isUserNameValid =  strlen($userName) < 50; // emojis...
 $isDataValid =  $isQuestionNumberValid && $isFeedbackValid && $isUserIdValid && $isUserNameValid;
@@ -80,8 +80,10 @@ try {
     die("Erreur de connexion à la base de données: " . $e->getMessage());
 }
 
-$columnToUpdate = ($feedbackType === 'like') ? 'Liked' : 'ProblemReported';
-
+if($feedbackType === 'like') $columnToUpdate = 'Liked';
+else if($feedbackType === 'problem') $columnToUpdate = 'ProblemReported';
+else if($feedbackType === 'easy') $columnToUpdate = 'Easy';
+else if($feedbackType === 'hard') $columnToUpdate = 'Hard';
 
 
 

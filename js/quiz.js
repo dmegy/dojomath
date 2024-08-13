@@ -449,16 +449,24 @@ function htmlFeedbackElement(questionNumber) {
   if (statsQuestions[questionNumber].feedbackSent)
     return "<p>Feedback envoyé, merci !</p>";
 
-  return `<details>
+  return `<details open>
     <summary style="font-weight:900;font-size:1rem">Réagir à cette question</summary>
-    <div style="display:flex;justify-content:space-between" id="feedbackDiv${questionNumber}">
+    <div style="display:flex" id="feedbackDiv${questionNumber}">
       <div class="btn btn-feedback" 
         onclick="sendFeedback(${questionNumber},'like')">
         ❤️ 
       </div>
+      <div class="btn btn-feedback" 
+        onclick="sendFeedback(${questionNumber},'easy')">
+        🥱 
+      </div>
+      <div class="btn btn-feedback" 
+        onclick="sendFeedback(${questionNumber},'hard')">
+        🥵 
+      </div>
       <div  class="btn btn-feedback"  
-        onclick="sendFeedback(${questionNumber},'reportProblem')">
-        ⁉️ Signaler un problème
+        onclick="sendFeedback(${questionNumber},'problem')">
+        ⁉️⚠️
       </div>
     </div>
   </details>`;

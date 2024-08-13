@@ -1387,7 +1387,7 @@ questions=[{"statement": "Tautologie.","answer":true},{"statement": "$|1-\\pi|>2
 {"answer": false, "statement": "$2$ est une solution de l'équation $-x^5+3x^4-6x+2=0$.","comment": "Les petites puissances de $2$ sont à connaître."},
 {"answer": true, "statement": "Une solution de l'équation $x^3-10x+3=0$ est $3$."},
 {"answer": false, "statement": "$3$ est une solution de l'équation $x^3-6x+8=0$.","comment": "Pas besoin de calculer : toutes les puissances de $3$ sont impaires, ça ne peut pas marcher."},
-{"answer": true, "statement": "L'équation $x^2-3x+2=0$ a une solution dans $\\mathbb Z$."},
+{"answer": false, "statement": "L'équation $x^2-3x+2=0$ a une solution dans $\\mathbb Z$."},
 {"answer": true, "statement": "L'équation $x^2-3x+2=0$ a deux solutions dans $\\mathbb Z$."},
 {"answer": false, "statement": "$1/2$ est une solution de l'équation $x^2+x-1=0$.","comment": "Notez qu'on ne demande pas de résoudre l'équation."},
 {"answer": true, "statement": "$-1$ est une solution de l'équation $|x+2/3|-1/3=0$.","comment": "Notez qu'on ne demande pas de résoudre l'équation."},
@@ -1665,7 +1665,7 @@ questions=[{"statement": "Tautologie.","answer":true},{"statement": "$|1-\\pi|>2
 {"statement": "$ABCD$ est un parallélogramme si et seulement si ses diagonales se coupent en leur milieu.","answer": true},
 {"statement": "$ABCD$ est un parallélogramme si et seulement si $AB=CD$.","answer": false},
 {"statement": "Si $(AB)//(CD)$, alors $ABCD$ est un parallélogramme.","answer": false},
-{"statement": "Si $AB=CD$, alors $ABCD$ est un paralléloramme.","answer": false},
+{"statement": "Si $AB=CD$, alors $ABCD$ est un parallélogramme.","answer": false},
 {"statement": " Si $AB=CD$ et $(BC)//(AD)$ alors $ABCD$ est un parallélogramme.","answer": false},
 {"statement": " Si $ABCD$ est un parallélogramme, alors $AB=CD$ et $(BC)//(AD)$.","answer": true},
 {"statement": " Tout parallélogramme avec deux côtés égaux est un carré","answer": false},
@@ -3395,7 +3395,7 @@ questions=[{"statement": "Tautologie.","answer":true},{"statement": "$|1-\\pi|>2
 {"statement":"$7\\times 6 + 9\\times 9 = 123$", "answer":true},
 {"statement":"$7\\times 6 + 8\\times 9 = 114$", "answer":true},
 {"statement":"$6\\times 7 + 9\\times 9 = 123$", "answer":true},
-{"statement":"$6\\times 7 + 8\\times 9 = 108$", "answer":true},
+{"statement":"$6\\times 7 + 8\\times 9 = 114$", "answer":true},
 {"statement":"$6\\times 6 + 9\\times 9 = 117$", "answer":true},
 {"statement":"$6\\times 6 + 8\\times 8 = 100$", "answer":true},
 {"statement":"$9\\times 9 + 9\\times 9 = 152$", "answer":false},
@@ -4078,16 +4078,24 @@ function htmlFeedbackElement(questionNumber) {
   if (statsQuestions[questionNumber].feedbackSent)
     return "<p>Feedback envoyé, merci !</p>";
 
-  return `<details>
+  return `<details open>
     <summary style="font-weight:900;font-size:1rem">Réagir à cette question</summary>
-    <div style="display:flex;justify-content:space-between" id="feedbackDiv${questionNumber}">
+    <div style="display:flex" id="feedbackDiv${questionNumber}">
       <div class="btn btn-feedback" 
         onclick="sendFeedback(${questionNumber},'like')">
         ❤️ 
       </div>
+      <div class="btn btn-feedback" 
+        onclick="sendFeedback(${questionNumber},'easy')">
+        🥱 
+      </div>
+      <div class="btn btn-feedback" 
+        onclick="sendFeedback(${questionNumber},'hard')">
+        🥵 
+      </div>
       <div  class="btn btn-feedback"  
-        onclick="sendFeedback(${questionNumber},'reportProblem')">
-        ⁉️ Signaler un problème
+        onclick="sendFeedback(${questionNumber},'problem')">
+        ⁉️⚠️
       </div>
     </div>
   </details>`;

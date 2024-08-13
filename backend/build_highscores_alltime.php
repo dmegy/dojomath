@@ -22,7 +22,7 @@ try {
                 UserName,
                 UserAreaCode,  
                 UserPoints,
-                ROW_NUMBER() OVER (PARTITION BY UserId ORDER BY DateTime DESC) AS rn
+                ROW_NUMBER() OVER (PARTITION BY UserId ORDER BY Id DESC) AS rn
             FROM 
                 FinishedQuizzes
         ) AS LatestScores

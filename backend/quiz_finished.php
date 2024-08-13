@@ -2,16 +2,17 @@
 
 include_once 'database/db_config.php';
 
-//ini_set('display_errors', 1);
-//ini_set('display_startup_errors', 1);
-//error_reporting(E_ALL);
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
 // Définir le header pour la réponse JSON
 header("Content-Type: application/json");
 
 // récupération de l'heure courante
-//$dateTime = date("Y-m-d H:i:s");
-$dateTime = round(microtime(true) * 1000);
+$date = date("Y-m-d H:i:s");
+// bientôt deprecated : 
+$dateTime = round(microtime(true) * 1000);// attention millisecondes !
 
 // récupération de l'adresse IP du client (on cherche d'abord à savoir si il est derrière un proxy)
 if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
@@ -183,9 +184,10 @@ try {
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     
     // Prépare une requête d'insertion
-    $stmt = $pdo->prepare("INSERT INTO FinishedQuizzes (DateTime, UserIP, UserId, UserName, UserAreaCode, QuizThemeId, Grade, PointsEarned, UserPoints, UserStreak, UserCombo) VALUES (:dateTime, :userIP, :userId, :userName, :userAreaCode, :quizThemeId, :grade, :pointsEarned, :userPoints, :userStreak, :userCombo)");
+    $stmt = $pdo->prepare("INSERT INTO FinishedQuizzes (DateTime, UserIP, UserId, UserName, UserAreaCode, QuizThemeId, Grade, PointsEarned, UserPoints, UserStreak, UserCombo, Date) VALUES (:dateTime, :userIP, :userId, :userName, :userAreaCode, :quizThemeId, :grade, :pointsEarned, :userPoints, :userStreak, :userCombo, :date)");
     
     // Liaison des paramètres
+    $stmt->bindParam(':date', $date, PDO::PARAM_STR);
     $stmt->bindParam(':dateTime', $dateTime, PDO::PARAM_INT);
     $stmt->bindParam(':userIP', $userIP, PDO::PARAM_STR);
     $stmt->bindParam(':userId', $userId, PDO::PARAM_STR);

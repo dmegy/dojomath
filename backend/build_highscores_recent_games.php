@@ -11,7 +11,7 @@ try {
     // Requête SQL avec ROW_NUMBER() pour obtenir les 10 meilleurs scores avec des joueurs uniques
     $sql = "
     SELECT 
-        DateTime,
+        Date,
         UserId,
         UserName,
         UserAreaCode, 
@@ -22,7 +22,7 @@ try {
     FROM 
         FinishedQuizzes
     ORDER BY 
-        DateTime DESC
+        Id DESC
     LIMIT 10;
     ";
 
