@@ -438,7 +438,7 @@ function htmlSolutionElement({ questionNumber, submittedAnswer, result }) {
 }
 
 function htmlCommentElement(questionNumber) {
-  if (!questions[questionNumber].comment) return;
+  if (!questions[questionNumber].comment) return "";
   return `<details open>
     <summary style="font-weight:900;font-size:1rem">Commentaires/explications</summary>
     ${questions[questionNumber].comment}
@@ -475,7 +475,7 @@ function consoleLogQuizRecap() {
 function toast(message, color) {
   Toastify({
     text: message,
-    duration: 800,
+    duration: 1000,
     destination: "",
     newWindow: true,
     close: false,
@@ -514,7 +514,7 @@ function notification(message, color) {
 function alertGameover() {
   Toastify({
     text: "GAMEOVER\n\n Trop de questions sautées ou ratées !",
-    duration: 4000,
+    duration: 4500,
     destination: "",
     newWindow: true,
     close: false,

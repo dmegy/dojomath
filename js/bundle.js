@@ -3588,20 +3588,20 @@ questions=[{"statement": "Tautologie.","answer":true},{"statement": "$|1-\\pi|>2
 {"statement":"Les Élements ont été écrits vers l'an 300 de notre ère.","answer":false,"comment":"Vers 300 *avant* notre ère."},
 {"statement":"Les Élements traitent des fondements de la théorie des probabilités.","answer":false,"comment":"Les Éléments sont un traité d'arithmétique et de géométrie."},
 {"statement":"Il n'y a aucune erreur mathématique dans les Éléments.","answer":false,"comment":"Les Élements sont un ouvrage mathématique écrit avec une rigueur admirable pour l'époque, fondée sur des démonstrations logiques, mais il y a malgré tout quelques angles morts parfois subtils. L'étude de ces insuffisances, en particulier autour des questions d'existence d'intersections ou de l'indépendance du cinquième postulat, a mené à la découverte des géométries non euclidiennes et aux axiomatisations modernes de la géométrie par Hilbert, Birkhoff et d'autres mathématiciens au XXe siècle."},
-{"statement":"Les Élements ont été écrits par Euclide et contiennent ses théorèmes.","answer":false,"comment":"Les Éléments sont une compilation de résultats dont certains étaient antérieurs à Euclide. Par exemple, Pythagore a vécu avant Euclide."},
+{"statement":"Les Élements ont été écrits par Euclide. L'ouvrage est composé de théorèmes qu'il a démontrés.","answer":false,"comment":"Les Éléments sont une compilation de résultats dont certains étaient antérieurs à Euclide. Par exemple, Pythagore a vécu avant Euclide."},
 {"statement":"Le manuscript original des Éléments est conservé à la bibliothèque d'Alexandrie.","answer":false,"comment":"L'ouvrage d'origine, probablement écrit sur des rouleaux de Papyrus, a été perdu."},
-{"statement":"Les Élements contiennent les démonstrations des thérèmes de Thalès et de Pythagore.","answer":true,"comment":""},
+{"statement":"Les Élements contiennent les démonstrations des théorèmes de Thalès et de Pythagore.","answer":true,"comment":""},
 {"statement":"Les Élements contiennent la notion de triangle semblable et son étude.","answer":true,"comment":""},
-{"statement":"Les Élements contiennent la construction du pentagone régulier à la règle et au compas.","answer":true,"comment":"La construction est assez difficile. Même au moyen-âge, certains savants célèbres n'ayant pas eu l'opportunité de lire les 'Éléments' ne savaient pas comment construire un pentagone régulier de manière exacte."},
+{"statement":"Les Élements contiennent la méthode de construction du pentagone régulier à la règle et au compas.","answer":true,"comment":"La construction est assez difficile. Même au moyen-âge, certains savants célèbres n'ayant pas eu l'opportunité de lire les 'Éléments' ne savaient pas comment construire un pentagone régulier de manière exacte."},
 {"statement":"Les Élements contiennent la démonstration qu'il existe une infinité de nombres premiers.","answer":true,"comment":""},
 {"statement":"Dans les Élements, la démonstration qu'il existe une infinité de nombres premiers est une démonstration par l'absurde.","answer":false,"comment":"La preuve n'est pas rédigée par l'absurde. Il s'agit d'une preuve directe et constructive. Avec le vocabulaire actuel, la preuve consiste à construire une suite injective de nombres premiers."},
-{"statement":"Les Élements contiennent la construction à la règle et au compas des triangles d'or et d'argent.","answer":true,"comment":""},
-{"statement":"Les Élements contiennent la construction de l'heptagone régulier à la règle et au compas.","answer":false,"comment":"Il a été démontré beaucoup plus tard, au XIXe siècle, que l'heptagone régulier (polygone régulier à sept côtés) n'est *pas* constructible à la règme et au compas."},
+{"statement":"Les Élements contiennent la méthode de construction à la règle et au compas des triangles d'or et d'argent.","answer":true,"comment":""},
+{"statement":"Les Élements contiennent la méthode de construction de l'heptagone régulier à la règle et au compas.","answer":false,"comment":"Il a été démontré beaucoup plus tard, au XIXe siècle, que l'heptagone régulier (polygone régulier à sept côtés) n'est *pas* constructible à la règme et au compas."},
 {"statement":"Les Élements contiennent l'étude de la somme des termes d'une suite géométrique.","answer":true,"comment":""},
 {"statement":"Les Élements contiennent la définition et les propriétés des PGCD et PPCM.","answer":true,"comment":""},
 {"statement":"Les Élements contiennent la démonstration que par un point donné, il passe une unique droite parallèle à une droite donnée.","answer":false,"comment":"Il s'agit du fameux 'cinquième postulat d'Euclide'. Pendant des siècles, les mathématiciens ont cru qu'il était possible de le démontrer à partir des autres postulats mais cela s'est révélé faux. Cette étude a débouché sur l'invention des géométries non euclidiennes."},
 {"statement":"Les Élements démontrent les principaux théorèmes de géométrie en utilisant des coordonnées.","answer":false,"comment":"L'usage de coordonnées en géométrie a été développé par René Descartes, bien après."},
-{"statement":"Les Élements contiennent la preuve que le nombre $\\pi$ est irrationnel.","answer":false,"comment":"L'irrationnalité de $\\pi$ a été démontrée en 1760 par Lambert."},
+{"statement":"Les Élements contiennent la preuve que le nombre $\\pi$ est irrationnel.","answer":false,"comment":"L'irrationnalité de $\\pi$ a été démontrée bien plus tard, en 1760 par Lambert."},
 {"statement":"Les Élements contiennent la première définition du nombre $\\sqrt{2}$.","answer":false,"comment":"Le nombre $\\sqrt{2}$ est connu depuis bien plus longtemps. En Mésopotamie près de mille ans avant, les scribes savaient déjà en calculer des valeurs approchées très précises."},
 ];
 function shuffleArray(array) {
@@ -4044,7 +4044,7 @@ function htmlSolutionElement({ questionNumber, submittedAnswer, result }) {
 }
 
 function htmlCommentElement(questionNumber) {
-  if (!questions[questionNumber].comment) return;
+  if (!questions[questionNumber].comment) return "";
   return `<details open>
     <summary style="font-weight:900;font-size:1rem">Commentaires/explications</summary>
     ${questions[questionNumber].comment}
@@ -4081,7 +4081,7 @@ function consoleLogQuizRecap() {
 function toast(message, color) {
   Toastify({
     text: message,
-    duration: 800,
+    duration: 1000,
     destination: "",
     newWindow: true,
     close: false,
@@ -4120,7 +4120,7 @@ function notification(message, color) {
 function alertGameover() {
   Toastify({
     text: "GAMEOVER\n\n Trop de questions sautées ou ratées !",
-    duration: 4000,
+    duration: 4500,
     destination: "",
     newWindow: true,
     close: false,
@@ -4330,19 +4330,19 @@ const range = (start, stop) =>
 let themes = {
   dates_antiquite: {
     title: "Dates - Antiquité",
-    info: "Questions pour situer les mathématiciens de l'antiquité les uns par rapport aux autres.",
+    info: "Questions pour situer les mathématiciens de l'antiquité les uns par rapport aux autres. Détails et liens dans les corrections.",
     questions: range(2595,2610),
     maxPointsPerQuestion: 3,
   },
   elements_euclide: {
     title: "Les Éléments d'Euclide",
-    info: "Questions sur le célèbre traité mathématique.",
+    info: "Questions sur le célèbre traité mathématique. Commentaires dans les corrections.",
     questions: range(2611,2628),
     maxPointsPerQuestion: 3,
   },
   sophie_germain: {
     title: "Sophie Germain",
-    info: "Vie et travaux de Sophie Germain, mathématicienne. Source pour les questions : Wikipédia.",
+    info: "Vie et travaux de Sophie Germain, mathématicienne. Commentaires dans les corrections. Source pour les questions : Wikipédia.",
     questions: range(2572,2594),
     maxPointsPerQuestion: 3,
   },

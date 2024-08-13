@@ -8,19 +8,19 @@ const range = (start, stop) =>
 let themes = {
   dates_antiquite: {
     title: "Dates - Antiquité",
-    info: "Questions pour situer les mathématiciens de l'antiquité les uns par rapport aux autres.",
+    info: "Questions pour situer les mathématiciens de l'antiquité les uns par rapport aux autres. Détails et liens dans les corrections.",
     questions: range(2595,2610),
     maxPointsPerQuestion: 3,
   },
   elements_euclide: {
     title: "Les Éléments d'Euclide",
-    info: "Questions sur le célèbre traité mathématique.",
+    info: "Questions sur le célèbre traité mathématique. Commentaires dans les corrections.",
     questions: range(2611,2628),
     maxPointsPerQuestion: 3,
   },
   sophie_germain: {
     title: "Sophie Germain",
-    info: "Vie et travaux de Sophie Germain, mathématicienne. Source pour les questions : Wikipédia.",
+    info: "Vie et travaux de Sophie Germain, mathématicienne. Commentaires dans les corrections. Source pour les questions : Wikipédia.",
     questions: range(2572,2594),
     maxPointsPerQuestion: 3,
   },
