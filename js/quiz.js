@@ -423,16 +423,26 @@ function htmlSolutionElement({ questionNumber, submittedAnswer, result }) {
   if (submittedAnswer === false)
     answerDiv = "<div>(Réponse donnée : Faux)</div>";
 
-  let s = `<div style='color:white;margin-bottom:1rem;padding:1.5rem;width:100%;border-radius:2rem;background-color:${color}'>
-    <div style='margin-bottom:1rem;display:flex;justify-content:space-between'>
-      <div>${message}</div>
-      <div>Q${questionNumber}</div>
-    </div>
+  let s = `
+    <div style='color:white;margin-bottom:1rem;padding:1.5rem;width:100%;border-radius:2rem;background-color:${color}'>
+      <div style='font-weight:900;margin-bottom:1rem;display:flex;justify-content:space-between'>
+        <div>${message}</div>
+        <div>Q${questionNumber}</div>
+      </div>
     <div style="margin-bottom:1rem">${questions[questionNumber].statement}</div>
     ${answerDiv}
+    ${htmlCommentElement(questionNumber)}
     ${htmlFeedbackElement(questionNumber)}
   </div>`;
   return s;
+}
+
+function htmlCommentElement(questionNumber) {
+  if (!questions[questionNumber].comment) return;
+  return `<details open>
+    <summary style="font-weight:900;font-size:1rem">Commentaires/explications</summary>
+    ${questions[questionNumber].comment}
+    </details>`;
 }
 
 function htmlFeedbackElement(questionNumber) {
@@ -440,7 +450,7 @@ function htmlFeedbackElement(questionNumber) {
     return "<p>Feedback envoyé, merci !</p>";
 
   return `<details>
-    <summary style="font-weight:400;font-size:1rem">Réagir à cette question</summary>
+    <summary style="font-weight:900;font-size:1rem">Réagir à cette question</summary>
     <div style="display:flex;justify-content:space-between" id="feedbackDiv${questionNumber}">
       <div class="btn btn-feedback" 
         onclick="sendFeedback(${questionNumber},'like')">

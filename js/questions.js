@@ -2572,7 +2572,7 @@ questions=[{"statement": "Tautologie.","answer":true},{"statement": "$|1-\\pi|>2
 {"statement": "Sophie Germain a vécu du temps de la Révolution et de Napoléon 1er.","answer":true,"comment":"Sophie Germain est née en 1776."},
 {"statement": "Sophie Germain est née à Toulouse.","answer":false,"comment":"Sophie Germain est née à Paris."},
 {"statement": "Sophie Germain a vécu au XVIIe siècle.","answer":false,"comment":"Sophie Germain est née en 1776 et est décédée en 1831 donc a vécu au tournant du XIXe siècle."},
-{"statement": "Sophie Germain apprend les mathématiques en autodidacte.","answer":true,"comment":"Sophie Germain lit les oeuvres de Bézout, Montucla. ELle décide ensuite d'apprendre le latin et le grec, ce qui lui permet alors d'étudier les travaux de Newton et Euler, puis de Gauss."},
+{"statement": "Sophie Germain apprend les mathématiques en autodidacte.","answer":true,"comment":"Sophie Germain lit les oeuvres de Bézout, Montucla. Elle décide ensuite d'apprendre le latin et le grec, ce qui lui permet alors d'étudier les travaux de Newton et Euler, puis de Gauss."},
 {"statement": "Sophie Germain a été reçue à l'École Polytechnique.","answer":false,"comment":"À l'époque, l'École Polytechnique est réservée aux hommes. Elle se procure les cours et correspond avec les professeurs en se faisant passer pour un homme."},
 {"statement": "Sophie Germain communique avec Joseph-Louis Lagrange, professeur à l'École Polytechnique, en envoyant ses remarques sous le nom de 'Monsieur Le Blanc'.","answer":true,"comment":"À l'époque, l'École Polytechnique est réservée aux hommes. Lagrange, impressionné par la complexité et rigueur de ses analyses, finit par découvrir la supercherie. Il devient l'ami et le mentor de la jeune fille."},
 {"statement": "Pour assurer sa subsistance, Sophie Germain est obligée de se marier à un médecin.","answer":false,"comment":"Sophie Germain n'a jamais été mariée. Sa famille renonce à lui faire épouser un bon parti, faisant preuve d'une grande tolérance pour l'époque."},
@@ -2591,5 +2591,5 @@ questions=[{"statement": "Tautologie.","answer":true},{"statement": "$|1-\\pi|>2
 {"statement": "Sophie Germain a donné son nom à un cratère sur Venus.","answer":true,"comment":"Il s'agit du cratère nommé 'Germain'."},
 {"statement": "Sophie Germain a donné son nom au bâtiment de mathématiques de l'université Paris 7.","answer":true,"comment":"C'est un des bâtiments du campus des Grands Moulins à Paris."},
 {"statement": "Sophie Germain est l'héroïne d'une bande dessinée.","answer":true,"comment":"Il s'agit de la bande dessinée «Les Oubliés de la science », de Camille Van Belle (Alisio Sciences, 2022)."},
-{"statement": "Sophie Germain a donné son nom à un prix mathématique.","answer":true,"comment":"Le prix Sophie-Germain de mathématiques, créé en 2003, remis chaque année par la fondation Sophie Germain."},
+{"statement": "Sophie Germain a donné son nom à un prix mathématique.","answer":true,"comment":"Le prix Sophie-Germain de mathématiques, créé en 2003, est remis chaque année par la fondation Sophie Germain."},
 ];

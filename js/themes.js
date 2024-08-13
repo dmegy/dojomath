@@ -8,7 +8,7 @@ const range = (start, stop) =>
 let themes = {
   sophie_germain: {
     title: "Sophie Germain",
-    info: "Vie et travaux de Sophie Germain, matématicienne.",
+    info: "Vie et travaux de Sophie Germain, matématicienne. Source pour les questions : Wikipédia.",
     questions: range(2572,2594),
     maxPointsPerQuestion: 3,
   },
