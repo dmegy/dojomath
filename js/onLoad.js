@@ -42,8 +42,9 @@ function initUpdateStatsThemes() {
       if (loadedStatsThemes[themeId][prop] !== undefined)
         statsThemes[themeId][prop] = loadedStatsThemes[themeId][prop];
     }
-    console.log("statsThemes initialized and updated");
   }
+
+  console.log("statsThemes initialized and updated");
 }
 
 function initUpdateStatsQuestions() {
@@ -78,7 +79,7 @@ function initUpdateStatsQuestions() {
 }
 
 function getScript(scriptUrl, callback) {
-  console.log("hello from loadScript");
+  console.log("Loading script " + scriptUrl);
   const script = document.createElement("script");
   script.src = scriptUrl + "?unique=" + Math.random();
   script.defer = true;

@@ -777,22 +777,32 @@ function htmlButtonTheme(i, j) {
   let label = chapters[i]["themes"][j].label;
   let id = chapters[i]["themes"][j].id;
 
+  computeThemeStats(id);
+
   return `
 		<div style="
-                --progression:0;
                 background-color: var(--c-secondary-40);
                 text-align: center;" 
 			class="btn btn-small ${statsThemes[id].isLocked ? "btn-disabled" : ""}" 
 			id="boutonTheme_${i}_${j}" 
 			onclick="gotoTheme('${id}')">
 			<div style="
-                opacity:50%;
+            opacity:50%;
 		        background:var(--c-secondary-70);
 		        position:absolute;
 		        top:0;
 		        left:0;
 		        height:100%;
-		        width: calc( var(--progression,0) * 1%);">
+		        width: ${Math.ceil((100 * statsThemes[id].questionsSuccessfulLastTime) / themes[id].questions.length)}%;">
+            </div>
+      <div style="
+            opacity:20%;
+		        background:white;
+		        position:absolute;
+		        top:0;
+		        left:0;
+		        height:100%;
+		        width: ${Math.ceil((100 * statsThemes[id].questionsSuccessfulLastTwoTimes) / themes[id].questions.length)}%;">
             </div>
 			<div style="position:relative;">${label}</div>
 		</div>
@@ -1175,8 +1185,9 @@ function initUpdateStatsThemes() {
       if (loadedStatsThemes[themeId][prop] !== undefined)
         statsThemes[themeId][prop] = loadedStatsThemes[themeId][prop];
     }
-    console.log("statsThemes initialized and updated");
   }
+
+  console.log("statsThemes initialized and updated");
 }
 
 function initUpdateStatsQuestions() {
@@ -1211,7 +1222,7 @@ function initUpdateStatsQuestions() {
 }
 
 function getScript(scriptUrl, callback) {
-  console.log("hello from loadScript");
+  console.log("Loading script " + scriptUrl);
   const script = document.createElement("script");
   script.src = scriptUrl + "?unique=" + Math.random();
   script.defer = true;
