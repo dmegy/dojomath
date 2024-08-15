@@ -6,8 +6,20 @@ const range = (start, stop) =>
   Array.from({ length: stop - start + 1 }, (_, i) => start + i);
 
 let themes = {
-  dates_antiquite: {
-    title: "Dates - Antiquité",
+  comparaisons_XVIIe_XVIIIe: {
+    title: "Mathématiciens des XVII<sup>e</sup> et XVIII<sup>e</sup> siècles",
+    info: "Questions pour situer les mathématiciens du XVII<sup>e</sup> et du siècle des Lumières. Détails et liens dans les corrections.",
+    questions: range(2650,2669),
+    maxPointsPerQuestion: 1,
+  },
+  comparaisons_pre_XVIIe: {
+    title: "Mathématiciens du premier au XVII<sup>e</sup> siècle",
+    info: "Questions pour situer les mathématiciens du début de notre ère jusqu'à la fin de la Renaissance. Détails et liens dans les corrections.",
+    questions: range(2629,2649),
+    maxPointsPerQuestion: 1,
+  },
+  comparaisons_antiquite: {
+    title: "Mathématiciens de l'Antiquité",
     info: "Questions pour situer les mathématiciens de l'antiquité les uns par rapport aux autres. Détails et liens dans les corrections.",
     questions: range(2595,2610),
     maxPointsPerQuestion: 1,

@@ -285,7 +285,7 @@ function showQuizResults() {
 function haveToLockTheme() {
   if (finishedQuizzesHistory.length < LOCK_LIMIT) return false;
 
-  // on prend les 10 dernières entrées ( ou tout si moins de 10 entrées)
+  // on prend les LOCK_LIMIT dernières entrées ( ou tout si moins de LOCK_LIMIT entrées)
   let recentHistory = finishedQuizzesHistory.slice(
     finishedQuizzesHistory.length - LOCK_LIMIT
   );
@@ -450,12 +450,8 @@ function htmlFeedbackElement(questionNumber) {
     return "<p>Feedback envoyé, merci !</p>";
 
   return `<details open>
-    <summary style="font-weight:900;font-size:1rem">Réagir à cette question</summary>
-    <div style="display:flex" id="feedbackDiv${questionNumber}">
-      <div class="btn btn-feedback" 
-        onclick="sendFeedback(${questionNumber},'like')">
-        ❤️ 
-      </div>
+    <summary style="font-weight:900;font-size:1rem">Réagir ou signaler un problème</summary>
+    <div style="display:flex;justify-content:space-between" id="feedbackDiv${questionNumber}">
       <div class="btn btn-feedback" 
         onclick="sendFeedback(${questionNumber},'easy')">
         🥱 
@@ -464,9 +460,13 @@ function htmlFeedbackElement(questionNumber) {
         onclick="sendFeedback(${questionNumber},'hard')">
         🥵 
       </div>
+      <div class="btn btn-feedback" 
+        onclick="sendFeedback(${questionNumber},'like')">
+        ❤️ 
+      </div>
       <div  class="btn btn-feedback"  
         onclick="sendFeedback(${questionNumber},'problem')">
-        ⁉️⚠️
+        ⚠️
       </div>
     </div>
   </details>`;

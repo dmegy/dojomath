@@ -19,6 +19,7 @@ const HAPPY_HOUR_LIST = [
 let UPDATE_TIME = 1000 * 3600 * 24; // nb de millisec pour check updates et  essayer de refresh si online
 let SHOW_HIDDEN_THEMES = false;
 let SHOW_HIDDEN_CHAPTERS = false;
+let TIME_WELCOME_BACK = 1000 * 3600 * 24; // pour donner un booster de bienvenue après 1 jour d'inactivité
 
 // - - - -
 let custom = false; //sera mis à true par le router si c'est un quiz custom. Controle certains affichages custom
@@ -64,6 +65,7 @@ let user = {
   nbQuizPerfect: 0,
   nbQuizFinishedToday: 0,
   nbQuizPerfectToday: 0,
+  lastRenderTime: Date.now(),
   lastActiveTime: 0 /* time in ms  */,
   lastStreak: 0,
   longestStreak: 0,
@@ -316,9 +318,11 @@ function xHtml() {
 
 function render() {
   checkForUpdates();
+  welcomeBackBoost();
   adjustPoints(); // vérification rudimentaire des points et correction systématique
   xShow();
   xHtml();
+  user.lastRenderTime = Date.now();
 
   // on rattache les listeners,
   // attention l'élément est crée par un composant et n'existe peut-être pas :
@@ -335,6 +339,20 @@ function render() {
       user.areaCode = userAreaCodeSelect.value;
       saveToLocalStorage();
     });
+}
+
+function welcomeBackBoost() {
+  // gives boost if new activity
+  if (Date.now() - user.lastRenderTime > TIME_WELCOME_BACK) {
+    user.lastBoostMultiplier = 2;
+    user.lastBoostEnd = Date.now() + BOOST_DURATION_MS;
+    notification(
+      "TE REVOILA !\nPoints doublés pendant " +
+        BOOST_DURATION_MS / (60 * 1000) +
+        " minutes !",
+      "oklch(70% 100% var(--hue-accent)"
+    );
+  }
 }
 
 // - - - - - - - -- D I V E R S - - - - - - - -

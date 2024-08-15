@@ -8,7 +8,7 @@ window.addEventListener("load", () => {
     testMathJax();
   });
   // ou alors  charger en async mais ça repousse le temps officiel de load
-  console.log("- - - -   D O M   C o n t e n t   L o a d e d   - - - - - -");
+  console.log("- - - -   O N L O A D   - - - - - -");
   initUpdateStatsThemes(); // a besoin que les thèmes soient loadés avant !
 
   initUpdateStatsQuestions(); /// idem, a besoin des questions, mais c'est inliné

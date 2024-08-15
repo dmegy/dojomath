@@ -20,6 +20,7 @@ const HAPPY_HOUR_LIST = [
 let UPDATE_TIME = 1000 * 3600 * 24; // nb de millisec pour check updates et  essayer de refresh si online
 let SHOW_HIDDEN_THEMES = false;
 let SHOW_HIDDEN_CHAPTERS = false;
+let TIME_WELCOME_BACK = 1000 * 3600 * 24; // pour donner un booster de bienvenue après 1 jour d'inactivité
 
 // - - - -
 let custom = false; //sera mis à true par le router si c'est un quiz custom. Controle certains affichages custom
@@ -65,6 +66,7 @@ let user = {
   nbQuizPerfect: 0,
   nbQuizFinishedToday: 0,
   nbQuizPerfectToday: 0,
+  lastRenderTime: Date.now(),
   lastActiveTime: 0 /* time in ms  */,
   lastStreak: 0,
   longestStreak: 0,
@@ -317,9 +319,11 @@ function xHtml() {
 
 function render() {
   checkForUpdates();
+  welcomeBackBoost();
   adjustPoints(); // vérification rudimentaire des points et correction systématique
   xShow();
   xHtml();
+  user.lastRenderTime = Date.now();
 
   // on rattache les listeners,
   // attention l'élément est crée par un composant et n'existe peut-être pas :
@@ -338,6 +342,20 @@ function render() {
     });
 }
 
+function welcomeBackBoost() {
+  // gives boost if new activity
+  if (Date.now() - user.lastRenderTime > TIME_WELCOME_BACK) {
+    user.lastBoostMultiplier = 2;
+    user.lastBoostEnd = Date.now() + BOOST_DURATION_MS;
+    notification(
+      "TE REVOILA !\nPoints doublés pendant " +
+        BOOST_DURATION_MS / (60 * 1000) +
+        " minutes !",
+      "oklch(70% 100% var(--hue-accent)"
+    );
+  }
+}
+
 // - - - - - - - -- D I V E R S - - - - - - - -
 
 function toB64(x) {
@@ -354,6 +372,14 @@ function fromB64(x) {
   let digit =
     "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_";
   return x.split("").reduce((s, v) => s * 64 + digit.indexOf(v), 0);
+}
+
+const URL_SEND_MESSAGE = "";
+
+function editMessage(recipientId, recipientName) {}
+
+function sendMessage() {
+  // paramètres en argument ? ou variable globale messageDraft ?
 }
 
 const URL_QUIZ_FINISHED = "backend/quiz_finished.php";
@@ -494,7 +520,9 @@ let chapters = [
     name: "Histoire des maths",
     themes: [
       { label: "Éléments", id: "elements_euclide" },
-      { label: "Dates: Antiquité", id: "dates_antiquite" },
+      { label: "Antiquité", id: "comparaisons_antiquite" },
+      { label: "Pré-XVII<sup>e</sup>", id: "comparaisons_pre_XVIIe" },
+      { label: "XVII<sup>e</sup>/XVIII<sup>e</sup>", id: "comparaisons_XVIIe_XVIIIe" },
       { label: "Sophie Germain", id: "sophie_germain" },
     ],
   },
@@ -920,7 +948,7 @@ window.addEventListener("load", () => {
     testMathJax();
   });
   // ou alors  charger en async mais ça repousse le temps officiel de load
-  console.log("- - - -   D O M   C o n t e n t   L o a d e d   - - - - - -");
+  console.log("- - - -   O N L O A D   - - - - - -");
   initUpdateStatsThemes(); // a besoin que les thèmes soient loadés avant !
 
   initUpdateStatsQuestions(); /// idem, a besoin des questions, mais c'est inliné
@@ -3592,7 +3620,7 @@ questions=[{"statement": "Tautologie.","answer":true},{"statement": "$|1-\\pi|>2
 {"statement": "Sophie Germain a donné son nom au bâtiment de mathématiques de l'université Paris 7.","answer":true,"comment":"C'est un des bâtiments du campus des Grands Moulins à Paris."},
 {"statement": "Sophie Germain est l'héroïne d'une bande dessinée.","answer":true,"comment":"Il s'agit de la bande dessinée «Les Oubliés de la science », de Camille Van Belle (Alisio Sciences, 2022)."},
 {"statement": "Sophie Germain a donné son nom à un prix mathématique.","answer":true,"comment":"Le prix Sophie-Germain de mathématiques, créé en 2003, est remis chaque année par la fondation Sophie Germain."},
-{"statement":"Thalès a vécu avant Platon.","answer":true,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Thal%C3%A8s'>Thalès de Milet (vers 624 av. J.-C. - vers 546 av. J.-C.).<br><a target='_blank' href='https://fr.wikipedia.org/wiki/Platon'>Platon</a> (vers 428/427 av. J.-C. - vers 348/347 av. J.-C.)"},
+{"statement":"Thalès a vécu avant Platon.","answer":true,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Thal%C3%A8s'>Thalès de Milet</a> (vers 624 av. J.-C. - vers 546 av. J.-C.).<br><a target='_blank' href='https://fr.wikipedia.org/wiki/Platon'>Platon</a> (vers 428/427 av. J.-C. - vers 348/347 av. J.-C.)"},
 {"statement":"Euclide a vécu avant Thalès.","answer":false,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Thal%C3%A8s'>Thalès de Milet</a> (vers 624 av. J.-C. - vers 546 av. J.-C.).<br><a target='_blank' href='https://fr.wikipedia.org/wiki/Euclide'>Euclide</a> (vers 300 av. J.-C. - vers 275 av. J.-C.)"},
 {"statement":"Thalès a vécu avant Archimède.","answer":true,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Thal%C3%A8s'>Thalès de Milet</a> (vers 624 av. J.-C. - vers 546 av. J.-C.).<br><a target='_blank' href='https://fr.wikipedia.org/wiki/Archim%C3%A8de'>Archimède de Syracuse</a> (vers 287 av. J.-C. - vers 212 av. J.-C.)"},
 {"statement":"Platon a vécu avant Pythagore.","answer":false,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Pythagore'>Pythagore de Samos</a> (vers 570 av. J.-C. - vers 495 av. J.-C.).<br><a target='_blank' href='https://fr.wikipedia.org/wiki/Platon'>Platon</a> (vers 428/427 av. J.-C. - vers 348/347 av. J.-C.)"},
@@ -3610,7 +3638,7 @@ questions=[{"statement": "Tautologie.","answer":true},{"statement": "$|1-\\pi|>2
 {"statement":"Diophante d'Alexandrie a vécu avant Hypatie d'Alexandrie.","answer":true,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Diophante_d%27Alexandrie'>Diophante d'Alexandrie</a> (vers 200 apr. J.-C. - vers 284 apr. J.-C.).<br><a target='_blank' href='https://fr.wikipedia.org/wiki/Hypatie'>Hypatie d'Alexandrie</a> (vers 355/370 apr. J.-C. - mars 415 apr. J.-C.) - Grèce/Rome"},
 {"statement":"Les Élements ont été écrits vers l'an 300 de notre ère.","answer":false,"comment":"Vers 300 *avant* notre ère."},
 {"statement":"Les Élements traitent des fondements de la théorie des probabilités.","answer":false,"comment":"Les Éléments sont un traité d'arithmétique et de géométrie."},
-{"statement":"Il n'y a aucune erreur mathématique dans les Éléments.","answer":false,"comment":"Les Élements sont un ouvrage mathématique écrit avec une rigueur admirable pour l'époque, fondée sur des démonstrations logiques, mais il y a malgré tout quelques angles morts parfois subtils. L'étude de ces insuffisances, en particulier autour des questions d'existence d'intersections ou de l'indépendance du cinquième postulat, a mené à la découverte des géométries non euclidiennes et aux axiomatisations modernes de la géométrie par Hilbert, Birkhoff et d'autres mathématiciens au XXe siècle."},
+{"statement":"Il n'y a aucune erreur mathématique dans les Éléments.","answer":false,"comment":"Les Élements sont écrits avec une rigueur impressionnante pour l'époque, encore conforme aux standards actuels de rédaction mathématique. Mais il y a malgré tout quelques angles morts parfois subtils sur les axiomes de base. L'étude de ces insuffisances, en particulier autour des questions d'existence d'intersections (<a target='_blank' href='https://fr.wikipedia.org/wiki/Axiome_de_Pasch'>axiome de Pasch</a>), a mené aux axiomatisations modernes de la géométrie par Hilbert, Birkhoff et d'autres mathématiciens au XXe siècle. Une fois les axiomes nécessaires rajoutés, les démonstrations des Éléments sont correctes."},
 {"statement":"Les Élements ont été écrits par Euclide. L'ouvrage est composé de théorèmes qu'il a démontrés.","answer":false,"comment":"Les Éléments sont une compilation de résultats dont certains étaient antérieurs à Euclide. Par exemple, Pythagore a vécu avant Euclide."},
 {"statement":"Le manuscript original des Éléments est conservé à la bibliothèque d'Alexandrie.","answer":false,"comment":"L'ouvrage d'origine, probablement écrit sur des rouleaux de Papyrus, a été perdu."},
 {"statement":"Les Élements contiennent les démonstrations des théorèmes de Thalès et de Pythagore.","answer":true,"comment":""},
@@ -3626,6 +3654,47 @@ questions=[{"statement": "Tautologie.","answer":true},{"statement": "$|1-\\pi|>2
 {"statement":"Les Élements démontrent les principaux théorèmes de géométrie en utilisant des coordonnées.","answer":false,"comment":"L'usage de coordonnées en géométrie a été développé par René Descartes, bien après."},
 {"statement":"Les Élements contiennent la preuve que le nombre $\\pi$ est irrationnel.","answer":false,"comment":"L'irrationnalité de $\\pi$ a été démontrée bien plus tard, en 1760 par Lambert."},
 {"statement":"Les Élements contiennent la première définition du nombre $\\sqrt{2}$.","answer":false,"comment":"Le nombre $\\sqrt{2}$ est connu depuis bien plus longtemps. En Mésopotamie près de mille ans avant, les scribes savaient déjà en calculer des valeurs approchées très précises."},
+{"statement":"Ptolémée a vécu avant Sun Tzu.","answer":true,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Claude_Ptol%C3%A9m%C3%A9e'>Ptolémée</a> (vers 100 apr. J.-C. - vers 170 apr. J.-C.)<br><a target='_blank' href='https://fr.wikipedia.org/wiki/Sun_Tzu'>Sun Tzu</a> (vers 3ème ou 4ème siècle apr. J.-C.) - Chine"},
+{"statement":"Brahmagupta a vécu avant Hypatie d'Alexandrie.","answer":false,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Hypatie'>Hypatie d'Alexandrie</a> (vers 355/370 apr. J.-C. - mars 415 apr. J.-C.) - Grèce/Rome.<br><a target='_blank' href='https://fr.wikipedia.org/wiki/Brahmagupta'>Brahmagupta</a> (598 apr. J.-C. - 668 apr. J.-C.) - Inde"},
+{"statement":"Hypatie d'Alexandrie a vécu avant Al-Kindi.","answer":true,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Hypatie'>Hypatie d'Alexandrie</a> (vers 355/370 apr. J.-C. - mars 415 apr. J.-C.) - Grèce/Rome<br><a target='_blank' href='https://fr.wikipedia.org/wiki/Al-Kindi'>Al-Kindi</a> (vers 801 apr. J.-C. - vers 873 apr. J.-C.) - Irak (Empire Abbasside)"},
+{"statement":"Qin Jiushao a vécu avant Sun Tzu.","answer":false,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Sun_Tzu'>Sun Tzu</a> (vers 3ème ou 4ème siècle apr. J.-C.) - Chine<br><a target='_blank' href='https://fr.wikipedia.org/wiki/Qin_Jiushao'>Qin Jiushao</a> (1202 - 1261) - Chine (Dynastie Song)"},
+{"statement":"Sun Tzu a vécu avant Al-Kashi.","answer":true,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Sun_Tzu'>Sun Tzu</a> (vers 3ème ou 4ème siècle apr. J.-C.) - Chine<br><a target='_blank' href='https://fr.wikipedia.org/wiki/Al-Kashi'>Al-Kashi</a> (vers 1380 - 22 juin 1429) - Perse (Empire Timouride)"},
+{"statement":"Al-Kashi a vécu avant Al-Khwârizmî.","answer":false,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Al-Khw%C3%A2rizm%C3%AE'>Al-Khwârizmî</a> (vers 780 apr. J.-C. - vers 850 apr. J.-C.) - Perse (Empire Abbasside)<br><a target='_blank' href='https://fr.wikipedia.org/wiki/Al-Kashi'>Al-Kashi</a> (vers 1380 - 22 juin 1429) - Perse (Empire Timouride)"},
+{"statement":"Al-Kindi a vécu avant  Fibonacci.","answer":true,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Al-Kindi'>Al-Kindi</a> (vers 801 apr. J.-C. - vers 873 apr. J.-C.) - Irak (Empire Abbasside)<br><a target='_blank' href='https://fr.wikipedia.org/wiki/Leonardo_Fibonacci'>Leonardo Fibonacci</a> (vers 1170 - vers 1250) - Italie"},
+{"statement":"Scipione del Ferro a vécu avant Leonardo Fibonacci.","answer":false,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Leonardo_Fibonacci'>Leonardo Fibonacci</a> (vers 1170 - vers 1250) - Italie<br><a target='_blank' href='https://fr.wikipedia.org/wiki/Scipione_del_Ferro'>Scipione del Ferro</a> (6 février 1465 - 5 novembre 1526) - Italie"},
+{"statement":"Leonardo Fibonacci a vécu avant Niccolò Fontana Tartaglia.","answer":true,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Leonardo_Fibonacci'>Leonardo Fibonacci</a> (vers 1170 - vers 1250) - Italie<br><a target='_blank' href='https://fr.wikipedia.org/wiki/Niccol%C3%B2_Fontana_Tartaglia'>Niccolò Fontana Tartaglia</a> (1499 - 13 décembre 1557) - Italie"},
+{"statement":"Copernic a vécu avant Qin Jiushao.","answer":false,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Qin_Jiushao'>Qin Jiushao</a> (1202 - 1261) - Chine (Dynastie Song)<br><a target='_blank' href='https://fr.wikipedia.org/wiki/Nicolas_Copernic'>Nicolas Copernic</a> (19 février 1473 - 24 mai 1543) - Pologne"},
+{"statement":"Al-Kashi a vécu avant Copernic.","answer":true,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Al-Kashi'>Al-Kashi</a> (vers 1380 - 22 juin 1429) - Perse (Empire Timouride)<br><a target='_blank' href='https://fr.wikipedia.org/wiki/Nicolas_Copernic'>Nicolas Copernic</a> (19 février 1473 - 24 mai 1543) - Pologne"},
+{"statement":"Galilée a vécu avant Al-Kashi.","answer":false,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Al-Kashi'>Al-Kashi</a> (vers 1380 - 22 juin 1429) - Perse (Empire Timouride)<br><a target='_blank' href='https://fr.wikipedia.org/wiki/Galil%C3%A9e_(savant)'>Galileo Galilei</a> (15 février 1564 - 8 janvier 1642) - Italie"},
+{"statement":"Scipione del Ferro a vécu avant Ludovico Ferrari.","answer":true,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Scipione_del_Ferro'>Scipione del Ferro</a> (6 février 1465 - 5 novembre 1526) - Italie<br><a target='_blank' href='https://fr.wikipedia.org/wiki/Ludovico_Ferrari'>Ludovico Ferrari</a> (2 février 1522 - 5 octobre 1565) - Italie"},
+{"statement":"John Neper a vécu avant Scipione del Ferro.","answer":false,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Scipione_del_Ferro'>Scipione del Ferro</a> (6 février 1465 - 5 novembre 1526) - Italie<br><a target='_blank' href='https://fr.wikipedia.org/wiki/John_Napier'>John Neper</a> (1550 - 4 avril 1617) - Écosse"},
+{"statement":"Copernic a vécu avant Galilée.","answer":true,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Nicolas_Copernic'>Nicolas Copernic</a> (19 février 1473 - 24 mai 1543) - Pologne<br><a target='_blank' href='https://fr.wikipedia.org/wiki/Galil%C3%A9e_(savant)'>Galileo Galilei</a> (15 février 1564 - 8 janvier 1642) - Italie"},
+{"statement":"Neper a vécu avant Copernic.","answer":false,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Nicolas_Copernic'>Nicolas Copernic</a> (19 février 1473 - 24 mai 1543) - Pologne<br><a target='_blank' href='https://fr.wikipedia.org/wiki/John_Napier'>John Neper</a> (1550 - 4 avril 1617) - Écosse"},
+{"statement":"Niccolò Fontana Tartaglia a vécu avant François Viète.","answer":true,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Niccol%C3%B2_Fontana_Tartaglia'>Niccolò Fontana Tartaglia</a> (1499 - 13 décembre 1557) - Italie<br><a target='_blank' href='https://fr.wikipedia.org/wiki/Fran%C3%A7ois_Vi%C3%A8te'>François Viète</a> (1540 - 23 février 1603) - France"},
+{"statement":"John Neper a vécu avant Girolamo Cardano.","answer":false,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/J%C3%A9r%C3%B4me_Cardan'>Girolamo Cardano</a> (24 septembre 1501 - 21 septembre 1576) - Italie<br><a target='_blank' href='https://fr.wikipedia.org/wiki/John_Napier'>John Neper</a> (1550 - 4 avril 1617) - Écosse"},
+{"statement":"Fibonacci a vécu avant Descartes.","answer":true,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Leonardo_Fibonacci'>Leonardo Fibonacci</a> (vers 1170 - vers 1250) - Italie<br><a target='_blank' href='https://fr.wikipedia.org/wiki/Ren%C3%A9_Descartes'>René Descartes</a> (31 mars 1596 - 11 février 1650) - France"},
+{"statement":"René Descartes a vécu avant Rafael Bombelli.","answer":false,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Rapha%C3%ABl_Bombelli'>Rafael Bombelli</a> (20 janvier 1526 - 1572) - Italie<br><a target='_blank' href='https://fr.wikipedia.org/wiki/Ren%C3%A9_Descartes'>René Descartes</a> (31 mars 1596 - 11 février 1650) - France"},
+{"statement":"François Viète a vécu avant René Descartes.","answer":true,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Fran%C3%A7ois_Vi%C3%A8te'>François Viète</a> (1540 - 23 février 1603) - France<br><a target='_blank' href='https://fr.wikipedia.org/wiki/Ren%C3%A9_Descartes'>René Descartes</a> (31 mars 1596 - 11 février 1650) - France"},
+{"statement":"Pierre de Fermat a vécu avant François Viète.","answer":false,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Fran%C3%A7ois_Vi%C3%A8te'>François Viète</a> (1540 - 23 février 1603) - France<br><a target='_blank' href='https://fr.wikipedia.org/wiki/Pierre_de_Fermat'>Pierre de Fermat</a> (17 août 1601 - 12 janvier 1665) - France"},
+{"statement":"Galilée a vécu avant Newton.","answer":true,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Galil%C3%A9e_(savant)'>Galilée</a> (15 février 1564 - 8 janvier 1642) - Italie<br><a target='_blank' href='https://fr.wikipedia.org/wiki/Isaac_Newton'>Isaac Newton</a> (25 décembre 1642 - 20 mars 1727) - Angleterre"},
+{"statement":"Isaac Newton a vécu René Descartes.","answer":false,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Ren%C3%A9_Descartes'>René Descartes</a> (31 mars 1596 - 11 février 1650) - France<br><a target='_blank' href='https://fr.wikipedia.org/wiki/Isaac_Newton'>Isaac Newton</a> (25 décembre 1642 - 20 mars 1727) - Angleterre"},
+{"statement":"René Descartes a vécu avant Émilie du Châtelet.","answer":true,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Ren%C3%A9_Descartes'>René Descartes</a> (31 mars 1596 - 11 février 1650) - France<br><a target='_blank' href='https://fr.wikipedia.org/wiki/%C3%89milie_du_Ch%C3%A2telet'>Émilie du Châtelet</a> (17 décembre 1706 - 10 septembre 1749) - France"},
+{"statement":"Étienne Bézout a vécu avant René Descartes.","answer":false,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Ren%C3%A9_Descartes'>René Descartes</a> (31 mars 1596 - 11 février 1650) - France<br><a target='_blank' href='https://fr.wikipedia.org/wiki/%C3%89tienne_B%C3%A9zout'>Étienne Bézout</a> (31 janvier 1730 - 27 septembre 1783) - France"},
+{"statement":"Pierre de Fermat a vécu avant Michel Rolle.","answer":true,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Pierre_de_Fermat'>Pierre de Fermat</a> (17 août 1601 - 12 janvier 1665) - France<br><a target='_blank' href='https://fr.wikipedia.org/wiki/Michel_Rolle'>Michel Rolle</a> (21 avril 1652 - 8 novembre 1719) - France"},
+{"statement":"Abraham de Moivre a vécu avant Pierre de Fermat.","answer":false,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Pierre_de_Fermat'>Pierre de Fermat</a> (17 août 1601 - 12 janvier 1665) - France<br><a target='_blank' href='https://fr.wikipedia.org/wiki/Abraham_de_Moivre'>Abraham de Moivre</a> (26 mai 1667 - 27 novembre 1754) - France/Angleterre"},
+{"statement":"Pierre de Fermat a vécu avant Pierre-Simon de Laplace.","answer":true,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Pierre_de_Fermat'>Pierre de Fermat</a> (17 août 1601 - 12 janvier 1665) - France<br><a target='_blank' href='https://fr.wikipedia.org/wiki/Pierre-Simon_de_Laplace'>Pierre-Simon de Laplace</a> (23 mars 1749 - 5 mars 1827) - France"},
+{"statement":"Leonhard Euler a vécu avant John Wallis.","answer":false,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/John_Wallis'>John Wallis</a> (23 novembre 1616 - 28 octobre 1703) - Angleterre<br><a target='_blank' href='https://fr.wikipedia.org/wiki/Leonhard_Euler'>Leonhard Euler</a> (15 avril 1707 - 7 septembre 1783) - Suisse"},
+{"statement":"Blaise Pascal a vécu avant Émilie du Châtelet.","answer":true,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Blaise_Pascal'>Blaise Pascal</a> (19 juin 1623 - 19 août 1662) - France<br><a target='_blank' href='https://fr.wikipedia.org/wiki/%C3%89milie_du_Ch%C3%A2telet'>Émilie du Châtelet</a> (17 décembre 1706 - 10 septembre 1749) - France"},
+{"statement":"Maria Gaetana Agnesi a vécu avant Cassini.","answer":false,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Jean-Dominique_Cassini'>Cassini</a> (8 juin 1625 - 14 septembre 1712) - Italie/France<br><a target='_blank' href='https://fr.wikipedia.org/wiki/Maria_Gaetana_Agnesi'>Maria Gaetana Agnesi</a> (16 août 1718 - 9 janvier 1799) - Italie"},
+{"statement":"Isaac Newton a vécu avant Gaspard Monge.","answer":true,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Isaac_Newton'>Isaac Newton</a> (25 décembre 1642 - 20 mars 1727) - Angleterre<br><a target='_blank' href='https://fr.wikipedia.org/wiki/Gaspard_Monge'>Gaspard Monge</a> (9 juillet 1746 - 28 juillet 1818) - France"},
+{"statement":"Laplace a vécu avant Newton.","answer":false,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Isaac_Newton'>Isaac Newton</a> (25 décembre 1642 - 20 mars 1727) - Angleterre<br><a target='_blank' href='https://fr.wikipedia.org/wiki/Pierre-Simon_de_Laplace'>Pierre-Simon de Laplace</a> (23 mars 1749 - 5 mars 1827) - France"},
+{"statement":"Isaac Newton a vécu avant Sophie Germain.","answer":true,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Isaac_Newton'>Isaac Newton</a> (25 décembre 1642 - 20 mars 1727) - Angleterre<br><a target='_blank' href='https://fr.wikipedia.org/wiki/Sophie_Germain'>Sophie Germain</a> (1er avril 1776 - 27 juin 1831) - France"},
+{"statement":"Euler a vécu avant Leibniz.","answer":false,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Gottfried_Wilhelm_Leibniz'>Gottfried Wilhelm Leibniz</a> (1er juillet 1646 - 14 novembre 1716) - Allemagne<br><a target='_blank' href='https://fr.wikipedia.org/wiki/Leonhard_Euler'>Leonhard Euler</a> (15 avril 1707 - 7 septembre 1783) - Suisse"},
+{"statement":"Leibniz a vécu avant Maria Gaetana Agnesi.","answer":true,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Gottfried_Wilhelm_Leibniz'>Gottfried Wilhelm Leibniz</a> (1er juillet 1646 - 14 novembre 1716) - Allemagne<br><a target='_blank' href='https://fr.wikipedia.org/wiki/Maria_Gaetana_Agnesi'>Maria Gaetana Agnesi</a> (16 août 1718 - 9 janvier 1799) - Italie"},
+{"statement":"Gaspard Monge a vécu avant Michel Rolle.","answer":false,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Michel_Rolle'>Michel Rolle</a> (21 avril 1652 - 8 novembre 1719) - France<br><a target='_blank' href='https://fr.wikipedia.org/wiki/Gaspard_Monge'>Gaspard Monge</a> (9 juillet 1746 - 28 juillet 1818) - France"},
+{"statement":"Michel Rolle a vécu avant Étienne Bézout.","answer":true,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Michel_Rolle'>Michel Rolle</a> (21 avril 1652 - 8 novembre 1719) - France<br><a target='_blank' href='https://fr.wikipedia.org/wiki/%C3%89tienne_B%C3%A9zout'>Étienne Bézout</a> (31 janvier 1730 - 27 septembre 1783) - France"},
+{"statement":"Carl Friedrich Gauss a vécu avant Jakob Bernoulli.","answer":false,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/Jacques_Bernoulli'>Jakob Bernoulli </a>(27 décembre 1654 - 16 août 1705) - Suisse<br><a target='_blank' href='https://fr.wikipedia.org/wiki/Carl_Friedrich_Gauss'>Carl Friedrich Gauss</a> (30 avril 1777 - 23 février 1855) - Allemagne"},
+{"statement":"Émilie du Châtelet a vécu avant Joseph Fourier.","answer":true,"comment":"<a target='_blank' href='https://fr.wikipedia.org/wiki/%C3%89milie_du_Ch%C3%A2telet'>Émilie du Châtelet</a> (17 décembre 1706 - 10 septembre 1749) - France<br><a target='_blank' href='https://fr.wikipedia.org/wiki/Joseph_Fourier'>Joseph Fourier</a> (21 mars 1768 - 16 mai 1830) - France"},
 ];
 function shuffleArray(array) {
   // attention !  le tableau est muté sur place
@@ -3914,7 +3983,7 @@ function showQuizResults() {
 function haveToLockTheme() {
   if (finishedQuizzesHistory.length < LOCK_LIMIT) return false;
 
-  // on prend les 10 dernières entrées ( ou tout si moins de 10 entrées)
+  // on prend les LOCK_LIMIT dernières entrées ( ou tout si moins de LOCK_LIMIT entrées)
   let recentHistory = finishedQuizzesHistory.slice(
     finishedQuizzesHistory.length - LOCK_LIMIT
   );
@@ -4079,12 +4148,8 @@ function htmlFeedbackElement(questionNumber) {
     return "<p>Feedback envoyé, merci !</p>";
 
   return `<details open>
-    <summary style="font-weight:900;font-size:1rem">Réagir à cette question</summary>
-    <div style="display:flex" id="feedbackDiv${questionNumber}">
-      <div class="btn btn-feedback" 
-        onclick="sendFeedback(${questionNumber},'like')">
-        ❤️ 
-      </div>
+    <summary style="font-weight:900;font-size:1rem">Réagir ou signaler un problème</summary>
+    <div style="display:flex;justify-content:space-between" id="feedbackDiv${questionNumber}">
       <div class="btn btn-feedback" 
         onclick="sendFeedback(${questionNumber},'easy')">
         🥱 
@@ -4093,9 +4158,13 @@ function htmlFeedbackElement(questionNumber) {
         onclick="sendFeedback(${questionNumber},'hard')">
         🥵 
       </div>
+      <div class="btn btn-feedback" 
+        onclick="sendFeedback(${questionNumber},'like')">
+        ❤️ 
+      </div>
       <div  class="btn btn-feedback"  
         onclick="sendFeedback(${questionNumber},'problem')">
-        ⁉️⚠️
+        ⚠️
       </div>
     </div>
   </details>`;
@@ -4359,8 +4428,20 @@ const range = (start, stop) =>
   Array.from({ length: stop - start + 1 }, (_, i) => start + i);
 
 let themes = {
-  dates_antiquite: {
-    title: "Dates - Antiquité",
+  comparaisons_XVIIe_XVIIIe: {
+    title: "Mathématiciens des XVII<sup>e</sup> et XVIII<sup>e</sup> siècles",
+    info: "Questions pour situer les mathématiciens du XVII<sup>e</sup> et du siècle des Lumières. Détails et liens dans les corrections.",
+    questions: range(2650,2669),
+    maxPointsPerQuestion: 1,
+  },
+  comparaisons_pre_XVIIe: {
+    title: "Mathématiciens du premier au XVII<sup>e</sup> siècle",
+    info: "Questions pour situer les mathématiciens du début de notre ère jusqu'à la fin de la Renaissance. Détails et liens dans les corrections.",
+    questions: range(2629,2649),
+    maxPointsPerQuestion: 1,
+  },
+  comparaisons_antiquite: {
+    title: "Mathématiciens de l'Antiquité",
     info: "Questions pour situer les mathématiciens de l'antiquité les uns par rapport aux autres. Détails et liens dans les corrections.",
     questions: range(2595,2610),
     maxPointsPerQuestion: 1,

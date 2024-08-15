@@ -9,7 +9,9 @@ let chapters = [
     name: "Histoire des maths",
     themes: [
       { label: "Éléments", id: "elements_euclide" },
-      { label: "Dates: Antiquité", id: "dates_antiquite" },
+      { label: "Antiquité", id: "comparaisons_antiquite" },
+      { label: "Pré-XVII<sup>e</sup>", id: "comparaisons_pre_XVIIe" },
+      { label: "XVII<sup>e</sup>/XVIII<sup>e</sup>", id: "comparaisons_XVIIe_XVIIIe" },
       { label: "Sophie Germain", id: "sophie_germain" },
     ],
   },
