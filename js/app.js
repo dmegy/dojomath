@@ -27,22 +27,6 @@ let questions = []; // Pour json. Commenter si questions loadées depuis js.
 let questionNumber; // int, question courante
 let question; // question courante : object
 let oldState = undefined;
-let state = "Loading";
-// les states ont "Loading", "Home", "Settings", "Statistics", "Chapters", "Theme", "Quiz" et "End"
-let sectionLabels = {
-  Loading: SITE_NAME + ".fr",
-  Home: SITE_NAME + ".fr",
-  Profile: "Préférences",
-  Statistics: "Progression",
-  Highscores: "Highscores",
-  Chapters: "Liste des thèmes",
-  Theme: "Thème choisi",
-  Quiz: "",
-  End: "Partie terminée!",
-  Gameover: "",
-};
-let theme = {}; // thème courant, celui affiché lorsqu'on clique sur un thème dans la page des chapitres.
-let quiz = {}; // quiz courant
 
 let user = {
   firstConnectionTime: t0 /* time in ms */,
@@ -72,6 +56,35 @@ let user = {
   lastBoostEndTime: 0 /* time in millisec */,
   lastBoostMultiplier: 1,
 };
+
+let state = "Loading";
+// les states ont "Loading", "Home", "Settings", "Statistics", "Chapters", "Theme", "Quiz" et "End"
+let sectionLabels = {
+  Loading: SITE_NAME + ".fr",
+  Home: SITE_NAME + ".fr",
+  Profile: "Profil",
+  Statistics: "Progression",
+  Highscores: "Highscores",
+  Chapters: "Chapitres",
+  Theme: "",
+  Quiz: "",
+  End: "Partie terminée!",
+  Gameover: "",
+};
+let sectionIcons = {
+  Loading: SITE_NAME + ".fr",
+  Home: "svgPathFasHouse",
+  Profile: getUserSvgPath(user.points),
+  Statistics: "svgPathFasChartLine",
+  Highscores: "svgPathFasTrophy",
+  Chapters: "svgPathFasDumbbell",
+  Theme: "",
+  Quiz: "",
+  End: "svgPathFasFlagCheckered",
+  Gameover: "",
+};
+let theme = {}; // thème courant, celui affiché lorsqu'on clique sur un thème dans la page des chapitres.
+let quiz = {}; // quiz courant
 
 // historique et stats :
 let pointsDiffHistory = [];

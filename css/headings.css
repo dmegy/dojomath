@@ -40,9 +40,7 @@ a:after {
 .glow {
   text-shadow: 0 0 0.5em var(--c-text);
 }
-.glow-more {
+.glow-icon {
   filter: drop-shadow(0 0 0.2rem var(--c-text));
   text-shadow: 0 0 1em var(--c-text);
 }
-
-

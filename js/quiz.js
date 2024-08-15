@@ -162,15 +162,6 @@ function validateAnswer() {
   else showQuizResults(); // quiz terminé !
 }
 
-// n'est plus utilisée ?
-function confirmQuit() {
-  let text =
-    "=======================\nDEMANDE DE CONFIRMATION\n=======================\n\nSouhaites-tu vraiment quitter la partie en cours ?\n\n(Attention, les points de la partie en cours ne seront pas sauvegardés.)";
-  if (confirm(text) == true) {
-    abortQuiz();
-  }
-}
-
 function abortQuiz() {
   user.nbQuizAborted++;
   gotoTheme(theme.id);

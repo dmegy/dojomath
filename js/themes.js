@@ -69,7 +69,7 @@ let themes = {
     title: "Tables de multiplications à un chiffre",
     info: "Parfait pour réviser ses tables !",
     questions: range(2354, 2383),
-    maxPointsPerQuestion: 5,
+    maxPointsPerQuestion: 1,
   },
   additions_tables: {
     title: "Additions de multiplications",
