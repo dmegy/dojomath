@@ -56,7 +56,11 @@ let user = {
   longestStreak: 0,
   lastBoostEndTime: 0 /* time in millisec */,
   lastBoostMultiplier: 1,
+  lastMessageSendTime: 0,
+  lastMessageCheckTime: 0,
 };
+
+let receivedMessages = [];
 
 let state = "Loading";
 // les states ont "Loading", "Home", "Settings", "Statistics", "Chapters", "Theme", "Quiz" et "End"
@@ -75,7 +79,7 @@ let sectionLabels = {
 let sectionIcons = {
   Loading: SITE_NAME + ".fr",
   Home: "svgPathFasHouse",
-  Profile: getUserSvgPath(user.points),
+  Profile: "svgPathFasUserLarge",
   Statistics: "svgPathFasChartLine",
   Highscores: "svgPathFasTrophy",
   Chapters: "svgPathFasDumbbell",
@@ -115,6 +119,13 @@ try {
       user[key] = loadedUser[key];
     }
     console.log("User updated");
+  }
+
+  // messages
+  if (window.localStorage.getItem("receivedMessages") !== null) {
+    receivedMessages = JSON.parse(
+      window.localStorage.getItem("receivedMessages")
+    );
   }
 
   if (window.localStorage.getItem("finishedQuizzesHistory") !== null) {
@@ -178,6 +189,10 @@ function saveToLocalStorage() {
     );
     window.localStorage.setItem("statsThemes", JSON.stringify(statsThemes));
     window.localStorage.setItem("user", JSON.stringify(user));
+    window.localStorage.setItem(
+      "receivedMessages",
+      JSON.stringify(receivedMessages)
+    );
     window.localStorage.setItem(
       "pointsDiffHistory",
       JSON.stringify(pointsDiffHistory)
@@ -331,8 +346,9 @@ function xHtml() {
 // éventuellement coder le x-for pour le composant de références de thèmes, avec liste de liens à afficher...
 
 function render() {
-  checkForUpdates();
-  welcomeBackBoost();
+  // pas que render... updates etc...
+  checkForUpdates(); // virer, gérer avec events
+  welcomeBackBoost(); // virer, gérer avec events ?
   adjustPoints(); // vérification rudimentaire des points et correction systématique
   xShow();
   xHtml();
@@ -387,14 +403,6 @@ function fromB64(x) {
   return x.split("").reduce((s, v) => s * 64 + digit.indexOf(v), 0);
 }
 
-const URL_SEND_MESSAGE = "";
-
-function editMessage(recipientId, recipientName) {}
-
-function sendMessage() {
-  // paramètres en argument ? ou variable globale messageDraft ?
-}
-
 const URL_QUIZ_FINISHED = "backend/quiz_finished.php";
 const URL_QUESTION_FINISHED = "backend/question_finished.php";
 const URL_HIGHSCORES_ALLTIME = "backend/highscores_alltime.html.txt";
@@ -410,7 +418,6 @@ function sendStatistics() {
     quiz: JSON.stringify(quiz),
   };
 
-  console.log("Envoi des points au serveur");
   fetch(URL_QUIZ_FINISHED, {
     method: "POST",
     headers: {
@@ -434,6 +441,10 @@ function getHighscores() {
 }
 
 function getBestPlayers() {
+  if (!window.navigator.onLine) {
+    console.log("getBestPlayers : navigator offline");
+    return;
+  }
   console.log("Downloading Highscores (alltime)");
   document.getElementById("loadingHighscoresAlltime").style.opacity = "20%";
   fetch(URL_HIGHSCORES_ALLTIME + "?unique=" + Math.random())
@@ -449,6 +460,10 @@ function getBestPlayers() {
 
 // deprecated, not used anymore (check!)
 function getRecentPlayers() {
+  if (!window.navigator.onLine) {
+    console.log("getRecentPlayers : navigator offline");
+    return;
+  }
   console.log("Downloading Highscores (recent players)");
   document.getElementById("loadingHighscoresRecent").style.opacity = "20%";
   fetch(URL_HIGHSCORES_RECENT + "?unique=" + Math.random())
@@ -951,17 +966,182 @@ function testMathJax() {
   /* composé automatiquement normalement, MathJax watch le contenu*/
 }
 
+const URL_GET_MESSAGES = "https://www.dojomath.fr/backend/get_messages.php";
+const URL_SEND_MESSAGE = "https://www.dojomath.fr/backend/send_message.php";
+
+function editMessage(recipientId) {
+  if (user.points < 100) {
+    notification(
+      "Pour envoyer un message, tu dois avoir plus de 100 points !",
+      "var(--c-danger)"
+    );
+    return;
+  }
+  if (!window.navigator.onLine) {
+    notification("Tu sembles être hors-ligne.", "var(--c-danger)");
+    return;
+  }
+  let promptMessage =
+    "Envoi de message\n============\n\nLongueur maximale du message:\n un seul émoji (ou 2 lettres)!";
+  let content = prompt(promptMessage, "👏");
+  if (!content) return;
+  if (content.length > 2) {
+    notification(
+      "Message trop long.\nLongueur maximale : un seul émoji ou deux lettres.",
+      "var(--c-danger)"
+    );
+    return;
+  }
+  sendMessage(recipientId, content);
+}
+
+function sendMessage(recipientId, content) {
+  if (user.points < 100) {
+    console.log("Pour envoyer des messages, il faut avoir au moins 100 points");
+    return;
+  }
+  if (content.length > 2 || recipientId.length > 16) {
+    // normalement déjà filtré par editMessage
+    console.log("Message invalide");
+    return;
+  }
+  if (Date.now() - user.lastMessageSendTime < 1000) {
+    console.log("Maximum un envoi de message par seconde");
+    return;
+  }
+
+  // paramètres en argument ? ou variable globale messageDraft ?
+  let requestBody = {
+    sender: JSON.stringify(user),
+    recipientId: recipientId,
+    content: content,
+  };
+
+  notification("Envoi du message...", "oklch(70% 90% var(--hue-accent))");
+  fetch(URL_SEND_MESSAGE, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(requestBody),
+  })
+    .then((response) => response.json())
+    .then((obj) => {
+      if (obj.status == "success")
+        notification("Message envoyé !", "oklch(70% 90% var(--hue-accent))");
+      else
+        notification(
+          "Erreur lors du traitement des données.",
+          "var(--c-danger)"
+        );
+    })
+    .catch((error) => {
+      notification("Erreur d'envoi", "var(--c-danger)");
+    });
+}
+
+function getMessages() {
+  if (!window.navigator.onLine) {
+    console.log("Navigateur hors-ligne.");
+    return;
+  }
+  if (Date.now() - user.lastMessageCheckTime < 3000) {
+    console.log("Maximum un check de message par 3 secondes");
+    return;
+  }
+
+  // paramètres en argument ? ou variable globale messageDraft ?
+  let requestBody = {
+    user: JSON.stringify(user),
+  };
+
+  fetch(URL_GET_MESSAGES, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(requestBody),
+  })
+    .then((response) => response.json())
+    .then((responseObj) => {
+      if (responseObj.status != "success") {
+        console.log(
+          "Réponse du serveur : Erreur. Message : " + responseObj.message
+        );
+        return;
+      }
+
+      if (responseObj.messages.length == 0) {
+        console.log("Pas de messages");
+        return;
+      }
+
+      if (
+        receivedMessages.length != 0 &&
+        receivedMessages[0].date === responseObj.messages[0].date
+      ) {
+        console.log("Pas de nouveaux messages");
+        return;
+      }
+      // END GUARD
+      let notifText =
+        state == "Profile"
+          ? "Nouveau(x) message(s) !"
+          : "Tu as de nouveaux messages!\n Tu peux les lire dans ta page de profil.";
+      notification(notifText, "oklch(70% 90% var(--hue-accent))");
+      receivedMessages = responseObj.messages;
+      saveToLocalStorage();
+      // on relance pas nu render(), on fait juste ceci :
+      document.getElementById("messages").innerHTML = htmlMessages();
+    })
+    .catch((error) => {
+      console.log(error);
+    });
+}
+
+function refreshMessages() {
+  getMessages();
+}
+
+function htmlMessages() {
+  if (receivedMessages.length == 0) {
+    return `Pas encore de messages.<br>
+     Les personnes venant de terminer une partie sont contactables par tout le monde.<br>
+     Tu peux engager une conversation de cette façon.<br>
+     Ensuite, toute personne qui reçoit un message peut y répondre.<br>
+     Attention la taille des messages est limitée à un seul émoji !`;
+  }
+  let s = "";
+  for (let i = 0; i < receivedMessages.length; i++) {
+    s += `<div style="display:flex;justify-content:space-between;align-items:center;margin:.2rem 0">
+      <div>${receivedMessages[i].senderName} dit : ${receivedMessages[i].content}</div>
+      <div class="btn btn-small btn-primary" onclick="editMessage('${receivedMessages[i].senderId}')">Répondre</div>
+      </div>`;
+  }
+  return s;
+}
+
+window.addEventListener("stateChange", (e) => {
+  let s = e.detail.newState;
+  if (s == "Home" || s == "Highscores" || s == "Statistics" || s == "Profile") {
+    console.log("get messages");
+    getMessages();
+  }
+});
+
 // - - - - - - - - - - - - - - - - - - - - - - -
 // - - - - LISTENER ONLOAD and getScript, Mathjax etc
 // - - - - - - - - - - - - - - - - - - - - - - -
 
 window.addEventListener("load", () => {
+  console.log("- - - -   P A G E   L O A D   - - - - - -");
   //GETSCRIPT MATHJAX : si on le met en async dans le body il commence trop tôt ?
   getScript("https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js", () => {
     testMathJax();
   });
   // ou alors  charger en async mais ça repousse le temps officiel de load
-  console.log("- - - -   O N L O A D   - - - - - -");
   initUpdateStatsThemes(); // a besoin que les thèmes soient loadés avant !
 
   initUpdateStatsQuestions(); /// idem, a besoin des questions, mais c'est inliné
@@ -4204,7 +4384,7 @@ function toast(message, color) {
 function notification(message, color) {
   Toastify({
     text: message,
-    duration: 4000,
+    duration: 4500,
     destination: "",
     newWindow: true,
     close: false,
@@ -4396,6 +4576,9 @@ window.addEventListener("popstate", (event) => {
 });
 
 function setState(s) {
+  window.dispatchEvent(
+    new CustomEvent("stateChange", { detail: { oldState: state, newState: s } })
+  );
   oldState = state;
   state = s;
 }

@@ -13,7 +13,6 @@ function sendStatistics() {
     quiz: JSON.stringify(quiz),
   };
 
-  console.log("Envoi des points au serveur");
   fetch(URL_QUIZ_FINISHED, {
     method: "POST",
     headers: {
@@ -37,6 +36,10 @@ function getHighscores() {
 }
 
 function getBestPlayers() {
+  if (!window.navigator.onLine) {
+    console.log("getBestPlayers : navigator offline");
+    return;
+  }
   console.log("Downloading Highscores (alltime)");
   document.getElementById("loadingHighscoresAlltime").style.opacity = "20%";
   fetch(URL_HIGHSCORES_ALLTIME + "?unique=" + Math.random())
@@ -52,6 +55,10 @@ function getBestPlayers() {
 
 // deprecated, not used anymore (check!)
 function getRecentPlayers() {
+  if (!window.navigator.onLine) {
+    console.log("getRecentPlayers : navigator offline");
+    return;
+  }
   console.log("Downloading Highscores (recent players)");
   document.getElementById("loadingHighscoresRecent").style.opacity = "20%";
   fetch(URL_HIGHSCORES_RECENT + "?unique=" + Math.random())

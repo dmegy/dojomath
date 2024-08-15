@@ -47,7 +47,7 @@ try {
         if(trim($row['UserName']) === "") $userName = "(" . $row['UserId'] . ")";
         else $userName = $row['UserName'];
 
-        $text .= "<tr><td align='right' style='width:2ch'></td><td align='left'>".$userName."</td><td align='right'>".$row['UserStreak']."j</td><td align='right'>".$row['UserCombo']."</td><td align='right'>+".$row['PointsEarned']."</td></tr>\n";
+        $text .= "<tr><td align='right' style='width:2ch'><div class='btn btn-small btn-primary' onclick='editMessage(\"".$row['UserId']."\")'>💬</div></td><td align='left'>".$userName."</td><td align='right'>".$row['UserStreak']."j</td><td align='right'>".$row['UserCombo']."</td><td align='right'>+".$row['PointsEarned']."</td></tr>\n";
         $i++;
     }
         $text .= "</tbody></table>";

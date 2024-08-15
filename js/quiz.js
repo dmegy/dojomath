@@ -493,7 +493,7 @@ function toast(message, color) {
 function notification(message, color) {
   Toastify({
     text: message,
-    duration: 4000,
+    duration: 4500,
     destination: "",
     newWindow: true,
     close: false,

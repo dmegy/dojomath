@@ -3,12 +3,12 @@
 // - - - - - - - - - - - - - - - - - - - - - - -
 
 window.addEventListener("load", () => {
+  console.log("- - - -   P A G E   L O A D   - - - - - -");
   //GETSCRIPT MATHJAX : si on le met en async dans le body il commence trop tôt ?
   getScript("https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js", () => {
     testMathJax();
   });
   // ou alors  charger en async mais ça repousse le temps officiel de load
-  console.log("- - - -   O N L O A D   - - - - - -");
   initUpdateStatsThemes(); // a besoin que les thèmes soient loadés avant !
 
   initUpdateStatsQuestions(); /// idem, a besoin des questions, mais c'est inliné

@@ -52,6 +52,7 @@
     <script defer src="js/toastify.js"></script>
     <script defer src="js/-tests.js"></script>
     <script defer src="js/initMathJax.js"></script>
+    <script defer src="js/messages.js"></script>
     <link
       rel="icon"
       href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 110 100'><text y='0.9em' font-size='90'>🏆</text></svg>"
@@ -185,13 +186,30 @@
         <section
           id="section-profile"
           x-show="(state=='Profile')"
-          style="display: none; text-align: center; padding-top: 3rem"
+          style="display: none"
         >
-          <p>Pseudonyme (⩽10 caractères) :</p>
-          <p x-html="htmlInputUsername()">input username</p>
+          <h3>Préférences</h3>
+          <p>
+            <b>Pseudonyme :</b>
+            <span x-html="htmlInputUsername()">input username</span>
+          </p>
+          <p>
+            (Modifiable, ⩽10 caractères / 5 émojis. C'est le nom qui apparaît
+            dans les tableaux de highscores et dans les messages envoyés.)
+          </p>
 
-          <p>Département (si France) :</p>
-          <p x-html="htmlSelectAreaCode()"></p>
+          <p>
+            <b>Département (si France) :</b>
+            <span x-html="htmlSelectAreaCode()"></span>
+          </p>
+
+          <h3>
+            Derniers messages reçus
+            <span class="btn btn-refresh-scores" onclick="refreshMessages()"
+              >↻</span
+            >
+          </h3>
+          <div x-html="htmlMessages()" id="messages"></div>
           <!--
           <div>
             <h3>Sauvegarde du compte</h3>

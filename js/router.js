@@ -154,6 +154,9 @@ window.addEventListener("popstate", (event) => {
 });
 
 function setState(s) {
+  window.dispatchEvent(
+    new CustomEvent("stateChange", { detail: { oldState: state, newState: s } })
+  );
   oldState = state;
   state = s;
 }

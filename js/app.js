@@ -55,7 +55,11 @@ let user = {
   longestStreak: 0,
   lastBoostEndTime: 0 /* time in millisec */,
   lastBoostMultiplier: 1,
+  lastMessageSendTime: 0,
+  lastMessageCheckTime: 0,
 };
+
+let receivedMessages = [];
 
 let state = "Loading";
 // les states ont "Loading", "Home", "Settings", "Statistics", "Chapters", "Theme", "Quiz" et "End"
@@ -74,7 +78,7 @@ let sectionLabels = {
 let sectionIcons = {
   Loading: SITE_NAME + ".fr",
   Home: "svgPathFasHouse",
-  Profile: getUserSvgPath(user.points),
+  Profile: "svgPathFasUserLarge",
   Statistics: "svgPathFasChartLine",
   Highscores: "svgPathFasTrophy",
   Chapters: "svgPathFasDumbbell",
@@ -114,6 +118,13 @@ try {
       user[key] = loadedUser[key];
     }
     console.log("User updated");
+  }
+
+  // messages
+  if (window.localStorage.getItem("receivedMessages") !== null) {
+    receivedMessages = JSON.parse(
+      window.localStorage.getItem("receivedMessages")
+    );
   }
 
   if (window.localStorage.getItem("finishedQuizzesHistory") !== null) {
@@ -177,6 +188,10 @@ function saveToLocalStorage() {
     );
     window.localStorage.setItem("statsThemes", JSON.stringify(statsThemes));
     window.localStorage.setItem("user", JSON.stringify(user));
+    window.localStorage.setItem(
+      "receivedMessages",
+      JSON.stringify(receivedMessages)
+    );
     window.localStorage.setItem(
       "pointsDiffHistory",
       JSON.stringify(pointsDiffHistory)
@@ -330,8 +345,9 @@ function xHtml() {
 // éventuellement coder le x-for pour le composant de références de thèmes, avec liste de liens à afficher...
 
 function render() {
-  checkForUpdates();
-  welcomeBackBoost();
+  // pas que render... updates etc...
+  checkForUpdates(); // virer, gérer avec events
+  welcomeBackBoost(); // virer, gérer avec events ?
   adjustPoints(); // vérification rudimentaire des points et correction systématique
   xShow();
   xHtml();
