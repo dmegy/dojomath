@@ -19,7 +19,6 @@ const HAPPY_HOUR_LIST = [
 let UPDATE_TIME = 1000 * 3600 * 24; // nb de millisec pour check updates et  essayer de refresh si online
 let SHOW_HIDDEN_THEMES = false;
 let SHOW_HIDDEN_CHAPTERS = false;
-let TIME_WELCOME_BACK = 1000 * 3600 * 24; // pour donner un booster de bienvenue après 1 jour d'inactivité
 
 // - - - -
 let custom = false; //sera mis à true par le router si c'est un quiz custom. Controle certains affichages custom
@@ -176,6 +175,7 @@ try {
   console.log("Localstorage disabled : could not load user data.");
 }
 // - - - - /FIN UPDATE FROM STORAGE
+// - - - - - - - - - - - - - - - - - -
 
 function saveToLocalStorage() {
   adjustPoints();
@@ -229,6 +229,7 @@ function adjustPoints() {
 // - - - - - - - - - - - - - - - - - - -
 
 function computeAllThemeStats() {
+  // inutilisé ?
   console.log("compute all theme stats");
   for (let themeId in statsThemes) {
     computeThemeStats(themeId);
@@ -347,12 +348,16 @@ function xHtml() {
 function render() {
   // pas que render... updates etc...
   checkForUpdates(); // virer, gérer avec events
-  welcomeBackBoost(); // virer, gérer avec events ?
   adjustPoints(); // vérification rudimentaire des points et correction systématique
   xShow();
   xHtml();
   user.lastRenderTime = Date.now();
+  window.dispatchEvent(new Event("render"));
+}
 
+// on rattache les listeners qui ont été détruits :
+window.addEventListener("render", () => {
+  console.log("on rattache les listeners");
   // on rattache les listeners,
   // attention l'élément est crée par un composant et n'existe peut-être pas :
   let userNameInput = document.getElementById("userNameInputId");
@@ -360,6 +365,7 @@ function render() {
     userNameInput.addEventListener("change", () => {
       user.userName = userNameInput.value;
       saveToLocalStorage();
+      notification("Pseudo sauvegardé.");
     });
 
   let userAreaCodeSelect = document.getElementById("userAreaCodeSelectId");
@@ -367,22 +373,9 @@ function render() {
     userAreaCodeSelect.addEventListener("change", () => {
       user.areaCode = userAreaCodeSelect.value;
       saveToLocalStorage();
+      notification("Département sauvegardé.");
     });
-}
-
-function welcomeBackBoost() {
-  // gives boost if new activity
-  if (Date.now() - user.lastRenderTime > TIME_WELCOME_BACK) {
-    user.lastBoostMultiplier = 2;
-    user.lastBoostEnd = Date.now() + BOOST_DURATION_MS;
-    notification(
-      "TE REVOILA !\nPoints doublés pendant " +
-        BOOST_DURATION_MS / (60 * 1000) +
-        " minutes !",
-      "oklch(70% 100% var(--hue-accent)"
-    );
-  }
-}
+});
 
 // - - - - - - - -- D I V E R S - - - - - - - -
 
