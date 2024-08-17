@@ -3,11 +3,13 @@ let lastUpdateCheckTime = Date.now();
 const SITE_NAME = "DojoMath";
 const MIN_QUIZ_RESULT = 2; // result \in [-10,10] attention certains quiz peuvent faire moins de 2 questions ?
 const MAX_QUIZ_LENGTH = 10;
-const MAX_POINTS_PER_QUESTION = 10; //maximum de pts que l'on peut gagner à chaque question
+const MAX_POINTS_PER_QUESTION = 5; //maximum de pts que l'on peut gagner à chaque question
 const BOOST_PROBABILITY = 0.1; // proba de looter un boost à la fin d'un quiz
 const BOOST_DURATION_MS = 5 * 60 * 1000; // 5 minutes
 const LOCK_LIMIT = 5; // limite au delà de la quelle on bloque temporairement un thème
-const NB_QUESTIONS = 2440; // pour la validation des quiz custom.
+const NB_QUESTIONS = 2670; // pour la validation des quiz custom.
+const SECRET_REFERRAL_CODE = 42000000000;
+const REFERRAL_GIFT = 50; // cadeau si arrivée par parrainage
 const QUESTION_SEPARATOR = ","; // pour les custom quiz
 const HAPPY_HOUR_LIST = [
   [6, 8],
@@ -28,6 +30,7 @@ let question; // question courante : object
 let oldState = undefined;
 
 let user = {
+  referrerId: "",
   firstConnectionTime: t0 /* time in ms */,
   userId: toB64(t0),
   userName: toB64(t0),
@@ -104,106 +107,35 @@ let loadedStatsThemes = {};
 //  - - - - - - - -  / FIN DECLARATION VARIABLES
 // - - - - - - - - - - - - - - - - - - - - - - - -
 
-// - - - - - - - - - - - - - - - - - - - - - - - -
-// - - - - - - - - - -  S T O R A G E - - - - -
-// - - - - - - - - - - - - - - - - - - - - - - - -
-
-try {
-  if (window.localStorage.getItem("user") !== null) {
-    console.log("user already exists in storage");
-    // on écrase, à partir de ce qu'il y a dans le storage, attention.
-    loadedUser = JSON.parse(window.localStorage.getItem("user"));
-    for (let key in loadedUser) {
-      user[key] = loadedUser[key];
-    }
-    console.log("User updated");
-  }
-
-  // messages
-  if (window.localStorage.getItem("receivedMessages") !== null) {
-    receivedMessages = JSON.parse(
-      window.localStorage.getItem("receivedMessages")
-    );
-  }
-
-  if (window.localStorage.getItem("finishedQuizzesHistory") !== null) {
-    console.log("Quiz history exists in storage");
-    // on écrase :
-    finishedQuizzesHistory = JSON.parse(
-      window.localStorage.getItem("finishedQuizzesHistory")
-    );
-    console.log("Quiz history updated");
-  }
-
-  if (window.localStorage.getItem("pointsDiffHistory") !== null) {
-    console.log("Points history exists in storage");
-    // on écrase :
-    pointsDiffHistory = JSON.parse(
-      window.localStorage.getItem("pointsDiffHistory")
-    );
-    console.log("Points history updated");
-  }
-
-  if (user.points > 0 && pointsDiffHistory.length == 0) {
-    // initialisation en cas de nouvelle version de l'appli
-    pointsDiffHistory.push(user.points);
-  }
-
-  if (window.localStorage.getItem("statsThemes") !== null) {
-    loadedStatsThemes = JSON.parse(window.localStorage.getItem("statsThemes"));
-    console.log(
-      Object.keys(loadedStatsThemes).length +
-        " themes have data in storage. Loaded in temporary object."
-    );
-  }
-  // la synchronisation aura lieu plus tard, une fois que les thèmes seront chargés.
-
-  // UPDATE STATS QUESTIONS attention les questions ne sont pas encore chargées ?
-  if (window.localStorage.getItem("statsQuestions") !== null) {
-    loadedStatsQuestions = JSON.parse(
-      window.localStorage.getItem("statsQuestions")
-    );
-    console.log(
-      loadedStatsQuestions.length +
-        " questions have data in storage. Loaded in temporary object."
-    );
-  }
-} catch (e) {
-  alert(
-    "Il semble que les cookies soient désactivés.\n Ce site a besoin des cookies pour fonctionner correctement, pour stocker temporairement les résultats aux questions, les points gagnés etc.\n Sans cookies, toutes les données sont perdues à chaque rechargement de la page ou perte de connexion."
-  );
-  console.log("Localstorage disabled : could not load user data.");
+function resetUser() {
+  localStorage.clear();
+  window.location.reload();
 }
-// - - - - /FIN UPDATE FROM STORAGE
-// - - - - - - - - - - - - - - - - - -
 
-function saveToLocalStorage() {
-  adjustPoints();
-  // à mettre dans app.js et pas dans quiz.js
-  // En effet : modifications/enregistrement de user dans la page de profil
-  try {
-    window.localStorage.setItem(
-      "statsQuestions",
-      JSON.stringify(statsQuestions)
-    );
-    window.localStorage.setItem("statsThemes", JSON.stringify(statsThemes));
-    window.localStorage.setItem("user", JSON.stringify(user));
-    window.localStorage.setItem(
-      "receivedMessages",
-      JSON.stringify(receivedMessages)
-    );
-    window.localStorage.setItem(
-      "pointsDiffHistory",
-      JSON.stringify(pointsDiffHistory)
-    );
-    window.localStorage.setItem(
-      "finishedQuizzesHistory",
-      JSON.stringify(finishedQuizzesHistory)
-    );
-    console.log("Saved data to localStorage");
-  } catch (e) {
-    console.log("localStorage disabled : could not save data");
-  }
+function isUserNew() {
+  return Object.keys(loadedUser).length === 0;
+}
+
+// - - - - - - - - - - - - - - - - - - -
+// - - - - - REFERRAL - - - - - - - - -
+// - - - - - - - - - - - - - - - - - - -
+
+function referralCodeToId(s) {
+  return toB64(fromB64(s) - SECRET_REFERRAL_CODE);
+}
+
+function getReferralCode() {
+  return toB64(user.firstConnectionTime + SECRET_REFERRAL_CODE);
+}
+
+function getReferralLink() {
+  return "https://www.dojomath.fr/?code=" + getReferralCode();
+  //
+}
+
+function copyReferralLinkToClipBoard() {
+  navigator.clipboard.writeText(getReferralLink());
+  toast("Lien copié");
 }
 
 // - - - - - - - - - - - - - - - - - - -
@@ -317,7 +249,7 @@ function getUserSvgPath(pts) {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - -
-// - - - - - - - - Mini-Alpine :-) - - - - - - - - -
+// - - - - - - - - Mini-Alpine :-) & RENDER - - - - - - - - -
 // - - - - - - - - - - - - - - - - - - - - - - - - -
 
 function xShow() {
@@ -355,10 +287,213 @@ function render() {
   window.dispatchEvent(new Event("render"));
 }
 
-// on rattache les listeners qui ont été détruits :
+// - - - - - - - -- BASE 64 - - - - - - - -
+
+function toB64(x) {
+  let digit =
+    "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_";
+  return x
+    .toString(2)
+    .split(/(?=(?:.{6})+(?!.))/g)
+    .map((v) => digit[parseInt(v, 2)])
+    .join("");
+}
+
+function fromB64(x) {
+  let digit =
+    "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_";
+  return x.split("").reduce((s, v) => s * 64 + digit.indexOf(v), 0);
+}
+
+function isB64(string) {
+  if (string.length == 0) return false;
+
+  let digit =
+    "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_";
+  for (let i = 0; i < string.length; i++) {
+    if (!digit.includes(string[i])) return false;
+  }
+  return true;
+}
+
+// - - - - - -  STORAGE - - - - - - - -
+
+function saveToLocalStorage() {
+  adjustPoints();
+  // à mettre dans app.js et pas dans quiz.js
+  // En effet : modifications/enregistrement de user dans la page de profil
+  try {
+    window.localStorage.setItem(
+      "statsQuestions",
+      JSON.stringify(statsQuestions)
+    );
+    window.localStorage.setItem("statsThemes", JSON.stringify(statsThemes));
+    window.localStorage.setItem("user", JSON.stringify(user));
+    window.localStorage.setItem(
+      "receivedMessages",
+      JSON.stringify(receivedMessages)
+    );
+    window.localStorage.setItem(
+      "pointsDiffHistory",
+      JSON.stringify(pointsDiffHistory)
+    );
+    window.localStorage.setItem(
+      "finishedQuizzesHistory",
+      JSON.stringify(finishedQuizzesHistory)
+    );
+    console.log("Saved data to localStorage");
+  } catch (e) {
+    console.log("localStorage disabled : could not save data");
+  }
+}
+
+function loadDataFromStorage() {
+  // on va loader :
+  // user, receivedMessages, finishedQuizHistory, pointsDiffHistory, statsThemes,statsQuestions
+  // cette fonction va être executée juste après la définition des fonctions, avant les event onLoad etc.
+  try {
+    if (window.localStorage.getItem("user") !== null) {
+      console.log("user already exists in storage");
+      // on écrase, à partir de ce qu'il y a dans le storage, attention.
+      loadedUser = JSON.parse(window.localStorage.getItem("user"));
+      for (let key in loadedUser) {
+        user[key] = loadedUser[key];
+      }
+      console.log("User updated");
+    }
+
+    // messages
+    if (window.localStorage.getItem("receivedMessages") !== null) {
+      receivedMessages = JSON.parse(
+        window.localStorage.getItem("receivedMessages")
+      );
+    }
+
+    if (window.localStorage.getItem("finishedQuizzesHistory") !== null) {
+      console.log("Quiz history exists in storage");
+      // on écrase :
+      finishedQuizzesHistory = JSON.parse(
+        window.localStorage.getItem("finishedQuizzesHistory")
+      );
+      console.log("Quiz history updated");
+    }
+
+    if (window.localStorage.getItem("pointsDiffHistory") !== null) {
+      console.log("Points history exists in storage");
+      // on écrase :
+      pointsDiffHistory = JSON.parse(
+        window.localStorage.getItem("pointsDiffHistory")
+      );
+      console.log("Points history updated");
+    }
+
+    if (user.points > 0 && pointsDiffHistory.length == 0) {
+      // initialisation en cas de nouvelle version de l'appli
+      pointsDiffHistory.push(user.points);
+    }
+
+    if (window.localStorage.getItem("statsThemes") !== null) {
+      loadedStatsThemes = JSON.parse(
+        window.localStorage.getItem("statsThemes")
+      );
+      console.log(
+        Object.keys(loadedStatsThemes).length +
+          " themes have data in storage. Loaded in temporary object."
+      );
+    }
+    // la synchronisation aura lieu plus tard, une fois que les thèmes seront chargés.
+
+    // UPDATE STATS QUESTIONS attention les questions ne sont pas encore chargées ?
+    if (window.localStorage.getItem("statsQuestions") !== null) {
+      loadedStatsQuestions = JSON.parse(
+        window.localStorage.getItem("statsQuestions")
+      );
+      console.log(
+        loadedStatsQuestions.length +
+          " questions have data in storage. Loaded in temporary object."
+      );
+    }
+  } catch (e) {
+    alert(
+      "Il semble que les cookies soient désactivés.\n Ce site a besoin des cookies pour fonctionner correctement, pour stocker temporairement les résultats aux questions, les points gagnés etc.\n Sans cookies, toutes les données sont perdues à chaque rechargement de la page ou perte de connexion."
+    );
+    console.log("Localstorage disabled : could not load user data.");
+  }
+}
+
+function processCode() {
+  if (!isUserNew()) return; // joueur déjà existant car loadé du storage
+
+  let queryString = window.location.search;
+  let urlParams = new URLSearchParams(queryString);
+  let code = urlParams.get("code");
+
+  if (!isB64(code)) return;
+
+  let x = fromB64(code);
+  if (
+    x < new Date("2024-07-01").getTime() ||
+    x > new Date("2030-01-01").getTime()
+  )
+    return;
+  user.referrerId = toB64(x - SECRET_REFERRAL_CODE);
+  userPoints = REFERRAL_GIFT;
+  pointsDiffHistory.push(REFERRAL_GIFT);
+  //notification("Parrain enregistré !\nTu gagnes 100 points");
+  //bug bizarre : la notif ne disparaît pas
+  // avec toast ça marche
+  // en modifiant la durée à 1000 ça marche, à partir de 2000 non.
+}
+
+function toast(message, color) {
+  Toastify({
+    text: message,
+    duration: 1000,
+    destination: "",
+    newWindow: true,
+    close: false,
+    gravity: "top", // `top` or `bottom`
+    position: "center", // `left`, `center` or `right`
+    stopOnFocus: true, // Prevents dismissing of toast on hover
+    style: {
+      "border-radius": "2rem",
+      background: color,
+      "text-align": "center",
+    },
+    onClick: function () {}, // Callback after click
+  }).showToast();
+}
+
+function notification(message, color) {
+  if (!message) return;
+  Toastify({
+    text: message,
+    duration: 4500,
+    destination: "",
+    newWindow: true,
+    close: false,
+    gravity: "top", // `top` or `bottom`
+    position: "center", // `left`, `center` or `right`
+    stopOnFocus: true, // Prevents dismissing of toast on hover
+    style: {
+      "border-radius": "2rem",
+      background: color,
+      "text-align": "center",
+    },
+    onClick: function () {}, // Callback after click
+  }).showToast();
+}
+
+// - - - - -  FIN FONCTIONS - - - - - -
+
+// - - - - - execution :
+
+loadDataFromStorage();
+
+processCode(); // *après loadFromStorage* : codes promos ou referrer
+
 window.addEventListener("render", () => {
-  console.log("on rattache les listeners");
-  // on rattache les listeners,
+  // on rattache les listeners sur les champs ,
   // attention l'élément est crée par un composant et n'existe peut-être pas :
   let userNameInput = document.getElementById("userNameInputId");
   if (userNameInput)
@@ -376,21 +511,3 @@ window.addEventListener("render", () => {
       notification("Département sauvegardé.");
     });
 });
-
-// - - - - - - - -- D I V E R S - - - - - - - -
-
-function toB64(x) {
-  let digit =
-    "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_";
-  return x
-    .toString(2)
-    .split(/(?=(?:.{6})+(?!.))/g)
-    .map((v) => digit[parseInt(v, 2)])
-    .join("");
-}
-
-function fromB64(x) {
-  let digit =
-    "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz-_";
-  return x.split("").reduce((s, v) => s * 64 + digit.indexOf(v), 0);
-}

@@ -39,6 +39,7 @@
     </style>
     <!-- INSERT SCRIPT TAG HERE -->
 
+    <script defer src="js/toastify.js"></script>
     <script defer src="js/svgPaths.js"></script>
     <script defer src="js/app.js"></script>
     <script defer src="js/router.js"></script>
@@ -49,7 +50,6 @@
     <script defer src="js/onLoad.js"></script>
     <script defer src="js/quiz.js"></script>
     <script defer src="js/backend.js"></script>
-    <script defer src="js/toastify.js"></script>
     <script defer src="js/-tests.js"></script>
     <script defer src="js/initMathJax.js"></script>
     <script defer src="js/messages.js"></script>
@@ -125,7 +125,7 @@
             DojoMath.fr propose de nombreux quiz pour t'entraîner du collège
             jusqu'au supérieur.
           </p>
-          <h3>Règles du jeu</h3>
+          <!--<h3>Règles du jeu</h3>
           <p>
             Chaque réponse correcte rapporte un point, chaque réponse incorrecte
             enlève un point.
@@ -133,7 +133,7 @@
           <p>
             Des bonus sont octroyés pour des séries de bonnes réponses
             consécutives.
-          </p>
+          </p>-->
           <h3>Pour commencer</h3>
           <p>
             Clique sur l'icône
@@ -148,8 +148,22 @@
                 transform: translateY(0.2rem);
               "
             ></svg>
-            en bas à droite de l'écran, choisis un chapitre et lance une partie
-            !
+            en bas à droite de l'écran. Cela affichera la liste des chapitres.
+          </p>
+          <h3>Invite tes amis</h3>
+          <p>
+            Ton lien de parrainage est :
+            <a
+              href="javascript:copyReferralLinkToClipBoard()"
+              x-html="getReferralLink()"
+            ></a
+            >. Il permet à tes filleuls de gagner 50 points dès leur première
+            connexion. De ton côté, tu gagneras 50 points
+            <b>à chaque fois</b> qu'un nouveau filleul finira son premier
+            quiz.<br />
+            <span
+              x-html="htmlShare('Rejoins-moi sur le jeu DojoMath! Commence directement avec 50 pts en suivant le lien '+getReferralLink())"
+            ></span>
           </p>
           <div style="padding: 2rem 0; opacity: 50%">
             <hr style="height: 1px; color: var(--c-text)" />
@@ -164,21 +178,12 @@
               📢 Merci 🙏 aux utilisateurs qui ont signalé des erreurs (ne
               serait-ce que des fautes de frappe) dans les questions ces
               derniers jours !<br />
-              📢 Il est maintenant possible d'envoyer du feedback sur la
-              difficulté ressentie des questions.
+              📢 Le site est en version bêta. Si tu trouves un bug ou
+              vulnérabilité, signale-le par mail à contribution@dojomath.fr pour
+              aider à améliorer le site.
             </p>
 
-            <p>
-              <svg
-                viewBox="0 0 600 512"
-                x-html="svgPathFasShareNodes"
-                style="fill: var(--c-text); height: 1rem"
-              ></svg>
-              Faire découvrir DojoMath :<br />
-              <span
-                x-html="htmlShare('Quiz de maths sur https://www.dojomath.fr/')"
-              ></span>
-            </p>
+            <p></p>
           </div>
         </section>
 
@@ -417,35 +422,37 @@
           <h3>
             Meilleurs joueurs :
             <span
-              id="loadingHighscoresAlltime"
+              id="loadingListBestPlayers"
               class="btn btn-refresh-scores"
               onclick="getBestPlayers()"
               >↻
             </span>
           </h3>
-          <div id="highscoresAlltime">- - - Chargement des scores - - -</div>
+          <div id="listBestPlayers">- - - Chargement des scores - - -</div>
 
-          <!--<h3>
-            Joueurs récents :
+          <h3>
+            Derniers joueurs actifs :
             <span
-              id="loadingHighscoresRecent"
+              id="loadingListRecentPlayers"
               class="btn btn-refresh-scores"
               onclick="getRecentPlayers()"
               >↻</span
             >
           </h3>
-          <div id="highscoresRecent">- - - Chargement des scores - - -</div>-->
+          <div id="listRecentPlayers">
+            - - - Chargement des joueurs récents - - -
+          </div>
 
           <h3>
-            Parties récentes :
+            Dernières parties terminées :
             <span
-              id="loadingHighscoresRecentGames"
+              id="loadingListRecentGames"
               class="btn btn-refresh-scores"
               onclick="getRecentGames()"
               >↻
             </span>
           </h3>
-          <div id="highscoresRecentGames">
+          <div id="listRecentGames">
             - - - Chargement des parties récentes - - -
           </div>
         </section>

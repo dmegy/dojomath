@@ -1,7 +1,7 @@
 const URL_GET_MESSAGES = "https://www.dojomath.fr/backend/get_messages.php";
 const URL_SEND_MESSAGE = "https://www.dojomath.fr/backend/send_message.php";
 
-function editMessage(recipientId) {
+function editMessage(recipientId, recipientName) {
   if (user.points < 100) {
     notification(
       "Pour envoyer un message, tu dois avoir plus de 100 points !",
@@ -13,8 +13,7 @@ function editMessage(recipientId) {
     notification("Tu sembles être hors-ligne.", "var(--c-danger)");
     return;
   }
-  let promptMessage =
-    "Envoi de message\n============\n\nLongueur maximale du message:\n un seul émoji (ou 2 lettres)!";
+  let promptMessage = `Envoi de message\n============\nDestinataire: ${recipientName}\n\nLongueur maximale du message:\nun seul émoji (ou 2 lettres)!`;
   let content = prompt(promptMessage, "👏");
   if (!content) return;
   if (content.length > 2) {

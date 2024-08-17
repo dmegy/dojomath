@@ -1,9 +1,10 @@
 const URL_QUIZ_FINISHED = "backend/quiz_finished.php";
 const URL_QUESTION_FINISHED = "backend/question_finished.php";
-const URL_HIGHSCORES_ALLTIME = "backend/highscores_alltime.html.txt";
-const URL_HIGHSCORES_RECENT = "backend/highscores_recent.html.txt";
-const URL_HIGHSCORES_RECENT_GAMES = "backend/highscores_recent_games.html.txt";
+const URL_LIST_BEST_PLAYERS = "backend/list_best_players.html";
+const URL_LIST_RECENT_PLAYERS = "backend/list_recent_players.html";
+const URL_LIST_RECENT_GAMES = "backend/list_recent_games.html";
 const URL_FEEDBACK_QUESTIONS = "backend/feedback_question.php";
+const URL_GET_GIFT = "backend/get_gift.php";
 
 function sendStatistics() {
   adjustPoints();
@@ -31,7 +32,7 @@ window.addEventListener("load", () => {
 
 function getHighscores() {
   getBestPlayers();
-  //getRecentPlayers();
+  getRecentPlayers();
   getRecentGames();
 }
 
@@ -40,16 +41,18 @@ function getBestPlayers() {
     console.log("getBestPlayers : navigator offline");
     return;
   }
-  console.log("Downloading Highscores (alltime)");
-  document.getElementById("loadingHighscoresAlltime").style.opacity = "20%";
-  fetch(URL_HIGHSCORES_ALLTIME + "?unique=" + Math.random())
+  console.log("Downloading Best Players (alltime)");
+  document.getElementById("loadingListBestPlayers").style.opacity = "20%";
+  fetch(URL_LIST_BEST_PLAYERS + "?unique=" + Math.random())
     .then((response) => response.text())
     .then((data) => {
-      document.getElementById("highscoresAlltime").innerHTML = data;
-      document.getElementById("loadingHighscoresAlltime").style.opacity =
-        "100%";
+      document.getElementById("listBestPlayers").innerHTML = data;
+      document.getElementById("loadingListBestPlayers").style.opacity = "100%";
 
-      console.log("Alltime scores : ok");
+      console.log("Best players  : ok");
+    })
+    .catch((e) => {
+      console.log("Error while fetching best players : " + e);
     });
 }
 
@@ -59,27 +62,33 @@ function getRecentPlayers() {
     console.log("getRecentPlayers : navigator offline");
     return;
   }
-  console.log("Downloading Highscores (recent players)");
-  document.getElementById("loadingHighscoresRecent").style.opacity = "20%";
-  fetch(URL_HIGHSCORES_RECENT + "?unique=" + Math.random())
+  console.log("Fetching Recent Players");
+  document.getElementById("loadingListRecentPlayers").style.opacity = "20%";
+  fetch(URL_LIST_RECENT_PLAYERS + "?unique=" + Math.random())
     .then((response) => response.text())
     .then((data) => {
-      document.getElementById("highscoresRecent").innerHTML = data;
-      document.getElementById("loadingHighscoresRecent").style.opacity = "100%";
-      console.log("Recent score : ok");
+      document.getElementById("listRecentPlayers").innerHTML = data;
+      document.getElementById("loadingListRecentPlayers").style.opacity =
+        "100%";
+      console.log("Recent players : ok");
+    })
+    .catch((e) => {
+      console.log("Error while fetching recent players : " + e);
     });
 }
 
 function getRecentGames() {
-  console.log("Downloading Recent Games");
-  document.getElementById("loadingHighscoresRecentGames").style.opacity = "50%";
-  fetch(URL_HIGHSCORES_RECENT_GAMES + "?unique=" + Math.random())
+  console.log("Fetching Recent Games");
+  document.getElementById("loadingListRecentGames").style.opacity = "50%";
+  fetch(URL_LIST_RECENT_GAMES + "?unique=" + Math.random())
     .then((response) => response.text())
     .then((data) => {
-      document.getElementById("highscoresRecentGames").innerHTML = data;
-      document.getElementById("loadingHighscoresRecentGames").style.opacity =
-        "100%";
+      document.getElementById("listRecentGames").innerHTML = data;
+      document.getElementById("loadingListRecentGames").style.opacity = "100%";
       console.log("Recent score : ok");
+    })
+    .catch((e) => {
+      console.log("Error while fetching recent games : " + e);
     });
 }
 
@@ -130,4 +139,49 @@ function sendQuestionResult() {
   }).catch((error) => {
     console.log(error);
   });
+}
+
+function getGift() {
+  if (!window.navigator.onLine) return;
+
+  let requestBody = {
+    user: JSON.stringify(user),
+  };
+
+  fetch(URL_GET_GIFT, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(requestBody),
+  })
+    .then((response) => response.json())
+    .then((responseObj) => {
+      if (responseObj.status != "success") {
+        console.log(
+          "Réponse du serveur : Erreur. Message : " + responseObj.message
+        );
+        return;
+      }
+
+      let giftAmount = Number(responseObj.giftAmount);
+      let giftMessage = responseObj.giftMessage;
+
+      if (giftAmount == 0 || giftAmount === NaN) {
+        return;
+      }
+
+      // END GUARD
+
+      pointsDiffHistory.push(giftAmount);
+      user.points += giftAmount;
+      saveToLocalStorage();
+      render();
+      let notifText = `${giftMessage}\n+${giftAmount} pts !`;
+      notification(notifText, "oklch(70% 90% var(--hue-accent))");
+    })
+    .catch((error) => {
+      console.log(error);
+    });
 }

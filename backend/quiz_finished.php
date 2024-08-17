@@ -2,9 +2,9 @@
 
 include_once 'database/db_config.php';
 
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+//ini_set('display_errors', 1);
+//ini_set('display_startup_errors', 1);
+//error_reporting(E_ALL);
 
 // Définir le header pour la réponse JSON
 header("Content-Type: application/json");
@@ -89,14 +89,14 @@ $userId = $user['userId'];
 $userName = $user['userName'];
 $userAreaCode = $user['areaCode'];
 $userPoints = $user['points'];
-$userPointsPreviously = $user['pointsPreviously'];
-$userStreak = $user['lastStreak'];
+$userStreak = $user['lastStreak']; //attention
 
 $userCombo = $user['combo'];
 
 $pointsEarned = $quiz['points']; // attention confusion possible, ce sont les points gagnés à la partie
 $quizThemeId = $quiz['id'];
 $grade = $quiz['finalGrade'];
+
 
 
 
@@ -130,11 +130,6 @@ if (!in_array($userAreaCode, $validAreaCodes)) {
 if (!isset($userPoints) || !filter_var($userPoints, FILTER_VALIDATE_INT, ["options" => ["min_range" => 1, "max_range" => 900000]])) {
     $errors[] = "Invalid userPoints : " . $userPoints;
 }
-// plus de validation !
-//if($userPoints !== $userPointsPreviously + $pointsEarned ){
-//    $errors[] = "Invalid userPoints : " . $userPointsPreviously . " + ". $pointsEarned . " != " . $userPoints;
-//}
-// ne sert à rien, les deux valeurs seront synchronisées par javascript juste après le quiz...
 
 
 if (!isset($userStreak) || !filter_var($userStreak, FILTER_VALIDATE_INT, ["options" => ["min_range" => 0, "max_range" => 10000]])) {
@@ -203,6 +198,174 @@ try {
     // Exécute la requête
     $stmt->execute();
 
+
+
+
+    // update or create user
+    // - - - - -
+
+    $stmt = $pdo->prepare("SELECT COUNT(*) FROM Users WHERE userId = :userId");
+    $stmt->bindParam(':userId', $user['userId'], PDO::PARAM_STR);
+    $stmt->execute();
+    $userExists = $stmt->fetchColumn() > 0;
+
+    if ($userExists) {
+        // Mettre à jour les données existantes de l'utilisateur
+        $stmt = $pdo->prepare("
+            UPDATE Users 
+            SET 
+            userName = :userName,
+            areaCode = :areaCode,
+            points = :points,
+            combo = :combo,
+            longestCombo = :longestCombo,
+            lastActiveTime = :lastActiveTime,
+            lastStreak = :lastStreak,
+            longestStreak = :longestStreak,
+            nbQuestionsViewed = :nbQuestionsViewed,
+            nbQuestionsFailed = :nbQuestionsFailed,
+            nbQuestionsSkipped  = :nbQuestionsSkipped,
+            nbQuestionsSuccessful = :nbQuestionsSuccessful,
+            nbQuizStarted = :nbQuizStarted,
+            nbQuizAborted = :nbQuizAborted,
+            nbQuizFinished = :nbQuizFinished,
+            nbQuizPerfect = :nbQuizPerfect,
+            modificationDate = :modificationDate
+            WHERE userId = :userId
+        ");
+        $stmt->bindParam(':userId', $user['userId'], PDO::PARAM_STR);
+        $stmt->bindParam(':userName', $user['userName'], PDO::PARAM_STR);
+        $stmt->bindParam(':areaCode', $user['areaCode'], PDO::PARAM_STR);
+        $stmt->bindParam(':points', $user['points'], PDO::PARAM_INT);
+        $stmt->bindParam(':combo', $user['combo'], PDO::PARAM_INT);
+        $stmt->bindParam(':longestCombo', $user['longestCombo'], PDO::PARAM_INT);
+        $stmt->bindParam(':lastActiveTime', $user['lastActiveTime'], PDO::PARAM_INT);
+        $stmt->bindParam(':lastStreak', $user['lastStreak'], PDO::PARAM_INT);
+        $stmt->bindParam(':longestStreak', $user['longestStreak'], PDO::PARAM_INT);
+        $stmt->bindParam(':nbQuestionsViewed', $user['nbQuestionsViewed'], PDO::PARAM_INT);
+        $stmt->bindParam(':nbQuestionsFailed', $user['nbQuestionsFailed'], PDO::PARAM_INT);
+        $stmt->bindParam(':nbQuestionsSkipped', $user['nbQuestionsSkipped'], PDO::PARAM_INT);
+        $stmt->bindParam(':nbQuestionsSuccessful', $user['nbQuestionsSuccessful'], PDO::PARAM_INT);
+        $stmt->bindParam(':nbQuizStarted', $user['nbQuizStarted'], PDO::PARAM_INT);
+        $stmt->bindParam(':nbQuizAborted', $user['nbQuizAborted'], PDO::PARAM_INT);
+        $stmt->bindParam(':nbQuizFinished', $user['nbQuizFinished'], PDO::PARAM_INT);
+        $stmt->bindParam(':nbQuizPerfect', $user['nbQuizPerfect'], PDO::PARAM_INT);
+        $stmt->bindParam(':modificationDate', date("Y-m-d H:i:s"), PDO::PARAM_STR);
+
+        $stmt->execute();
+
+    } else {
+        // Insérer un nouvel utilisateur, et récompenser le referrer en lui ajoutant un cadeau et en incrémentant le compteur.
+        $stmt = $pdo->prepare("
+            INSERT INTO Users (
+                userId,
+                userName,
+                referrerId,
+                areaCode,
+                points,
+                combo,
+                longestCombo,
+                firstConnectionTime,
+                lastActiveTime,
+                lastStreak,
+                longestStreak,
+                nbQuestionsViewed,
+                nbQuestionsFailed,
+                nbQuestionsSkipped,
+                nbQuestionsSuccessful,
+                nbQuizStarted,
+                nbQuizAborted,
+                nbQuizFinished,
+                nbQuizPerfect,
+                creationDate,
+                modificationDate)
+            VALUES (
+                :userId,
+                :userName,
+                :referrerId,
+                :areaCode,
+                :points,
+                :combo,
+                :longestCombo,
+                :firstConnectionTime,
+                :lastActiveTime,
+                :lastStreak,
+                :longestStreak,
+                :nbQuestionsViewed,
+                :nbQuestionsFailed,
+                :nbQuestionsSkipped,
+                :nbQuestionsSuccessful,
+                :nbQuizStarted,
+                :nbQuizAborted,
+                :nbQuizFinished,
+                :nbQuizPerfect,
+                :creationDate,
+                :modificationDate)
+        ");
+        $stmt->bindParam(':userId', $user['userId'], PDO::PARAM_STR);
+        $stmt->bindParam(':userName', $user['userName'], PDO::PARAM_STR);
+        $stmt->bindParam(':referrerId', $user['referrerId'], PDO::PARAM_STR);
+        $stmt->bindParam(':areaCode', $user['areaCode'], PDO::PARAM_STR);
+        $stmt->bindParam(':points', $user['points'], PDO::PARAM_INT);
+        $stmt->bindParam(':combo', $user['combo'], PDO::PARAM_INT);
+        $stmt->bindParam(':longestCombo', $user['longestCombo'], PDO::PARAM_INT);
+        $stmt->bindParam(':firstConnectionTime', $user['firstConnectionTime'], PDO::PARAM_INT);
+        $stmt->bindParam(':lastActiveTime', $user['lastActiveTime'], PDO::PARAM_INT);
+        $stmt->bindParam(':lastStreak', $user['lastStreak'], PDO::PARAM_INT);
+        $stmt->bindParam(':longestStreak', $user['longestStreak'], PDO::PARAM_INT);
+        $stmt->bindParam(':nbQuestionsViewed', $user['nbQuestionsViewed'], PDO::PARAM_INT);
+        $stmt->bindParam(':nbQuestionsFailed', $user['nbQuestionsFailed'], PDO::PARAM_INT);
+        $stmt->bindParam(':nbQuestionsSkipped', $user['nbQuestionsSkipped'], PDO::PARAM_INT);
+        $stmt->bindParam(':nbQuestionsSuccessful', $user['nbQuestionsSuccessful'], PDO::PARAM_INT);
+        $stmt->bindParam(':nbQuizStarted', $user['nbQuizStarted'], PDO::PARAM_INT);
+        $stmt->bindParam(':nbQuizAborted', $user['nbQuizAborted'], PDO::PARAM_INT);
+        $stmt->bindParam(':nbQuizFinished', $user['nbQuizFinished'], PDO::PARAM_INT);
+        $stmt->bindParam(':nbQuizPerfect', $user['nbQuizPerfect'], PDO::PARAM_INT);
+        $stmt->bindParam(':creationDate', date("Y-m-d H:i:s"), PDO::PARAM_STR);
+        $stmt->bindParam(':modificationDate', date("Y-m-d H:i:s"), PDO::PARAM_STR);
+
+        $stmt->execute();
+
+        // - - - - - - - - - - - - - - - - - -
+        // récompense du referrer s'il existe
+
+        
+
+        if(!empty($user['referrerId'])){
+            $stmt = $pdo->prepare("SELECT COUNT(*) FROM Users WHERE userId = :userId");
+            $stmt->bindParam(':userId', $user['referrerId'], PDO::PARAM_STR);
+            $stmt->execute();
+            $referrerExists = $stmt->fetchColumn() > 0;
+
+            $giftMessage = "Filleul(s) activé(s) !";
+
+            if ($referrerExists) {
+                $stmt = $pdo->prepare("
+                    UPDATE Users 
+                    SET 
+                    nbActivatedReferees = nbActivatedReferees + 1,
+                    giftAmount = giftAmount+50,
+                    giftMessage = :giftMessage,
+                    modificationDate = :modificationDate
+                    WHERE userId = :userId
+                ");
+                $stmt->bindParam(':userId', $user['referrerId'], PDO::PARAM_STR);
+                $stmt->bindParam(':giftMessage', $giftMessage, PDO::PARAM_STR);
+                $stmt->bindParam(':modificationDate', date("Y-m-d H:i:s"), PDO::PARAM_STR);
+
+                $stmt->execute();
+            }
+        }
+
+        // - - - - - - - - - - - - - - -
+        // - - - -récupération des cadeaux
+    }
+
+
+
+
+    // - - - -  response ?
+
     $response = [
         'status' => 'success',
         'message' => 'Data received and saved successfully'
@@ -215,11 +378,11 @@ try {
     ];
 }
 
-include('build_highscores_alltime.php');
+include('build_list_best_players.php');
 
-include('build_highscores_recent.php');
+include('build_list_recent_players.php');
 
-include('build_highscores_recent_games.php');
+include('build_list_recent_games.php');
 
 
 

@@ -18,7 +18,9 @@ try {
         UserPoints,
         UserCombo,
         UserStreak,
-        PointsEarned
+        QuizThemeId,
+        PointsEarned,
+        Grade
     FROM 
         FinishedQuizzes
     ORDER BY 
@@ -31,28 +33,29 @@ try {
     $stmt->execute();
 
     // Récupération des résultats
-    $highscores = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $array = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     $medal = "";
     $dep = "";
     $userName = "";
-    $text = "<table width='100%'>\n";
-    $text .= "<thead><tr style='font-weight:900;'><th></th><th align='left'>Joueur</th><th align='right'>Streak</th><th align='right'>Combo</th><th align='right'>Points</th></tr></thead>";
-    $text .= "<tbody>\n";
+    $html = "<table width='100%'>\n";
+    $html .= "<thead><tr style='font-weight:900;'><th></th><th align='left'>Joueur</th><th align='left'>Chapitre</th><th align='right'>Points</th></tr></thead>";
+    $html .= "<tbody>\n";
 
     // Affichage des résultats
     $i=1;
-    foreach ($highscores as $row) {
+    foreach ($array as $row) {
 
         if(trim($row['UserName']) === "") $userName = "(" . $row['UserId'] . ")";
         else $userName = $row['UserName'];
 
-        $text .= "<tr><td align='right' style='width:2ch'><div class='btn btn-small btn-primary' onclick='editMessage(\"".$row['UserId']."\")'>💬</div></td><td align='left'>".$userName."</td><td align='right'>".$row['UserStreak']."j</td><td align='right'>".$row['UserCombo']."</td><td align='right'>+".$row['PointsEarned']."</td></tr>\n";
+        $html .= "<tr><td align='right' style='width:2ch'></td><td align='left'>".$userName."</td><td align='left'>".$row['QuizThemeId']."</td><td align='right'>+".$row['PointsEarned']."</td></tr>\n";
         $i++;
     }
-        $text .= "</tbody></table>";
-        //echo $text;
-        file_put_contents("highscores_recent_games.html.txt",$text);
+        $html .= "</tbody></table>";
+
+        file_put_contents("list_recent_games.json",json_encode($array));
+        file_put_contents("list_recent_games.html",$html);
         file_put_contents("build_highscores.log.txt", date("Y-m-d H:i:s") . " : Recent Games Highscores built\n",FILE_APPEND);
 
 

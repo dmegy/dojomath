@@ -78,3 +78,8 @@
   position: absolute;
   transform: translate(0, -1.2rem) scale(1.8);
 }
+
+.btn-talk {
+  margin-right: 0.2rem;
+  font-size: 1.4rem;
+}

@@ -14,6 +14,10 @@ window.addEventListener("load", () => {
   initUpdateStatsQuestions(); /// idem, a besoin des questions, mais c'est inliné
 
   processURL(); // contient setState adéquat et render()
+  if (isUserNew()) {
+    //notification("Bienvenue!");
+  }
+  saveToLocalStorage(); // tout de suite. Après le check newUser.
 }); // fin du listener sur onLoad
 
 function initUpdateStatsThemes() {

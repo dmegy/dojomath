@@ -176,6 +176,7 @@ let themes = {
     title: "Tables de multiplication et parenthèses",
     info: "Calcul mental, multiplications avec parenthèses.",
     questions: range(1714, 1753),
+    maxPointsPerQuestion: 5,
   },
   suites_arithmetiques_variations: {
     title: "Variation des suites arithmétiques",
@@ -246,11 +247,13 @@ let themes = {
     title: "Multiplications",
     info: "Multiplications à deux chiffres.",
     questions: range(1305, 1337),
+    maxPointsPerQuestion: 5,
   },
   tables_logique1: {
     title: "Tables et logique",
     info: "Tables de multiplication et connecteurs logiques «et» et «ou».",
     questions: range(117, 132),
+    maxPointsPerQuestion: 5,
   },
   complexes_mult: {
     title: "Nombres complexes : forme algébrique",

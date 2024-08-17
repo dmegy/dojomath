@@ -1,32 +1,18 @@
 <?php
 
-die("coucou");
 
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-
-if (strpos($_SERVER['HTTP_REFERER'], 'dojomath.fr')===false){
-    echo "mauvais referer";
-    exit;
-}
-
-
 // Définir le header pour la réponse JSON
 header("Content-Type: application/json");
+header("Access-Control-Allow-Origin: *");
+header("Access-Control-Allow-Headers: *");
 
 // récupération de l'heure courante
 $date = date("Y-m-d H:i:s");
 
-// récupération de l'adresse IP du client (on cherche d'abord à savoir si il est derrière un proxy)
-if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
-    $senderIp = $_SERVER['HTTP_X_FORWARDED_FOR'];
-} elseif (isset($_SERVER['HTTP_CLIENT_IP'])) {
-    $senderIp = $_SERVER['HTTP_CLIENT_IP'];
-} else {
-    $senderIp = $_SERVER['REMOTE_ADDR'];
-}
 
 // Récupérer les données brutes de la requête
 $rawData = file_get_contents("php://input");
@@ -76,65 +62,41 @@ if (json_last_error() !== JSON_ERROR_NONE || !$user) {
 
 
 
-$userId = $user['userId'];
-
 
 // validation ?
-
-if (!empty($errors)) {
-    $response = [
-        'status' => 'error',
-        'message' => "Error : invalid user "
-    ];
-    echo json_encode($response);
-    exit;
-}
-
-
-
-
-// - - - insertion dans base de données
 
 
 try {
     // Crée une nouvelle instance de PDO avec les informations de connexion
-    $pdo = new PDO('sqlite:database/db_messages.db');
+    $pdo = new PDO('sqlite:database/database.db');
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     
-    // Prépare une requête d'insertion
-    $stmt = $pdo->prepare("SELECT * FROM messages WHERE recipient_id=:user_id ORDER BY id DESC");
-    
-    // Liaison des paramètres
-    $stmt->bindParam(':user_id', $userId, PDO::PARAM_STR);
-    
-    // Exécute la requête
+    $stmt = $pdo->prepare("SELECT * FROM Users WHERE userId = :user_id ORDER BY id DESC LIMIT 1");
+    $stmt->bindParam(':user_id', $user['userId'], PDO::PARAM_STR);
     $stmt->execute();
 
-    $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    $result = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    /*if (empty($results)) {
+    if (empty($result)) {
         $response = [
-            'status' => 'success',
-            'message' => 'No messages'
+            'status' => 'error',
+            'message' => 'No such user'
         ];
         echo json_encode($response);
         exit;
-    }*/
-
-    $messages = [];
-    foreach ($results as $row) {
-        $messages.push([
-            'date' => $row['date'],
-            'senderId' => $row['sender_id'],
-            'senderName' => $row['sender_name'],
-            'content' => $row['content'],
-        ])
     }
 
     $response = [
         'status' => 'success',
-        'messages' => $messages
+        'giftAmount' => $result['giftAmount'],
+        'giftMessage' => $result['giftMessage']
     ];
+
+    $stmt = $pdo->prepare("
+        UPDATE Users SET giftAmount = 0, giftMessage = '' WHERE userId = :user_id");
+    $stmt->bindParam(':user_id', $user['userId'], PDO::PARAM_STR);
+    $stmt->execute();
+
     
 } catch (PDOException $e) {
     $response = [
@@ -144,7 +106,6 @@ try {
 }
 
 
-// Envoyer la réponse JSON
 echo json_encode($response);
 
 ?>
