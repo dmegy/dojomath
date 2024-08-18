@@ -1,6 +1,6 @@
 <?php
 session_start();
-include "gotoIndexIfNotConnected.php";
+include "goto-index-if-not-connected.php";
 ?>
 <!doctype html>
 <html lang="fr">
@@ -30,7 +30,7 @@ if ($quizThemeId === null || trim($quizThemeId) === "") {
 
 else{
     try {
-        $pdo = new PDO('sqlite:../backend/database/database.db');
+        $pdo = new PDO('sqlite:../backend/databases/db_main.sqlite3');
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     } catch (PDOException $e) {
         echo "Erreur de connexion à la base de données: " . $e->getMessage() ;

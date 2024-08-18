@@ -1,11 +1,10 @@
 <?php
 
-
-include_once 'database/db_config.php';
+include_once 'databases/db_config.php';
 
 try {
     // Connexion à la base de données SQLite
-    $pdo = new PDO(DB_DSN);
+    $pdo = new PDO(DB_MAIN_DSN);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
     // Requête SQL avec ROW_NUMBER() pour obtenir les 10 meilleurs scores avec des joueurs uniques

@@ -1,6 +1,6 @@
 <?php
 
-include_once 'database/db_config.php';
+include_once 'databases/db_config.php';
 
 //ini_set('display_errors', 1);
 //ini_set('display_startup_errors', 1);
@@ -175,7 +175,7 @@ if (!empty($errors)) {
 
 try {
     // Crée une nouvelle instance de PDO avec les informations de connexion
-    $pdo = new PDO(DB_DSN);
+    $pdo = new PDO(DB_MAIN_DSN);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     
     // Prépare une requête d'insertion

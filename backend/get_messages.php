@@ -1,9 +1,10 @@
 <?php
 
+include_once 'databases/db_config.php';
 
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
+//ini_set('display_errors', 1);
+//ini_set('display_startup_errors', 1);
+//error_reporting(E_ALL);
 
 // Définir le header pour la réponse JSON
 header("Content-Type: application/json");
@@ -85,7 +86,7 @@ if (!empty($errors)) {
 
 try {
     // Crée une nouvelle instance de PDO avec les informations de connexion
-    $pdo = new PDO('sqlite:database/db_messages.db');
+    $pdo = new PDO(DB_MESSAGES_DSN);
     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     
     // Prépare une requête d'insertion. On ne prend que les 10 derniers messages.

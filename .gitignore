@@ -1,11 +1,16 @@
 **/__*
-backend/database/
+backend/databases/
 
 
 
 **/*.env
 **/*.env-development
 **/*.env-production
+
+**/*.db
+**/*.sqlite
+**/*.sqlite3
+
 
 # Logs
 **/logs

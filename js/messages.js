@@ -157,7 +157,6 @@ function htmlMessages() {
 window.addEventListener("stateChange", (e) => {
   let s = e.detail.newState;
   if (s == "Home" || s == "Highscores" || s == "Statistics" || s == "Profile") {
-    console.log("get messages");
     getMessages();
   }
 });

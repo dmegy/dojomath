@@ -9,7 +9,7 @@ const BOOST_DURATION_MS = 5 * 60 * 1000; // 5 minutes
 const LOCK_LIMIT = 5; // limite au delà de la quelle on bloque temporairement un thème
 const NB_QUESTIONS = 2670; // pour la validation des quiz custom.
 const SECRET_REFERRAL_CODE = 42000000000;
-const REFERRAL_GIFT = 50; // cadeau si arrivée par parrainage
+const REFERRAL_BONUS = 50; // cadeau si arrivée par parrainage
 const QUESTION_SEPARATOR = ","; // pour les custom quiz
 const HAPPY_HOUR_LIST = [
   [6, 8],
@@ -437,8 +437,8 @@ function processCode() {
   )
     return;
   user.referrerId = toB64(x - SECRET_REFERRAL_CODE);
-  userPoints = REFERRAL_GIFT;
-  pointsDiffHistory.push(REFERRAL_GIFT);
+  userPoints = REFERRAL_BONUS;
+  pointsDiffHistory.push(REFERRAL_BONUS);
   //notification("Parrain enregistré !\nTu gagnes 100 points");
   //bug bizarre : la notif ne disparaît pas
   // avec toast ça marche

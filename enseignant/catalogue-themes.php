@@ -1,6 +1,6 @@
 <?php
 session_start();
-include "gotoIndexIfNotConnected.php";
+include "goto-index-if-not-connected.php";
 ?>
 <!doctype html>
 <html lang="fr">

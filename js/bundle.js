@@ -10,7 +10,7 @@ const BOOST_DURATION_MS = 5 * 60 * 1000; // 5 minutes
 const LOCK_LIMIT = 5; // limite au delà de la quelle on bloque temporairement un thème
 const NB_QUESTIONS = 2670; // pour la validation des quiz custom.
 const SECRET_REFERRAL_CODE = 42000000000;
-const REFERRAL_GIFT = 50; // cadeau si arrivée par parrainage
+const REFERRAL_BONUS = 50; // cadeau si arrivée par parrainage
 const QUESTION_SEPARATOR = ","; // pour les custom quiz
 const HAPPY_HOUR_LIST = [
   [6, 8],
@@ -438,8 +438,8 @@ function processCode() {
   )
     return;
   user.referrerId = toB64(x - SECRET_REFERRAL_CODE);
-  userPoints = REFERRAL_GIFT;
-  pointsDiffHistory.push(REFERRAL_GIFT);
+  userPoints = REFERRAL_BONUS;
+  pointsDiffHistory.push(REFERRAL_BONUS);
   //notification("Parrain enregistré !\nTu gagnes 100 points");
   //bug bizarre : la notif ne disparaît pas
   // avec toast ça marche
@@ -513,13 +513,13 @@ window.addEventListener("render", () => {
     });
 });
 
-const URL_QUIZ_FINISHED = "backend/quiz_finished.php";
-const URL_QUESTION_FINISHED = "backend/question_finished.php";
+const URL_POST_FINISHED_QUIZ = "backend/post_finished_quiz.php";
+const URL_PATCH_QUESTION = "backend/patch_question.php";
 const URL_LIST_BEST_PLAYERS = "backend/list_best_players.html";
 const URL_LIST_RECENT_PLAYERS = "backend/list_recent_players.html";
 const URL_LIST_RECENT_GAMES = "backend/list_recent_games.html";
-const URL_FEEDBACK_QUESTIONS = "backend/feedback_question.php";
-const URL_GET_GIFT = "backend/get_gift.php";
+const URL_POST_QUESTION_FEEDBACK = "backend/post_question_feedback.php";
+const URL_GET_AND_RESET_BONUS = "backend/get_and_reset_bonus.php";
 
 function sendStatistics() {
   adjustPoints();
@@ -529,7 +529,7 @@ function sendStatistics() {
     quiz: JSON.stringify(quiz),
   };
 
-  fetch(URL_QUIZ_FINISHED, {
+  fetch(URL_POST_FINISHED_QUIZ, {
     method: "POST",
     headers: {
       Accept: "application/json",
@@ -622,7 +622,7 @@ function sendFeedback(questionNumber, feedbackType) {
   };
 
   console.log("Envoi du feedback au serveur");
-  fetch(URL_FEEDBACK_QUESTIONS, {
+  fetch(URL_POST_QUESTION_FEEDBACK, {
     method: "POST",
     headers: {
       Accept: "application/json",
@@ -644,7 +644,7 @@ function sendQuestionResult() {
   };
 
   console.log("Envoi du résultat de la question au serveur");
-  fetch(URL_QUESTION_FINISHED, {
+  fetch(URL_PATCH_QUESTION, {
     method: "POST",
     headers: {
       Accept: "application/json",
@@ -656,14 +656,14 @@ function sendQuestionResult() {
   });
 }
 
-function getGift() {
+function getAndResetBonus() {
   if (!window.navigator.onLine) return;
 
   let requestBody = {
     user: JSON.stringify(user),
   };
 
-  fetch(URL_GET_GIFT, {
+  fetch(URL_GET_AND_RESET_BONUS, {
     method: "POST",
     headers: {
       Accept: "application/json",
@@ -680,26 +680,33 @@ function getGift() {
         return;
       }
 
-      let giftAmount = Number(responseObj.giftAmount);
-      let giftMessage = responseObj.giftMessage;
+      let bonusAmount = Number(responseObj.bonusAmount);
+      let bonusMessage = responseObj.bonusMessage;
 
-      if (giftAmount == 0 || giftAmount === NaN) {
+      if (bonusAmount == 0 || bonusAmount === NaN) {
         return;
       }
 
       // END GUARD
 
-      pointsDiffHistory.push(giftAmount);
-      user.points += giftAmount;
+      pointsDiffHistory.push(bonusAmount);
+      user.points += bonusAmount;
       saveToLocalStorage();
       render();
-      let notifText = `${giftMessage}\n+${giftAmount} pts !`;
+      let notifText = `${bonusMessage}\n+${bonusAmount} pts !`;
       notification(notifText, "oklch(70% 90% var(--hue-accent))");
     })
     .catch((error) => {
       console.log(error);
     });
 }
+
+window.addEventListener("stateChange", (e) => {
+  let s = e.detail.newState;
+  if (s == "Home" || s == "Highscores" || s == "Statistics" || s == "Profile") {
+    getAndResetBonus();
+  }
+});
 
 // - - - - - - - - - - - - - - - - - - - - -
 // - - - - - - - - - - - - - - - - - - - - -
@@ -1299,7 +1306,6 @@ function htmlMessages() {
 window.addEventListener("stateChange", (e) => {
   let s = e.detail.newState;
   if (s == "Home" || s == "Highscores" || s == "Statistics" || s == "Profile") {
-    console.log("get messages");
     getMessages();
   }
 });
