@@ -384,6 +384,7 @@ include('build_list_recent_players.php');
 
 include('build_list_recent_games.php');
 
+include('backup_databases.php');
 
 
 // Envoyer la réponse JSON

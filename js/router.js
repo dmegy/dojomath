@@ -135,12 +135,12 @@ function checkForUpdates() {
 
   if (state !== "Chapters") return;
 
-  lastUpdateCheckTime = Date.now();
   if (!window.navigator.onLine) {
     console.log("Cannot check for updates : offline");
     return;
   }
 
+  lastUpdateCheckTime = Date.now();
   location.reload();
 }
 

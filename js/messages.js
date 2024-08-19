@@ -1,5 +1,5 @@
 const URL_GET_MESSAGES = "https://www.dojomath.fr/backend/get_messages.php";
-const URL_SEND_MESSAGE = "https://www.dojomath.fr/backend/send_message.php";
+const URL_POST_MESSAGE = "https://www.dojomath.fr/backend/post_message.php";
 
 function editMessage(recipientId, recipientName) {
   if (user.points < 100) {
@@ -49,7 +49,7 @@ function sendMessage(recipientId, content) {
   };
 
   notification("Envoi du message...", "oklch(70% 90% var(--hue-accent))");
-  fetch(URL_SEND_MESSAGE, {
+  fetch(URL_POST_MESSAGE, {
     method: "POST",
     headers: {
       Accept: "application/json",
