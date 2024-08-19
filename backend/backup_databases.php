@@ -1,11 +1,11 @@
 <?php
-//ini_set('display_errors', 1);
-//ini_set('display_startup_errors', 1);
-//error_reporting(E_ALL);
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
 
-$logFilePath = 'backups/backup_log.txt'; 
-$backupFilePath = 'backups/last_backup_time.txt';
-$backupDirectory = 'backups/';    
+$logFilePath = '../../backups/backup_log.txt'; 
+$backupFilePath = '../../backups/last_backup_time.txt';
+$backupDirectory = '../../backups/';    
 
 
 $filesToBackup = [
