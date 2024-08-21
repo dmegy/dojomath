@@ -134,9 +134,6 @@ function validateAnswer() {
   if (isGameover) {
     user.nbQuizGameover++;
 
-    // avant il y avait le toast et on allait au thème.
-    //alertGameover();
-    //gotoTheme(theme.id);
     gotoGameover();
     return;
   }
@@ -207,14 +204,14 @@ function showQuizResults() {
     }
   }
 
-  // BOOST
+  // Calcul du BOOST
   console.log("points avant booster : " + quiz.points);
   quiz.points *= getBoost();
   console.log("boost multiplier : " + getBoost());
-  console.log("points après booster : " + quiz.points);
+  console.log("points après boost : " + quiz.points);
   // faire apparaître le boost pendant tout le quiz en haut ?
 
-  // test levelup :
+  // felicitation levelup :
   if (level(user.points + quiz.points) > level(user.points))
     toast(`LEVEL UP !`, "oklch(70% 100% var(--hue-accent)");
 
@@ -266,7 +263,7 @@ function showQuizResults() {
 
   // lors du render, le bouton "rejouer" va être désactivé si le thème est locked
 
-  sendStatistics();
+  postFinishedQuiz();
   // console log bilan du quiz
   consoleLogQuizRecap();
 
@@ -287,55 +284,17 @@ function haveToLockTheme() {
   return true;
 }
 
-function giveBoost() {
-  if (getBoost() > 1) return; // on ne donne pas de boost s'il y en a déjà un actif
-
-  let thisDate = new Date();
-  let thisHour = thisDate.getHours();
-
-  for (let i = 0; i < HAPPY_HOUR_LIST.length; i++) {
-    if (HAPPY_HOUR_LIST[i][0] <= thisHour && thisHour < HAPPY_HOUR_LIST[i][1]) {
-      user.lastBoostMultiplier = 2;
-      user.lastBoostEnd = new Date(
-        thisDate.getFullYear(),
-        thisDate.getMonth(),
-        thisDate.getDate(),
-        HAPPY_HOUR_LIST[i][1]
-      ).getTime();
-      notification(
-        "HAPPY HOUR :\nPoints doublés jusqu'à " + HAPPY_HOUR_LIST[i][1] + "h",
-        "oklch(70% 100% var(--hue-accent)"
-      );
-      return;
-    }
-  }
-
-  if (Math.random() < BOOST_PROBABILITY) {
-    user.lastBoostMultiplier = 2;
-    user.lastBoostEnd = Date.now() + BOOST_DURATION_MS;
-    notification(
-      "BOOST !\nPoints doublés pendant " +
-        BOOST_DURATION_MS / (60 * 1000) +
-        " minutes !",
-      "oklch(70% 100% var(--hue-accent)"
-    );
-  }
-}
-
 function unstack(targetName) {
+  // changer le nom puisque ça n'unstack plus les messages
   // appelé en sortie d'écran de fin
 
   window.setTimeout(getHighscores, 1000); // php est en train d'écrire les fichiers texte
 
-  giveBoost();
+  //giveBoost(); // move to event
+  window.dispatchEvent(new Event("afterEnd")); // entraine giveBoost()
 
   if (targetName == "Chapters") goto("Chapters");
   else if (targetName == "Quiz") gotoQuiz();
-}
-
-function getBoost() {
-  if (Date.now() < user.lastBoostEnd) return user.lastBoostMultiplier;
-  else return 1;
 }
 
 // - - - - - - - - - - - - - - - - - -

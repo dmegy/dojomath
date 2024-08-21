@@ -1,4 +1,19 @@
  
+/**
+ * Minified by jsDelivr using Terser v5.14.1.
+ * Original file: /npm/toastify-js@1.12.0/src/toastify.js
+ *
+ * Do NOT use SRI with dynamically generated files! More information: https://www.jsdelivr.com/using-sri-with-dynamic-files
+ */
+/*!
+ * Toastify js 1.12.0
+ * https://github.com/apvarun/toastify-js
+ * @license MIT licensed
+ *
+ * Copyright (C) 2018 Varun A P
+ */
+!function(t,o){"object"==typeof module&&module.exports?module.exports=o():t.Toastify=o()}(this,(function(t){var o=function(t){return new o.lib.init(t)};function i(t,o){return o.offset[t]?isNaN(o.offset[t])?o.offset[t]:o.offset[t]+"px":"0px"}function s(t,o){return!(!t||"string"!=typeof o)&&!!(t.className&&t.className.trim().split(/\s+/gi).indexOf(o)>-1)}return o.defaults={oldestFirst:!0,text:"Toastify is awesome!",node:void 0,duration:3e3,selector:void 0,callback:function(){},destination:void 0,newWindow:!1,close:!1,gravity:"toastify-top",positionLeft:!1,position:"",backgroundColor:"",avatar:"",className:"",stopOnFocus:!0,onClick:function(){},offset:{x:0,y:0},escapeMarkup:!0,ariaLive:"polite",style:{background:""}},o.lib=o.prototype={toastify:"1.12.0",constructor:o,init:function(t){return t||(t={}),this.options={},this.toastElement=null,this.options.text=t.text||o.defaults.text,this.options.node=t.node||o.defaults.node,this.options.duration=0===t.duration?0:t.duration||o.defaults.duration,this.options.selector=t.selector||o.defaults.selector,this.options.callback=t.callback||o.defaults.callback,this.options.destination=t.destination||o.defaults.destination,this.options.newWindow=t.newWindow||o.defaults.newWindow,this.options.close=t.close||o.defaults.close,this.options.gravity="bottom"===t.gravity?"toastify-bottom":o.defaults.gravity,this.options.positionLeft=t.positionLeft||o.defaults.positionLeft,this.options.position=t.position||o.defaults.position,this.options.backgroundColor=t.backgroundColor||o.defaults.backgroundColor,this.options.avatar=t.avatar||o.defaults.avatar,this.options.className=t.className||o.defaults.className,this.options.stopOnFocus=void 0===t.stopOnFocus?o.defaults.stopOnFocus:t.stopOnFocus,this.options.onClick=t.onClick||o.defaults.onClick,this.options.offset=t.offset||o.defaults.offset,this.options.escapeMarkup=void 0!==t.escapeMarkup?t.escapeMarkup:o.defaults.escapeMarkup,this.options.ariaLive=t.ariaLive||o.defaults.ariaLive,this.options.style=t.style||o.defaults.style,t.backgroundColor&&(this.options.style.background=t.backgroundColor),this},buildToast:function(){if(!this.options)throw"Toastify is not initialized";var t=document.createElement("div");for(var o in t.className="toastify on "+this.options.className,this.options.position?t.className+=" toastify-"+this.options.position:!0===this.options.positionLeft?(t.className+=" toastify-left",console.warn("Property `positionLeft` will be depreciated in further versions. Please use `position` instead.")):t.className+=" toastify-right",t.className+=" "+this.options.gravity,this.options.backgroundColor&&console.warn('DEPRECATION NOTICE: "backgroundColor" is being deprecated. Please use the "style.background" property.'),this.options.style)t.style[o]=this.options.style[o];if(this.options.ariaLive&&t.setAttribute("aria-live",this.options.ariaLive),this.options.node&&this.options.node.nodeType===Node.ELEMENT_NODE)t.appendChild(this.options.node);else if(this.options.escapeMarkup?t.innerText=this.options.text:t.innerHTML=this.options.text,""!==this.options.avatar){var s=document.createElement("img");s.src=this.options.avatar,s.className="toastify-avatar","left"==this.options.position||!0===this.options.positionLeft?t.appendChild(s):t.insertAdjacentElement("afterbegin",s)}if(!0===this.options.close){var e=document.createElement("button");e.type="button",e.setAttribute("aria-label","Close"),e.className="toast-close",e.innerHTML="&#10006;",e.addEventListener("click",function(t){t.stopPropagation(),this.removeElement(this.toastElement),window.clearTimeout(this.toastElement.timeOutValue)}.bind(this));var n=window.innerWidth>0?window.innerWidth:screen.width;("left"==this.options.position||!0===this.options.positionLeft)&&n>360?t.insertAdjacentElement("afterbegin",e):t.appendChild(e)}if(this.options.stopOnFocus&&this.options.duration>0){var a=this;t.addEventListener("mouseover",(function(o){window.clearTimeout(t.timeOutValue)})),t.addEventListener("mouseleave",(function(){t.timeOutValue=window.setTimeout((function(){a.removeElement(t)}),a.options.duration)}))}if(void 0!==this.options.destination&&t.addEventListener("click",function(t){t.stopPropagation(),!0===this.options.newWindow?window.open(this.options.destination,"_blank"):window.location=this.options.destination}.bind(this)),"function"==typeof this.options.onClick&&void 0===this.options.destination&&t.addEventListener("click",function(t){t.stopPropagation(),this.options.onClick()}.bind(this)),"object"==typeof this.options.offset){var l=i("x",this.options),r=i("y",this.options),p="left"==this.options.position?l:"-"+l,d="toastify-top"==this.options.gravity?r:"-"+r;t.style.transform="translate("+p+","+d+")"}return t},showToast:function(){var t;if(this.toastElement=this.buildToast(),!(t="string"==typeof this.options.selector?document.getElementById(this.options.selector):this.options.selector instanceof HTMLElement||"undefined"!=typeof ShadowRoot&&this.options.selector instanceof ShadowRoot?this.options.selector:document.body))throw"Root element is not defined";var i=o.defaults.oldestFirst?t.firstChild:t.lastChild;return t.insertBefore(this.toastElement,i),o.reposition(),this.options.duration>0&&(this.toastElement.timeOutValue=window.setTimeout(function(){this.removeElement(this.toastElement)}.bind(this),this.options.duration)),this},hideToast:function(){this.toastElement.timeOutValue&&clearTimeout(this.toastElement.timeOutValue),this.removeElement(this.toastElement)},removeElement:function(t){t.className=t.className.replace(" on",""),window.setTimeout(function(){this.options.node&&this.options.node.parentNode&&this.options.node.parentNode.removeChild(this.options.node),t.parentNode&&t.parentNode.removeChild(t),this.options.callback.call(t),o.reposition()}.bind(this),400)}},o.reposition=function(){for(var t,o={top:15,bottom:15},i={top:15,bottom:15},e={top:15,bottom:15},n=document.getElementsByClassName("toastify"),a=0;a<n.length;a++){t=!0===s(n[a],"toastify-top")?"toastify-top":"toastify-bottom";var l=n[a].offsetHeight;t=t.substr(9,t.length-1);(window.innerWidth>0?window.innerWidth:screen.width)<=360?(n[a].style[t]=e[t]+"px",e[t]+=l+15):!0===s(n[a],"toastify-left")?(n[a].style[t]=o[t]+"px",o[t]+=l+15):(n[a].style[t]=i[t]+"px",i[t]+=l+15)}return this},o.lib.init.prototype=o.lib,o}));
+//# sourceMappingURL=/sm/e1ebbfe1bf0b0061f0726ebc83434e1c2f8308e6354c415fd05ecccdaad47617.map
 let t0 = performance.timeOrigin + performance.now(); // pour les ID
 let lastUpdateCheckTime = Date.now();
 const SITE_NAME = "DojoMath";
@@ -35,6 +50,7 @@ let user = {
   firstConnectionTime: t0 /* time in ms */,
   userId: toB64(t0),
   userName: toB64(t0),
+  instructorAssignedId: "",
   areaCode: "" /* numéro de département, STRING car "AEFE" etc" */,
   countryCode: "",
   combo: 0,
@@ -342,7 +358,6 @@ function saveToLocalStorage() {
       "finishedQuizzesHistory",
       JSON.stringify(finishedQuizzesHistory)
     );
-    console.log("Saved data to localStorage");
   } catch (e) {
     console.log("localStorage disabled : could not save data");
   }
@@ -427,8 +442,10 @@ function processCode() {
 
   let queryString = window.location.search;
   let urlParams = new URLSearchParams(queryString);
-  let code = urlParams.get("code");
 
+  if (!urlParams.has("code")) return;
+
+  let code = urlParams.get("code");
   if (!isB64(code)) return;
 
   let x = fromB64(code);
@@ -440,10 +457,15 @@ function processCode() {
   user.referrerId = toB64(x - SECRET_REFERRAL_CODE);
   userPoints = REFERRAL_BONUS;
   pointsDiffHistory.push(REFERRAL_BONUS);
-  //notification("Parrain enregistré !\nTu gagnes 100 points");
-  //bug bizarre : la notif ne disparaît pas
-  // avec toast ça marche
-  // en modifiant la durée à 1000 ça marche, à partir de 2000 non.
+  saveToLocalStorage();
+  // bug bizarre notifs ne disparaissent pas si on les affiche trop vite après le démarrage
+  window.setTimeout(
+    notification,
+    3000,
+    "Cadeau de parrainage !\nTu gagnes " +
+      REFERRAL_BONUS +
+      " points.\n Ton parrain ou ta marraine en gagnera autant\n après ta première partie."
+  );
 }
 
 function toast(message, color) {
@@ -467,7 +489,8 @@ function toast(message, color) {
 
 function notification(message, color) {
   if (!message) return;
-  Toastify({
+  if (!color) color = "oklch(70% 90% var(--hue-accent))";
+  var toast = Toastify({
     text: message,
     duration: 4500,
     destination: "",
@@ -481,8 +504,11 @@ function notification(message, color) {
       background: color,
       "text-align": "center",
     },
-    onClick: function () {}, // Callback after click
-  }).showToast();
+    onClick: function () {
+      toast.hideToast();
+    },
+  });
+  toast.showToast();
 }
 
 // - - - - -  FIN FONCTIONS - - - - - -
@@ -521,7 +547,7 @@ const URL_LIST_RECENT_GAMES = "backend/list_recent_games.html";
 const URL_POST_QUESTION_FEEDBACK = "backend/post_question_feedback.php";
 const URL_GET_AND_RESET_BONUS = "backend/get_and_reset_bonus.php";
 
-function sendStatistics() {
+function postFinishedQuiz() {
   adjustPoints();
 
   let requestBody = {
@@ -673,12 +699,7 @@ function getAndResetBonus() {
   })
     .then((response) => response.json())
     .then((responseObj) => {
-      if (responseObj.status != "success") {
-        console.log(
-          "Réponse du serveur : Erreur. Message : " + responseObj.message
-        );
-        return;
-      }
+      if (responseObj.status != "success") return;
 
       let bonusAmount = Number(responseObj.bonusAmount);
       let bonusMessage = responseObj.bonusMessage;
@@ -693,6 +714,7 @@ function getAndResetBonus() {
       user.points += bonusAmount;
       saveToLocalStorage();
       render();
+      // après le render sinon problème de notif :
       let notifText = `${bonusMessage}\n+${bonusAmount} pts !`;
       notification(notifText, "oklch(70% 90% var(--hue-accent))");
     })
@@ -1266,15 +1288,16 @@ function getMessages() {
         return;
       }
       // END GUARD
+
+      receivedMessages = responseObj.messages;
+      saveToLocalStorage();
+      // on relance pas nu render(), on fait juste ceci :
+      document.getElementById("messages").innerHTML = htmlMessages();
       let notifText =
         state == "Profile"
           ? "Nouveau(x) message(s) !"
           : "Tu as de nouveaux messages!\n Tu peux les lire dans ta page de profil.";
       notification(notifText, "oklch(70% 90% var(--hue-accent))");
-      receivedMessages = responseObj.messages;
-      saveToLocalStorage();
-      // on relance pas nu render(), on fait juste ceci :
-      document.getElementById("messages").innerHTML = htmlMessages();
     })
     .catch((error) => {
       console.log(error);
@@ -1297,7 +1320,7 @@ function htmlMessages() {
   for (let i = 0; i < receivedMessages.length; i++) {
     s += `<div style="display:flex;justify-content:space-between;align-items:center;margin:.2rem 0">
       <div>${receivedMessages[i].senderName} dit : ${receivedMessages[i].content}</div>
-      <div class="btn btn-small btn-primary" onclick="editMessage('${receivedMessages[i].senderId}')">Répondre</div>
+      <div class="btn btn-small btn-primary" onclick="editMessage('${receivedMessages[i].senderId}','${receivedMessages[i].senderName}')">Répondre</div>
       </div>`;
   }
   return s;
@@ -1308,6 +1331,91 @@ window.addEventListener("stateChange", (e) => {
   if (s == "Home" || s == "Highscores" || s == "Statistics" || s == "Profile") {
     getMessages();
   }
+});
+
+// attribution de booster si le joueur fait un rendu alors qu'il était inactif depuis longtemps
+
+// todo : varier le type et la valeur du booster accordé
+
+let TIME_WELCOME_BACK = 1000 * 3600 * 24; // pour donner un booster de bienvenue après 1 jour d'inactivité
+
+function welcomeBackBoost() {
+  if (Date.now() - user.lastRenderTime < TIME_WELCOME_BACK) {
+    console.log(
+      "dernier render il y a " +
+        Math.round(Date.now() - user.lastRenderTime) / 1000 +
+        "s"
+    );
+    return; // activité récente détectée
+  }
+  // else :
+  console.log(
+    "temps d'inactivité en secondes : " +
+      Math.round(Date.now() - user.lastRenderTime) / 1000
+  );
+  user.lastBoostMultiplier = 2;
+  user.lastBoostEnd = Date.now() + BOOST_DURATION_MS;
+  notification(
+    "TE REVOILA !\nPoints doublés pendant " +
+      BOOST_DURATION_MS / (60 * 1000) +
+      " minutes !",
+    "oklch(70% 100% var(--hue-accent))"
+  );
+}
+
+window.addEventListener("stateChange", (e) => {
+  // on écoute stateChange et non render, car on vérifie avec lastRenderTime
+  window.setTimeout(welcomeBackBoost, 1000);
+  //timeout car sinon le render détruit les listeners et la notif ne disparaît plus.
+});
+
+function getBoost() {
+  if (Date.now() < user.lastBoostEnd) return user.lastBoostMultiplier;
+  else return 1;
+}
+
+function giveBoost() {
+  // appelée après la fin d'un quiz, au moment de revenir ("afterEnd")
+  // move to event
+  if (getBoost() > 1) return; // on ne donne pas de boost s'il y en a déjà un actif
+
+  if (Math.random() < BOOST_PROBABILITY) return; // probas de boost
+
+  let thisDate = new Date();
+  let thisHour = thisDate.getHours();
+
+  // si on est dans une happy hour on donne le bonus et return
+  for (let i = 0; i < HAPPY_HOUR_LIST.length; i++) {
+    if (HAPPY_HOUR_LIST[i][0] <= thisHour && thisHour < HAPPY_HOUR_LIST[i][1]) {
+      user.lastBoostMultiplier = 2;
+      user.lastBoostEnd = new Date(
+        thisDate.getFullYear(),
+        thisDate.getMonth(),
+        thisDate.getDate(),
+        HAPPY_HOUR_LIST[i][1]
+      ).getTime();
+      notification(
+        "HAPPY HOUR :\nPoints doublés jusqu'à " + HAPPY_HOUR_LIST[i][1] + "h",
+        "oklch(70% 100% var(--hue-accent)"
+      );
+      return;
+    }
+  }
+
+  // si pas happy hour, bonus court.
+
+  user.lastBoostMultiplier = 2;
+  user.lastBoostEnd = Date.now() + BOOST_DURATION_MS;
+  notification(
+    "BOOST !\nPoints doublés pendant " +
+      BOOST_DURATION_MS / (60 * 1000) +
+      " minutes !",
+    "oklch(70% 100% var(--hue-accent)"
+  );
+}
+
+window.addEventListener("afterEnd", () => {
+  giveBoost();
 });
 
 // - - - - - - - - - - - - - - - - - - - - - - -
@@ -4209,9 +4317,6 @@ function validateAnswer() {
   if (isGameover) {
     user.nbQuizGameover++;
 
-    // avant il y avait le toast et on allait au thème.
-    //alertGameover();
-    //gotoTheme(theme.id);
     gotoGameover();
     return;
   }
@@ -4282,14 +4387,14 @@ function showQuizResults() {
     }
   }
 
-  // BOOST
+  // Calcul du BOOST
   console.log("points avant booster : " + quiz.points);
   quiz.points *= getBoost();
   console.log("boost multiplier : " + getBoost());
-  console.log("points après booster : " + quiz.points);
+  console.log("points après boost : " + quiz.points);
   // faire apparaître le boost pendant tout le quiz en haut ?
 
-  // test levelup :
+  // felicitation levelup :
   if (level(user.points + quiz.points) > level(user.points))
     toast(`LEVEL UP !`, "oklch(70% 100% var(--hue-accent)");
 
@@ -4341,7 +4446,7 @@ function showQuizResults() {
 
   // lors du render, le bouton "rejouer" va être désactivé si le thème est locked
 
-  sendStatistics();
+  postFinishedQuiz();
   // console log bilan du quiz
   consoleLogQuizRecap();
 
@@ -4362,55 +4467,17 @@ function haveToLockTheme() {
   return true;
 }
 
-function giveBoost() {
-  if (getBoost() > 1) return; // on ne donne pas de boost s'il y en a déjà un actif
-
-  let thisDate = new Date();
-  let thisHour = thisDate.getHours();
-
-  for (let i = 0; i < HAPPY_HOUR_LIST.length; i++) {
-    if (HAPPY_HOUR_LIST[i][0] <= thisHour && thisHour < HAPPY_HOUR_LIST[i][1]) {
-      user.lastBoostMultiplier = 2;
-      user.lastBoostEnd = new Date(
-        thisDate.getFullYear(),
-        thisDate.getMonth(),
-        thisDate.getDate(),
-        HAPPY_HOUR_LIST[i][1]
-      ).getTime();
-      notification(
-        "HAPPY HOUR :\nPoints doublés jusqu'à " + HAPPY_HOUR_LIST[i][1] + "h",
-        "oklch(70% 100% var(--hue-accent)"
-      );
-      return;
-    }
-  }
-
-  if (Math.random() < BOOST_PROBABILITY) {
-    user.lastBoostMultiplier = 2;
-    user.lastBoostEnd = Date.now() + BOOST_DURATION_MS;
-    notification(
-      "BOOST !\nPoints doublés pendant " +
-        BOOST_DURATION_MS / (60 * 1000) +
-        " minutes !",
-      "oklch(70% 100% var(--hue-accent)"
-    );
-  }
-}
-
 function unstack(targetName) {
+  // changer le nom puisque ça n'unstack plus les messages
   // appelé en sortie d'écran de fin
 
   window.setTimeout(getHighscores, 1000); // php est en train d'écrire les fichiers texte
 
-  giveBoost();
+  //giveBoost(); // move to event
+  window.dispatchEvent(new Event("afterEnd")); // entraine giveBoost()
 
   if (targetName == "Chapters") goto("Chapters");
   else if (targetName == "Quiz") gotoQuiz();
-}
-
-function getBoost() {
-  if (Date.now() < user.lastBoostEnd) return user.lastBoostMultiplier;
-  else return 1;
 }
 
 // - - - - - - - - - - - - - - - - - -
@@ -5250,54 +5317,4 @@ let themes = {
     questions: [...range(1515, 1554)],
   },
 };
-
-/**
- * Minified by jsDelivr using Terser v5.14.1.
- * Original file: /npm/toastify-js@1.12.0/src/toastify.js
- *
- * Do NOT use SRI with dynamically generated files! More information: https://www.jsdelivr.com/using-sri-with-dynamic-files
- */
-/*!
- * Toastify js 1.12.0
- * https://github.com/apvarun/toastify-js
- * @license MIT licensed
- *
- * Copyright (C) 2018 Varun A P
- */
-!function(t,o){"object"==typeof module&&module.exports?module.exports=o():t.Toastify=o()}(this,(function(t){var o=function(t){return new o.lib.init(t)};function i(t,o){return o.offset[t]?isNaN(o.offset[t])?o.offset[t]:o.offset[t]+"px":"0px"}function s(t,o){return!(!t||"string"!=typeof o)&&!!(t.className&&t.className.trim().split(/\s+/gi).indexOf(o)>-1)}return o.defaults={oldestFirst:!0,text:"Toastify is awesome!",node:void 0,duration:3e3,selector:void 0,callback:function(){},destination:void 0,newWindow:!1,close:!1,gravity:"toastify-top",positionLeft:!1,position:"",backgroundColor:"",avatar:"",className:"",stopOnFocus:!0,onClick:function(){},offset:{x:0,y:0},escapeMarkup:!0,ariaLive:"polite",style:{background:""}},o.lib=o.prototype={toastify:"1.12.0",constructor:o,init:function(t){return t||(t={}),this.options={},this.toastElement=null,this.options.text=t.text||o.defaults.text,this.options.node=t.node||o.defaults.node,this.options.duration=0===t.duration?0:t.duration||o.defaults.duration,this.options.selector=t.selector||o.defaults.selector,this.options.callback=t.callback||o.defaults.callback,this.options.destination=t.destination||o.defaults.destination,this.options.newWindow=t.newWindow||o.defaults.newWindow,this.options.close=t.close||o.defaults.close,this.options.gravity="bottom"===t.gravity?"toastify-bottom":o.defaults.gravity,this.options.positionLeft=t.positionLeft||o.defaults.positionLeft,this.options.position=t.position||o.defaults.position,this.options.backgroundColor=t.backgroundColor||o.defaults.backgroundColor,this.options.avatar=t.avatar||o.defaults.avatar,this.options.className=t.className||o.defaults.className,this.options.stopOnFocus=void 0===t.stopOnFocus?o.defaults.stopOnFocus:t.stopOnFocus,this.options.onClick=t.onClick||o.defaults.onClick,this.options.offset=t.offset||o.defaults.offset,this.options.escapeMarkup=void 0!==t.escapeMarkup?t.escapeMarkup:o.defaults.escapeMarkup,this.options.ariaLive=t.ariaLive||o.defaults.ariaLive,this.options.style=t.style||o.defaults.style,t.backgroundColor&&(this.options.style.background=t.backgroundColor),this},buildToast:function(){if(!this.options)throw"Toastify is not initialized";var t=document.createElement("div");for(var o in t.className="toastify on "+this.options.className,this.options.position?t.className+=" toastify-"+this.options.position:!0===this.options.positionLeft?(t.className+=" toastify-left",console.warn("Property `positionLeft` will be depreciated in further versions. Please use `position` instead.")):t.className+=" toastify-right",t.className+=" "+this.options.gravity,this.options.backgroundColor&&console.warn('DEPRECATION NOTICE: "backgroundColor" is being deprecated. Please use the "style.background" property.'),this.options.style)t.style[o]=this.options.style[o];if(this.options.ariaLive&&t.setAttribute("aria-live",this.options.ariaLive),this.options.node&&this.options.node.nodeType===Node.ELEMENT_NODE)t.appendChild(this.options.node);else if(this.options.escapeMarkup?t.innerText=this.options.text:t.innerHTML=this.options.text,""!==this.options.avatar){var s=document.createElement("img");s.src=this.options.avatar,s.className="toastify-avatar","left"==this.options.position||!0===this.options.positionLeft?t.appendChild(s):t.insertAdjacentElement("afterbegin",s)}if(!0===this.options.close){var e=document.createElement("button");e.type="button",e.setAttribute("aria-label","Close"),e.className="toast-close",e.innerHTML="&#10006;",e.addEventListener("click",function(t){t.stopPropagation(),this.removeElement(this.toastElement),window.clearTimeout(this.toastElement.timeOutValue)}.bind(this));var n=window.innerWidth>0?window.innerWidth:screen.width;("left"==this.options.position||!0===this.options.positionLeft)&&n>360?t.insertAdjacentElement("afterbegin",e):t.appendChild(e)}if(this.options.stopOnFocus&&this.options.duration>0){var a=this;t.addEventListener("mouseover",(function(o){window.clearTimeout(t.timeOutValue)})),t.addEventListener("mouseleave",(function(){t.timeOutValue=window.setTimeout((function(){a.removeElement(t)}),a.options.duration)}))}if(void 0!==this.options.destination&&t.addEventListener("click",function(t){t.stopPropagation(),!0===this.options.newWindow?window.open(this.options.destination,"_blank"):window.location=this.options.destination}.bind(this)),"function"==typeof this.options.onClick&&void 0===this.options.destination&&t.addEventListener("click",function(t){t.stopPropagation(),this.options.onClick()}.bind(this)),"object"==typeof this.options.offset){var l=i("x",this.options),r=i("y",this.options),p="left"==this.options.position?l:"-"+l,d="toastify-top"==this.options.gravity?r:"-"+r;t.style.transform="translate("+p+","+d+")"}return t},showToast:function(){var t;if(this.toastElement=this.buildToast(),!(t="string"==typeof this.options.selector?document.getElementById(this.options.selector):this.options.selector instanceof HTMLElement||"undefined"!=typeof ShadowRoot&&this.options.selector instanceof ShadowRoot?this.options.selector:document.body))throw"Root element is not defined";var i=o.defaults.oldestFirst?t.firstChild:t.lastChild;return t.insertBefore(this.toastElement,i),o.reposition(),this.options.duration>0&&(this.toastElement.timeOutValue=window.setTimeout(function(){this.removeElement(this.toastElement)}.bind(this),this.options.duration)),this},hideToast:function(){this.toastElement.timeOutValue&&clearTimeout(this.toastElement.timeOutValue),this.removeElement(this.toastElement)},removeElement:function(t){t.className=t.className.replace(" on",""),window.setTimeout(function(){this.options.node&&this.options.node.parentNode&&this.options.node.parentNode.removeChild(this.options.node),t.parentNode&&t.parentNode.removeChild(t),this.options.callback.call(t),o.reposition()}.bind(this),400)}},o.reposition=function(){for(var t,o={top:15,bottom:15},i={top:15,bottom:15},e={top:15,bottom:15},n=document.getElementsByClassName("toastify"),a=0;a<n.length;a++){t=!0===s(n[a],"toastify-top")?"toastify-top":"toastify-bottom";var l=n[a].offsetHeight;t=t.substr(9,t.length-1);(window.innerWidth>0?window.innerWidth:screen.width)<=360?(n[a].style[t]=e[t]+"px",e[t]+=l+15):!0===s(n[a],"toastify-left")?(n[a].style[t]=o[t]+"px",o[t]+=l+15):(n[a].style[t]=i[t]+"px",i[t]+=l+15)}return this},o.lib.init.prototype=o.lib,o}));
-//# sourceMappingURL=/sm/e1ebbfe1bf0b0061f0726ebc83434e1c2f8308e6354c415fd05ecccdaad47617.map
-// attribution de booster si le joueur fait un rendu alors qu'il était inactif depuis longtemps
-
-// todo : varier le type et la valeur du booster accordé
-
-let TIME_WELCOME_BACK = 1000 * 3600 * 24; // pour donner un booster de bienvenue après 1 jour d'inactivité
-
-function welcomeBackBoost() {
-  if (Date.now() - user.lastRenderTime < TIME_WELCOME_BACK) {
-    console.log(
-      "dernier render il y a " +
-        Math.round(Date.now() - user.lastRenderTime) / 1000 +
-        "s"
-    );
-    return; // activité récente détectée
-  }
-  // else :
-  console.log(
-    "temps d'inactivité en secondes : " +
-      Math.round(Date.now() - user.lastRenderTime) / 1000
-  );
-  user.lastBoostMultiplier = 2;
-  user.lastBoostEnd = Date.now() + BOOST_DURATION_MS;
-  notification(
-    "TE REVOILA !\nPoints doublés pendant " +
-      BOOST_DURATION_MS / (60 * 1000) +
-      " minutes !",
-    "oklch(70% 100% var(--hue-accent))"
-  );
-}
-
-window.addEventListener("stateChange", (e) => {
-  // et non render, car on vérifie avec la date du dernier render...
-  welcomeBackBoost();
-});
 

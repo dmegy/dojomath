@@ -1,4 +1,5 @@
 <?php
+include 'cors_headers.php';
 
 include_once 'databases/db_config.php';
 
@@ -8,17 +9,7 @@ include_once 'databases/db_config.php';
 
 
 
-$referer = $_SERVER['HTTP_REFERER'];
-$bon_referer = (strpos($referer, 'dojomath.fr') !== false);
 
-if ( !$bon_referer )
-  exit;
-
-
-// Définir le header pour la réponse JSON
-header("Content-Type: application/json");
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Headers: *");
 
 // récupération de l'heure courante
 $date = date("Y-m-d H:i:s");

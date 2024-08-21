@@ -1,11 +1,11 @@
 <?php
+include 'cors_headers.php';
+
 include_once 'databases/db_config.php';
 
 //ini_set('display_errors', 1);
 //ini_set('display_startup_errors', 1);
 //error_reporting(E_ALL);
-
-//header("Content-Type: application/json");
 
 
 
@@ -18,13 +18,6 @@ if (isset($_SERVER['HTTP_X_FORWARDED_FOR'])) {
     $userIP = $_SERVER['REMOTE_ADDR'];
 }
 
-$referer = $_SERVER['HTTP_REFERER'];
-$bon_referer = (strpos($referer, 'dojomath.fr') !== false);
-
-if ( !$bon_referer ){
-    echo "lol gtfo!";
-    exit;
-}
 
 $rawData = file_get_contents("php://input");
 

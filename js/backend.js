@@ -6,7 +6,7 @@ const URL_LIST_RECENT_GAMES = "backend/list_recent_games.html";
 const URL_POST_QUESTION_FEEDBACK = "backend/post_question_feedback.php";
 const URL_GET_AND_RESET_BONUS = "backend/get_and_reset_bonus.php";
 
-function sendStatistics() {
+function postFinishedQuiz() {
   adjustPoints();
 
   let requestBody = {
@@ -158,12 +158,7 @@ function getAndResetBonus() {
   })
     .then((response) => response.json())
     .then((responseObj) => {
-      if (responseObj.status != "success") {
-        console.log(
-          "Réponse du serveur : Erreur. Message : " + responseObj.message
-        );
-        return;
-      }
+      if (responseObj.status != "success") return;
 
       let bonusAmount = Number(responseObj.bonusAmount);
       let bonusMessage = responseObj.bonusMessage;
@@ -178,6 +173,7 @@ function getAndResetBonus() {
       user.points += bonusAmount;
       saveToLocalStorage();
       render();
+      // après le render sinon problème de notif :
       let notifText = `${bonusMessage}\n+${bonusAmount} pts !`;
       notification(notifText, "oklch(70% 90% var(--hue-accent))");
     })

@@ -117,15 +117,16 @@ function getMessages() {
         return;
       }
       // END GUARD
+
+      receivedMessages = responseObj.messages;
+      saveToLocalStorage();
+      // on relance pas nu render(), on fait juste ceci :
+      document.getElementById("messages").innerHTML = htmlMessages();
       let notifText =
         state == "Profile"
           ? "Nouveau(x) message(s) !"
           : "Tu as de nouveaux messages!\n Tu peux les lire dans ta page de profil.";
       notification(notifText, "oklch(70% 90% var(--hue-accent))");
-      receivedMessages = responseObj.messages;
-      saveToLocalStorage();
-      // on relance pas nu render(), on fait juste ceci :
-      document.getElementById("messages").innerHTML = htmlMessages();
     })
     .catch((error) => {
       console.log(error);
@@ -148,7 +149,7 @@ function htmlMessages() {
   for (let i = 0; i < receivedMessages.length; i++) {
     s += `<div style="display:flex;justify-content:space-between;align-items:center;margin:.2rem 0">
       <div>${receivedMessages[i].senderName} dit : ${receivedMessages[i].content}</div>
-      <div class="btn btn-small btn-primary" onclick="editMessage('${receivedMessages[i].senderId}')">Répondre</div>
+      <div class="btn btn-small btn-primary" onclick="editMessage('${receivedMessages[i].senderId}','${receivedMessages[i].senderName}')">Répondre</div>
       </div>`;
   }
   return s;

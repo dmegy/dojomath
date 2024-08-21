@@ -30,7 +30,7 @@ if ($quizThemeId === null || trim($quizThemeId) === "") {
 
 else{
     try {
-        $pdo = new PDO('sqlite:../backend/databases/db_main.sqlite3');
+        $pdo = new PDO('sqlite:../../databases/db_main.sqlite3');
         $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
     } catch (PDOException $e) {
         echo "Erreur de connexion à la base de données: " . $e->getMessage() ;
@@ -54,6 +54,7 @@ else{
 
         // Récupérer les résultats
         $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
 
         // Vérifier si des résultats ont été trouvés
         if (empty($results)) {

@@ -34,6 +34,7 @@ let user = {
   firstConnectionTime: t0 /* time in ms */,
   userId: toB64(t0),
   userName: toB64(t0),
+  instructorAssignedId: "",
   areaCode: "" /* numéro de département, STRING car "AEFE" etc" */,
   countryCode: "",
   combo: 0,
@@ -341,7 +342,6 @@ function saveToLocalStorage() {
       "finishedQuizzesHistory",
       JSON.stringify(finishedQuizzesHistory)
     );
-    console.log("Saved data to localStorage");
   } catch (e) {
     console.log("localStorage disabled : could not save data");
   }
@@ -426,8 +426,10 @@ function processCode() {
 
   let queryString = window.location.search;
   let urlParams = new URLSearchParams(queryString);
-  let code = urlParams.get("code");
 
+  if (!urlParams.has("code")) return;
+
+  let code = urlParams.get("code");
   if (!isB64(code)) return;
 
   let x = fromB64(code);
@@ -439,10 +441,15 @@ function processCode() {
   user.referrerId = toB64(x - SECRET_REFERRAL_CODE);
   userPoints = REFERRAL_BONUS;
   pointsDiffHistory.push(REFERRAL_BONUS);
-  //notification("Parrain enregistré !\nTu gagnes 100 points");
-  //bug bizarre : la notif ne disparaît pas
-  // avec toast ça marche
-  // en modifiant la durée à 1000 ça marche, à partir de 2000 non.
+  saveToLocalStorage();
+  // bug bizarre notifs ne disparaissent pas si on les affiche trop vite après le démarrage
+  window.setTimeout(
+    notification,
+    3000,
+    "Cadeau de parrainage !\nTu gagnes " +
+      REFERRAL_BONUS +
+      " points.\n Ton parrain ou ta marraine en gagnera autant\n après ta première partie."
+  );
 }
 
 function toast(message, color) {
@@ -466,7 +473,8 @@ function toast(message, color) {
 
 function notification(message, color) {
   if (!message) return;
-  Toastify({
+  if (!color) color = "oklch(70% 90% var(--hue-accent))";
+  var toast = Toastify({
     text: message,
     duration: 4500,
     destination: "",
@@ -480,8 +488,11 @@ function notification(message, color) {
       background: color,
       "text-align": "center",
     },
-    onClick: function () {}, // Callback after click
-  }).showToast();
+    onClick: function () {
+      toast.hideToast();
+    },
+  });
+  toast.showToast();
 }
 
 // - - - - -  FIN FONCTIONS - - - - - -
